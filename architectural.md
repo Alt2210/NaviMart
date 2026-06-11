@@ -2,126 +2,97 @@
 
 Tài liệu này dùng để theo dõi tiến độ hoàn thiện các biểu đồ (Analysis Diagram, Sequence Diagram, Communication Diagram) cho từng Use Case (UC) đã được phân rã chi tiết nhất theo chuẩn đặc tả yêu cầu phần mềm (SRS).
 
-## 1. Phân hệ Xác thực & Quản lý Tài khoản (Authentication & Profile)
-*Mô tả: Nhóm chức năng xử lý định danh người dùng và quản lý thông tin cá nhân.*
-- [ ] **UC1.1: Đăng ký tài khoản (bằng Email/SĐT)**
+## PHÂN HỆ 1: XÁC THỰC VÀ QUẢN LÝ TÀI KHOẢN
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC001: Đăng ký tài khoản**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC1.2: Đăng nhập hệ thống (Email/SĐT & Mật khẩu)**
+- [ ] **UC002: Đăng nhập hệ thống (Email/SĐT)**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC1.3: Đăng nhập qua mạng xã hội (OAuth Google/Facebook)**
+- [ ] **UC003: Đăng nhập qua mạng xã hội (OAuth Google/Facebook)**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC1.4: Quên mật khẩu & Đặt lại mật khẩu**
+- [ ] **UC004: Quên mật khẩu & Đặt lại mật khẩu**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC1.5: Xem thông tin cá nhân (Profile)**
+- [ ] **UC005: Xem và Cập nhật thông tin cá nhân**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC1.6: Cập nhật thông tin cá nhân (Sửa tên, avatar, số điện thoại)**
+- [ ] **UC006: Đổi mật khẩu**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC1.7: Đổi mật khẩu**
+- [ ] **UC007: Đăng xuất**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC1.8: Đăng xuất khỏi hệ thống**
+## PHÂN HỆ 2: QUẢN LÝ NHÓM GIA ĐÌNH
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC008: Tạo nhóm gia đình**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-
-## 2. Phân hệ Quản lý Nhóm Gia Đình (Family Sharing)
-*Mô tả: Nhóm chức năng cốt lõi cho phép nhiều người dùng (vợ, chồng, con cái) cùng quản lý chung 1 tủ lạnh và 1 danh sách đi chợ.*
-- [ ] **UC2.1: Tạo nhóm gia đình (Người tạo trở thành Owner)**
+- [ ] **UC009: Xem thông tin nhóm gia đình & Danh sách thành viên**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC2.2: Xem thông tin nhóm gia đình & Danh sách thành viên**
+- [ ] **UC010: Tạo mã mời/Link mời thành viên mới**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC2.3: Tạo mã mời/Link mời thành viên mới vào nhóm (Có thời hạn)**
+- [ ] **UC011: Tham gia nhóm gia đình**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC2.4: Tham gia nhóm gia đình qua mã mời/Link/QR Code**
+- [ ] **UC012: Cập nhật phân quyền cho thành viên**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC2.5: Cập nhật phân quyền cho thành viên (Chỉ Owner: Edit list, Edit pantry, View only)**
+- [ ] **UC013: Xóa thành viên khỏi nhóm (Kick)**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC2.6: Xóa thành viên khỏi nhóm gia đình (Kick member - Chỉ Owner)**
+- [ ] **UC014: Rời khỏi nhóm gia đình**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC2.7: Rời khỏi nhóm gia đình (Leave group)**
+## PHÂN HỆ 3: QUẢN LÝ DANH SÁCH MUA SẮM
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC015: Tạo mới danh sách mua sắm**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-
-## 3. Phân hệ Quản lý Danh sách Mua sắm (Shopping List)
-*Mô tả: Hỗ trợ người dùng lên danh sách những đồ cần mua trước khi ra siêu thị/chợ.*
-- [ ] **UC3.1: Tạo mới danh sách mua sắm (Theo ngày/tuần hoặc sự kiện)**
+- [ ] **UC016: Xem, Sửa tên, Xóa danh sách mua sắm**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC3.2: Xem danh sách các danh sách mua sắm**
+- [ ] **UC017: Thêm mặt hàng vào danh sách**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC3.3: Sửa tên/Xóa danh sách mua sắm**
+- [ ] **UC018: Cập nhật và Xóa mặt hàng**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC3.4: Thêm mặt hàng vào danh sách mua sắm**
+- [ ] **UC019: Đánh dấu đã mua và Tự động chuyển vào Tủ lạnh**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC3.5: Cập nhật thông tin mặt hàng cần mua (Số lượng, Đơn vị, Ghi chú)**
+## PHÂN HỆ 4: QUẢN LÝ TỦ LẠNH & KHO THỰC PHẨM (PANTRY)
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC020: Xem và Tìm kiếm thực phẩm trong kho**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC3.6: Xóa mặt hàng khỏi danh sách mua sắm**
+- [ ] **UC021: Thêm mới thực phẩm vào tủ lạnh (Thủ công)**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC3.7: Đánh dấu mặt hàng đã mua (Check item)**
+- [ ] **UC022: Cập nhật thông tin thực phẩm**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC3.8: Tự động chuyển hàng đã mua vào Kho thực phẩm (Khi hoàn tất đi chợ)**
+- [ ] **UC023: Xóa/Thanh lý thực phẩm**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-
-## 4. Phân hệ Quản lý Tủ lạnh & Kho thực phẩm (Pantry Management)
-*Mô tả: Quản lý đồ ăn đang có trong nhà (Tủ lạnh, tủ đông, kệ bếp) để tránh lãng phí.*
-- [ ] **UC4.1: Xem danh sách thực phẩm trong kho (Có bộ lọc theo vị trí: tủ mát, tủ đông, tủ khô)**
+- [ ] **UC024: Tự động trừ số lượng thực phẩm khi nấu ăn**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC4.2: Thêm mới thực phẩm vào tủ lạnh (Nhập thủ công)**
+- [ ] **UC025: Gửi thông báo nhắc nhở thực phẩm sắp hết hạn**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC4.3: Cập nhật thông tin thực phẩm (Chỉnh sửa số lượng, Hạn sử dụng, Vị trí lưu trữ)**
+## PHÂN HỆ 5: LÊN KẾ HOẠCH BỮA ĂN (MEAL PLANNER)
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC026: Xem lịch trình và Tạo phiên ăn**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC4.4: Xóa/Thanh lý thực phẩm (Khi ăn hết hoặc vứt bỏ do hỏng)**
+- [ ] **UC027: Thêm và Sửa món ăn trong lịch trình**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC4.5: Tìm kiếm thực phẩm trong kho (Theo tên, loại)**
+- [ ] **UC028: Xóa món ăn khỏi lịch trình**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC4.6: Tự động trừ số lượng thực phẩm trong kho khi xác nhận nấu một công thức**
+## PHÂN HỆ 6: GỢI Ý THÔNG MINH & CÔNG THỨC NẤU ĂN
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC029: Gợi ý món ăn dựa trên thực phẩm hiện có**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC4.7: Gửi thông báo nhắc nhở thực phẩm sắp hết hạn (Ví dụ: Trước 2 ngày, 3 ngày)**
+- [ ] **UC030: Tìm kiếm và Xem chi tiết công thức**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-
-## 5. Phân hệ Lên Kế Hoạch Bữa Ăn (Meal Planner)
-*Mô tả: Giúp nội trợ sắp xếp thực đơn cho cả tuần để không phải suy nghĩ "Hôm nay ăn gì?".*
-- [ ] **UC5.1: Xem lịch trình bữa ăn (Theo ngày/Theo tuần)**
+- [ ] **UC031: Lưu/Bỏ lưu công thức yêu thích**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC5.2: Tạo thêm phiên ăn (Session) trong ngày (Ví dụ: Bữa sáng, Trưa, Tối, Bữa phụ)**
+- [ ] **UC032: Tự động thêm nguyên liệu còn thiếu vào Danh sách mua sắm**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC5.3: Thêm món ăn vào một bữa ăn cụ thể trong lịch trình**
+- [ ] **UC033: Chat tương tác với AI Chef**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC5.4: Chỉnh sửa/Đổi món trong lịch trình**
+## PHÂN HỆ 7: BÁO CÁO & THỐNG KÊ
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC034: Xem thống kê tiêu dùng và lãng phí**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC5.5: Xóa món ăn khỏi lịch trình bữa ăn**
+## PHÂN HỆ 8: QUẢN TRỊ VIÊN (ADMIN)
+*Mô tả: Nhóm chức năng này đang được thiết kế.*
+- [ ] **UC035: Đăng nhập và Xem danh sách User**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-
-## 6. Phân hệ Gợi ý thông minh & Công thức nấu ăn (AI Recipes & Suggestions)
-*Mô tả: Kho công thức và AI phân tích thực phẩm đang có để gợi ý món.*
-- [ ] **UC6.1: Gợi ý món ăn tự động dựa trên thực phẩm sắp hết hạn trong tủ lạnh**
+- [ ] **UC036: Khóa/Mở khóa tài khoản**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC6.2: Tìm kiếm công thức nấu ăn (Theo tên, nguyên liệu, tag)**
+- [ ] **UC037: Quản lý Master Data (Thực phẩm, Đơn vị tính)**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC6.3: Xem chi tiết công thức nấu ăn (Nguyên liệu, Cách làm, Dinh dưỡng)**
+- [ ] **UC038: Kiểm duyệt công thức nấu ăn**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC6.4: Lưu/Bỏ lưu (Bookmark) công thức nấu ăn yêu thích**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC6.5: Tự động thêm các nguyên liệu còn thiếu của công thức vào Danh sách mua sắm**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC6.6: Chat tương tác với AI Chef (Trợ lý ảo hướng dẫn nấu ăn)**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-
-## 7. Phân hệ Báo cáo và Thống kê (Reports & Analytics)
-*Mô tả: Giúp người dùng nhìn lại thói quen tiêu dùng để tối ưu chi phí.*
-- [ ] **UC7.1: Xem biểu đồ thống kê thực phẩm đã mua (Theo thời gian/Danh mục)**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC7.2: Xem báo cáo số lượng/giá trị thực phẩm bị lãng phí (Do hết hạn phải vứt bỏ)**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-
-## 8. Phân hệ Quản trị viên (Admin System)
-*Mô tả: Dành cho Admin vận hành hệ thống.*
-- [ ] **UC8.1: Đăng nhập quyền Quản trị viên**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC8.2: Xem danh sách toàn bộ người dùng hệ thống**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC8.3: Khóa/Mở khóa tài khoản người dùng vi phạm**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC8.4: Quản lý Master Data: Thêm/Sửa/Xóa Danh mục thực phẩm (Category)**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC8.5: Quản lý Master Data: Thêm/Sửa/Xóa Đơn vị tính (Unit: kg, lit, hộp...)**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC8.6: Kiểm duyệt công thức nấu ăn (Nếu cho phép user đóng góp công thức)**
-  - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
-- [ ] **UC8.7: Xem Dashboard thống kê tổng quan toàn hệ thống (DAU, MAU, Tổng user)**
+- [ ] **UC039: Xem Dashboard tổng quan**
   - [ ] Analysis Diagram | [ ] Sequence Diagram | [ ] Communication Diagram
