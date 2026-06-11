@@ -1,0 +1,743 @@
+{
+  "info": {
+    "_postman_id": "7a9e9694-1f0b-4f13-9f2f-000000000001",
+    "name": "NaviMart API",
+    "description": "Postman collection for NaviMart backend. Import this file, set baseUrl if needed, then run Auth requests first to populate tokens.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "familyId", "value": "" },
+    { "key": "memberId", "value": "" },
+    { "key": "inviteCode", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "foodId", "value": "" },
+    { "key": "shoppingListId", "value": "" },
+    { "key": "shoppingListItemId", "value": "" },
+    { "key": "pantryItemId", "value": "" },
+    { "key": "recipeId", "value": "" },
+    { "key": "mealId", "value": "" },
+    { "key": "notificationId", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) pm.collectionVariables.set('accessToken', json.accessToken);",
+                  "if (json.refreshToken) pm.collectionVariables.set('refreshToken', json.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"linh@example.com\",\n  \"password\": \"Sup3rSecret!\",\n  \"firstName\": \"Linh\",\n  \"lastName\": \"Nguyen\",\n  \"familyName\": \"Gia dinh Linh\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) pm.collectionVariables.set('accessToken', json.accessToken);",
+                  "if (json.refreshToken) pm.collectionVariables.set('refreshToken', json.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"linh@example.com\",\n  \"password\": \"Sup3rSecret!\",\n  \"rememberMe\": true\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Refresh token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) pm.collectionVariables.set('accessToken', json.accessToken);",
+                  "if (json.refreshToken) pm.collectionVariables.set('refreshToken', json.refreshToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/refresh"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Family",
+      "item": [
+        {
+          "name": "Get current family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json._id || json.id;",
+                  "if (id) pm.collectionVariables.set('familyId', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/family"
+          }
+        },
+        {
+          "name": "Create family",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json._id || json.id;",
+                  "if (id) pm.collectionVariables.set('familyId', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gia dinh Linh\"\n}"
+            },
+            "url": "{{baseUrl}}/family"
+          }
+        },
+        {
+          "name": "Create invite",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.inviteCode) pm.collectionVariables.set('inviteCode', json.inviteCode);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expiresInHours\": 24,\n  \"permissions\": [\"edit_lists\", \"edit_pantry\", \"edit_meals\"]\n}"
+            },
+            "url": "{{baseUrl}}/family/invite"
+          }
+        },
+        {
+          "name": "Join family",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inviteCode\": \"{{inviteCode}}\"\n}"
+            },
+            "url": "{{baseUrl}}/family/join"
+          }
+        },
+        {
+          "name": "Update member permissions",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissions\": [\"edit_lists\", \"edit_pantry\", \"edit_meals\"]\n}"
+            },
+            "url": "{{baseUrl}}/family/members/{{memberId}}/permissions"
+          }
+        },
+        {
+          "name": "Remove member",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/family/members/{{memberId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shopping Lists",
+      "item": [
+        {
+          "name": "List shopping lists",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shopping-lists?status=active",
+              "host": ["{{baseUrl}}"],
+              "path": ["shopping-lists"],
+              "query": [{ "key": "status", "value": "active" }]
+            }
+          }
+        },
+        {
+          "name": "Create shopping list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json._id || json.id;",
+                  "if (id) pm.collectionVariables.set('shoppingListId', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Di cho cuoi tuan\",\n  \"type\": \"weekly\",\n  \"plannedFor\": \"2026-06-13T00:00:00.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/shopping-lists"
+          }
+        },
+        {
+          "name": "Get shopping list detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/shopping-lists/{{shoppingListId}}"
+          }
+        },
+        {
+          "name": "Update shopping list",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Di cho trong ngay\",\n  \"type\": \"custom\"\n}"
+            },
+            "url": "{{baseUrl}}/shopping-lists/{{shoppingListId}}"
+          }
+        },
+        {
+          "name": "Add shopping list item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const item = json.items && json.items[json.items.length - 1];",
+                  "const id = item && (item._id || item.id);",
+                  "if (id) pm.collectionVariables.set('shoppingListItemId', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Thit bo\",\n  \"quantity\": 500,\n  \"unit\": \"g\",\n  \"note\": \"Loai ngon de xao\"\n}"
+            },
+            "url": "{{baseUrl}}/shopping-lists/{{shoppingListId}}/items"
+          }
+        },
+        {
+          "name": "Check shopping list item",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checked\": true,\n  \"status\": \"bought\",\n  \"quantity\": 500,\n  \"unit\": \"g\"\n}"
+            },
+            "url": "{{baseUrl}}/shopping-lists/{{shoppingListId}}/items/{{shoppingListItemId}}"
+          }
+        },
+        {
+          "name": "Complete list into pantry",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"defaultExpiryDays\": 7,\n  \"defaultLocation\": \"fridge\"\n}"
+            },
+            "url": "{{baseUrl}}/shopping-lists/{{shoppingListId}}/complete"
+          }
+        },
+        {
+          "name": "Remove shopping list item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/shopping-lists/{{shoppingListId}}/items/{{shoppingListItemId}}"
+          }
+        },
+        {
+          "name": "Archive shopping list",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/shopping-lists/{{shoppingListId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pantry",
+      "item": [
+        {
+          "name": "List pantry items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pantry?expiryStatus=expiring",
+              "host": ["{{baseUrl}}"],
+              "path": ["pantry"],
+              "query": [{ "key": "expiryStatus", "value": "expiring" }]
+            }
+          }
+        },
+        {
+          "name": "Create pantry item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json._id || json.id;",
+                  "if (id) pm.collectionVariables.set('pantryItemId', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Thit bo\",\n  \"quantity\": 500,\n  \"unit\": \"g\",\n  \"expiryDate\": \"2026-06-18T00:00:00.000Z\",\n  \"location\": \"fridge\",\n  \"source\": \"manual\"\n}"
+            },
+            "url": "{{baseUrl}}/pantry"
+          }
+        },
+        {
+          "name": "Get pantry item detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/pantry/{{pantryItemId}}"
+          }
+        },
+        {
+          "name": "Update pantry item",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 450,\n  \"note\": \"Da dung mot it\"\n}"
+            },
+            "url": "{{baseUrl}}/pantry/{{pantryItemId}}"
+          }
+        },
+        {
+          "name": "Consume pantry item",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 100,\n  \"note\": \"Dung cho bua toi\"\n}"
+            },
+            "url": "{{baseUrl}}/pantry/{{pantryItemId}}/consume"
+          }
+        },
+        {
+          "name": "Mark pantry item wasted",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/pantry/{{pantryItemId}}/waste"
+          }
+        },
+        {
+          "name": "Delete pantry item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/pantry/{{pantryItemId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "item": [
+        {
+          "name": "Search recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes?q=thit&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["recipes"],
+              "query": [
+                { "key": "q", "value": "thit" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create recipe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json._id || json.id;",
+                  "if (id) pm.collectionVariables.set('recipeId', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trung chien ca chua\",\n  \"description\": \"Mon nhanh cho bua sang.\",\n  \"cookTimeMinutes\": 15,\n  \"difficulty\": \"easy\",\n  \"servings\": 2,\n  \"ingredients\": [\n    { \"name\": \"Trung ga\", \"quantity\": 2, \"unit\": \"qua\" },\n    { \"name\": \"Ca chua\", \"quantity\": 150, \"unit\": \"g\" }\n  ],\n  \"steps\": [\"Danh trung\", \"Xao ca chua\", \"Cho trung vao chien\"],\n  \"tags\": [\"breakfast\", \"quick\"],\n  \"status\": \"approved\"\n}"
+            },
+            "url": "{{baseUrl}}/recipes"
+          }
+        },
+        {
+          "name": "Get recipe detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/recipes/{{recipeId}}"
+          }
+        },
+        {
+          "name": "Recipe missing ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/recipes/{{recipeId}}/missing-ingredients?servings=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["recipes", "{{recipeId}}", "missing-ingredients"],
+              "query": [{ "key": "servings", "value": "2" }]
+            }
+          }
+        },
+        {
+          "name": "Generate list from recipe",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mua do cho cong thuc\",\n  \"plannedFor\": \"2026-06-13T00:00:00.000Z\",\n  \"servings\": 2\n}"
+            },
+            "url": "{{baseUrl}}/recipes/{{recipeId}}/generate-shopping-list"
+          }
+        },
+        {
+          "name": "Update recipe",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Cap nhat mo ta cong thuc\"\n}"
+            },
+            "url": "{{baseUrl}}/recipes/{{recipeId}}"
+          }
+        },
+        {
+          "name": "Archive recipe",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/recipes/{{recipeId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meals",
+      "item": [
+        {
+          "name": "List meal plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meals?startDate=2026-06-11T00:00:00.000Z&endDate=2026-06-18T00:00:00.000Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["meals"],
+              "query": [
+                { "key": "startDate", "value": "2026-06-11T00:00:00.000Z" },
+                { "key": "endDate", "value": "2026-06-18T00:00:00.000Z" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create meal plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const id = json._id || json.id;",
+                  "if (id) pm.collectionVariables.set('mealId', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-06-12T00:00:00.000Z\",\n  \"session\": \"dinner\",\n  \"recipeId\": \"{{recipeId}}\",\n  \"servings\": 2,\n  \"note\": \"Bua toi gia dinh\"\n}"
+            },
+            "url": "{{baseUrl}}/meals"
+          }
+        },
+        {
+          "name": "Get meal detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/meals/{{mealId}}"
+          }
+        },
+        {
+          "name": "Meal missing ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/meals/{{mealId}}/missing-ingredients"
+          }
+        },
+        {
+          "name": "Generate list from meal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mua do cho meal plan\",\n  \"plannedFor\": \"2026-06-13T00:00:00.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/meals/{{mealId}}/generate-shopping-list"
+          }
+        },
+        {
+          "name": "Update meal plan",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": true\n}"
+            },
+            "url": "{{baseUrl}}/meals/{{mealId}}"
+          }
+        },
+        {
+          "name": "Delete meal plan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/meals/{{mealId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications?unreadOnly=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"],
+              "query": [{ "key": "unreadOnly", "value": "true" }]
+            }
+          }
+        },
+        {
+          "name": "Mark notification as read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/notifications/{{notificationId}}/read"
+          }
+        },
+        {
+          "name": "Mark all notifications as read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/notifications/read-all"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Dashboard report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/dashboard?startDate=2026-06-01T00:00:00.000Z&endDate=2026-06-30T23:59:59.000Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "dashboard"],
+              "query": [
+                { "key": "startDate", "value": "2026-06-01T00:00:00.000Z" },
+                { "key": "endDate", "value": "2026-06-30T23:59:59.000Z" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consumption trends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/consumption-trends?startDate=2026-06-01T00:00:00.000Z&endDate=2026-06-30T23:59:59.000Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "consumption-trends"],
+              "query": [
+                { "key": "startDate", "value": "2026-06-01T00:00:00.000Z" },
+                { "key": "endDate", "value": "2026-06-30T23:59:59.000Z" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Waste report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/waste?startDate=2026-06-01T00:00:00.000Z&endDate=2026-06-30T23:59:59.000Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "waste"],
+              "query": [
+                { "key": "startDate", "value": "2026-06-01T00:00:00.000Z" },
+                { "key": "endDate", "value": "2026-06-30T23:59:59.000Z" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
