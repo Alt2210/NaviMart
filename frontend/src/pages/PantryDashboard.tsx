@@ -1,77 +1,150 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import SideNav from '../components/SideNav';
+import { CardGridSkeleton } from '../components/Skeleton';
+import { pantryApi } from '../api';
+import type { PantryItem, StorageLocation } from '../api';
+import { useDialog } from '../contexts/DialogContext';
+
+const LOCATION_FILTERS: { label: string; value?: StorageLocation }[] = [
+  { label: 'Tất cả' },
+  { label: 'Tủ đông', value: 'freezer' },
+  { label: 'Tủ mát', value: 'fridge' },
+  { label: 'Đồ khô', value: 'pantry' },
+  { label: 'Khác', value: 'other' },
+];
+
+const LOCATION_LABELS: Record<StorageLocation, string> = {
+  freezer: 'Tủ đông',
+  fridge: 'Tủ mát',
+  pantry: 'Đồ khô',
+  other: 'Khác',
+};
+
+function expiryBadge(item: PantryItem) {
+  const days = Math.ceil(
+    (new Date(item.expiryDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000),
+  );
+  if (item.expiryStatus === 'expired') {
+    return { status: 'Hết hạn', color: 'error', border: 'border-error/30', text: `Quá hạn ${Math.abs(days)} ngày` };
+  }
+  if (item.expiryStatus === 'expiring') {
+    return { status: `Còn ${Math.max(days, 0)} ngày`, color: 'secondary', border: 'border-secondary/30', text: `HSD: ${new Date(item.expiryDate).toLocaleDateString('vi-VN')}` };
+  }
+  return { status: 'An toàn', color: 'tertiary', border: 'border-outline-variant/50', text: `HSD: ${new Date(item.expiryDate).toLocaleDateString('vi-VN')}` };
+}
 
 export default function PantryDashboard() {
+  const { showAlert } = useDialog();
   const [activeFilter, setActiveFilter] = useState('Tất cả');
-  const [activeMenu, setActiveMenu] = useState<number | null>(null);
-  const [pantryItems, setPantryItems] = useState([
-    {
-      id: 1,
-      name: 'Súp lơ xanh',
-      category: 'Tủ mát',
-      quantity: '2 bắp',
-      expiryDate: 'HSD: 5 ngày',
-      status: 'An toàn',
-      statusColor: 'tertiary',
-      borderColor: 'border-outline-variant/50',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBdXPABjf2kmB_xB54DOqq7BXqF-Oi1j6t9BnvDKKLrnCnjc1BAArhUHS9vxSUAZRuo5KTcMaIzUmiAn1HL_nrzCEVAdXnheKpSS0Zh7Kgs_ZmALrKE60hwaRNx17YpoA5p20gZvOSB95Dj_5pDqaEVaRXsX-Pr_JitM651gopO0e6OcSZhmm1oAOMqeVRbZ240Gmtv5c-IljjyXsVMsoy_ehehKNcuPbcdzZV18elMwMxAgoFUnPkX_MxvVj2H0zGFyiFScgxZllBD'
-    },
-    {
-      id: 2,
-      name: 'Sữa tươi TH True Milk',
-      category: 'Tủ mát',
-      quantity: '1 lít',
-      expiryDate: 'HSD: 20/10',
-      status: 'Còn 2 ngày',
-      statusColor: 'secondary',
-      borderColor: 'border-secondary/30',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBC_itWmEYsRGuPRcpxCekaFb68VPoTUDeXEE3uyRxoHDjrI1l-4qsal2YhArifRMDBHyXlC5mkdtLE0AtdYNJyai8jvkUkDxSD4qelwfeFpNkZhdemcQu1QmkSBNL9NIuau0d36Z3j_nMOGmjqp-ZFRm_LHq6EEgc-WTeSpCsg9uc9ah6f9ssfLC7KyCqSaCrgLUFWxC0CCBEbtPWItWtm07JN3xBrPmcOF6Xdi_Oaet3oWihpPb4sUztPLlqqToHowMVZzbpCk_ga'
-    }
-  ]);
+  const [search, setSearch] = useState('');
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [editingItem, setEditingItem] = useState<{id: number, name: string, quantity: string} | null>(null);
+  const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
   const [editQuantityInput, setEditQuantityInput] = useState('');
-  
-  const [deletedItem, setDeletedItem] = useState<any | null>(null);
-  const [showUndo, setShowUndo] = useState(false);
 
-  const handleDelete = (id: number) => {
-    const itemToDelete = pantryItems.find(item => item.id === id);
-    if (itemToDelete) {
-      setDeletedItem(itemToDelete);
-      setPantryItems(pantryItems.filter(item => item.id !== id));
-      setShowUndo(true);
-      
-      // Auto hide undo after 4 seconds
-      setTimeout(() => {
-        setShowUndo(false);
-      }, 4000);
+  const [deletedItem, setDeletedItem] = useState<PantryItem | null>(null);
+  const [showUndo, setShowUndo] = useState(false);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleError = useCallback(
+    (err: unknown, fallback: string) => {
+      showAlert(err instanceof Error ? err.message : fallback);
+    },
+    [showAlert],
+  );
+
+  const loadItems = useCallback(async () => {
+    setLoading(true);
+    try {
+      const location = LOCATION_FILTERS.find((f) => f.label === activeFilter)?.value;
+      setPantryItems(await pantryApi.list({ location, q: search.trim() || undefined }));
+    } catch (err) {
+      handleError(err, 'Không tải được kho thực phẩm.');
+    } finally {
+      setLoading(false);
     }
-    setActiveMenu(null);
+  }, [activeFilter, search, handleError]);
+
+  useEffect(() => {
+    const timer = setTimeout(loadItems, search ? 300 : 0);
+    return () => clearTimeout(timer);
+  }, [loadItems, search]);
+
+  const stats = {
+    total: pantryItems.length,
+    safe: pantryItems.filter((item) => item.expiryStatus === 'safe').length,
+    expiring: pantryItems.filter((item) => item.expiryStatus === 'expiring').length,
+    expired: pantryItems.filter((item) => item.expiryStatus === 'expired').length,
   };
 
-  const handleUndo = () => {
-    if (deletedItem) {
-      setPantryItems([...pantryItems, deletedItem]);
+  const handleDelete = async (id: string) => {
+    const itemToDelete = pantryItems.find((item) => item.id === id);
+    setActiveMenu(null);
+    if (!itemToDelete) return;
+    try {
+      await pantryApi.remove(id);
+      setPantryItems((items) => items.filter((item) => item.id !== id));
+      setDeletedItem(itemToDelete);
+      setShowUndo(true);
+      if (undoTimer.current) clearTimeout(undoTimer.current);
+      undoTimer.current = setTimeout(() => setShowUndo(false), 4000);
+    } catch (err) {
+      handleError(err, 'Không xóa được thực phẩm.');
+    }
+  };
+
+  const handleWaste = async (id: string) => {
+    setActiveMenu(null);
+    try {
+      await pantryApi.markWasted(id);
+      await loadItems();
+    } catch (err) {
+      handleError(err, 'Không cập nhật được trạng thái.');
+    }
+  };
+
+  const handleUndo = async () => {
+    if (!deletedItem) return;
+    try {
+      const recreated = await pantryApi.create({
+        name: deletedItem.name,
+        categoryId: deletedItem.categoryId,
+        quantity: deletedItem.quantity,
+        unit: deletedItem.unit,
+        expiryDate: deletedItem.expiryDate,
+        location: deletedItem.location,
+        note: deletedItem.note,
+      });
+      setPantryItems((items) => [recreated, ...items]);
+    } catch (err) {
+      handleError(err, 'Không khôi phục được thực phẩm.');
+    } finally {
       setDeletedItem(null);
       setShowUndo(false);
     }
   };
 
-  const openEditModal = (item: any) => {
+  const openEditModal = (item: PantryItem) => {
     setEditingItem(item);
-    setEditQuantityInput(item.quantity);
+    setEditQuantityInput(String(item.quantity));
     setActiveMenu(null);
   };
 
-  const handleSaveEdit = () => {
-    if (editingItem && editQuantityInput.trim()) {
-      setPantryItems(pantryItems.map(item => 
-        item.id === editingItem.id ? { ...item, quantity: editQuantityInput.trim() } : item
-      ));
+  const handleSaveEdit = async () => {
+    const quantity = Number(editQuantityInput);
+    if (!editingItem || Number.isNaN(quantity) || quantity < 0) return;
+    try {
+      const updated = await pantryApi.update(editingItem.id, { quantity });
+      setPantryItems((items) =>
+        items.map((item) => (item.id === editingItem.id ? updated : item)),
+      );
       setEditingItem(null);
+    } catch (err) {
+      handleError(err, 'Không cập nhật được số lượng.');
     }
   };
 
@@ -113,14 +186,25 @@ export default function PantryDashboard() {
           </Link>
         </div>
 
+        <div className="relative">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm transition-all"
+            placeholder="Tìm thực phẩm theo tên..."
+            type="text"
+          />
+        </div>
+
         <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
-          {['Tất cả', 'Tủ đông', 'Tủ mát', 'Đồ khô'].map(filter => (
-            <button 
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full font-body-md transition-colors ${activeFilter === filter ? 'bg-primary-container text-on-primary-container shadow-sm' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'}`}
+          {LOCATION_FILTERS.map(filter => (
+            <button
+              key={filter.label}
+              onClick={() => setActiveFilter(filter.label)}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full font-body-md transition-colors ${activeFilter === filter.label ? 'bg-primary-container text-on-primary-container shadow-sm' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'}`}
             >
-              {filter}
+              {filter.label}
             </button>
           ))}
         </div>
@@ -131,46 +215,50 @@ export default function PantryDashboard() {
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>kitchen</span>
               <span className="font-label-sm text-label-sm font-semibold">Tổng thực phẩm</span>
             </div>
-            <div className="mt-2 font-headline-md text-headline-md text-on-surface">42 <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
+            <div className="mt-2 font-headline-md text-headline-md text-on-surface">{stats.total} <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
           </div>
           <div className="bg-surface-container-low rounded-xl p-4 border border-outline-variant/30 flex flex-col justify-between">
             <div className="flex items-center gap-2 text-tertiary">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
               <span className="font-label-sm text-label-sm font-semibold">An toàn</span>
             </div>
-            <div className="mt-2 font-headline-md text-headline-md text-on-surface">35 <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
+            <div className="mt-2 font-headline-md text-headline-md text-on-surface">{stats.safe} <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
           </div>
           <div className="bg-secondary-container/20 rounded-xl p-4 border border-secondary-container/30 flex flex-col justify-between">
             <div className="flex items-center gap-2 text-secondary">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
               <span className="font-label-sm text-label-sm font-semibold">Sắp hết hạn</span>
             </div>
-            <div className="mt-2 font-headline-md text-headline-md text-on-surface">5 <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
+            <div className="mt-2 font-headline-md text-headline-md text-on-surface">{stats.expiring} <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
           </div>
           <div className="bg-error-container/30 rounded-xl p-4 border border-error/20 flex flex-col justify-between">
             <div className="flex items-center gap-2 text-error">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>error</span>
               <span className="font-label-sm text-label-sm font-semibold">Đã hết hạn</span>
             </div>
-            <div className="mt-2 font-headline-md text-headline-md text-on-surface">2 <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
+            <div className="mt-2 font-headline-md text-headline-md text-on-surface">{stats.expired} <span className="text-body-md text-on-surface-variant font-normal">món</span></div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter-mobile md:gap-4">
-          {pantryItems.length > 0 ? (
-            pantryItems.map(item => (
-              <div key={item.id} className={`bg-surface-container-lowest rounded-lg shadow-sm border ${item.borderColor} overflow-visible flex flex-col relative`}>
-                <div className="relative h-32 md:h-40 bg-surface-container rounded-t-lg overflow-hidden">
-                  <img alt={item.name} className="w-full h-full object-cover" src={item.image}/>
-                  <div className={`absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm border border-${item.statusColor}/20`}>
-                    <span className={`w-2 h-2 rounded-full bg-${item.statusColor}`}></span>
-                    <span className={`font-label-sm text-label-sm text-${item.statusColor} font-semibold`}>{item.status}</span>
+          {loading ? (
+            <CardGridSkeleton count={8} />
+          ) : pantryItems.length > 0 ? (
+            pantryItems.map(item => {
+              const badge = expiryBadge(item);
+              return (
+              <div key={item.id} className={`bg-surface-container-lowest rounded-lg shadow-sm border ${badge.border} overflow-visible flex flex-col relative`}>
+                <div className="relative h-32 md:h-40 bg-surface-container rounded-t-lg overflow-hidden flex items-center justify-center">
+                  <span className="material-symbols-outlined text-6xl text-outline">grocery</span>
+                  <div className={`absolute top-2 right-2 bg-surface/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm border border-${badge.color}/20`}>
+                    <span className={`w-2 h-2 rounded-full bg-${badge.color}`}></span>
+                    <span className={`font-label-sm text-label-sm text-${badge.color} font-semibold`}>{badge.status}</span>
                   </div>
                 </div>
                 <div className="p-3 flex-1 flex flex-col">
                   <div className="flex justify-between items-start gap-2">
                     <h3 className="font-headline-sm text-[16px] leading-[24px] text-on-surface font-semibold line-clamp-1">{item.name}</h3>
-                    <button 
+                    <button
                       onClick={() => setActiveMenu(activeMenu === item.id ? null : item.id)}
                       className="text-on-surface-variant hover:text-primary transition-colors p-1 -mr-1 -mt-1 rounded-full hover:bg-surface-container-high"
                     >
@@ -179,7 +267,10 @@ export default function PantryDashboard() {
                     {activeMenu === item.id && (
                       <div className="absolute top-10 right-2 w-48 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg z-50 overflow-hidden">
                         <button onClick={() => openEditModal(item)} className="w-full text-left px-4 py-3 hover:bg-surface-container-low transition-colors font-body-md text-on-surface flex items-center gap-2">
-                          <span className="material-symbols-outlined text-lg">edit</span> Chỉnh sửa
+                          <span className="material-symbols-outlined text-lg">edit</span> Cập nhật số lượng
+                        </button>
+                        <button onClick={() => handleWaste(item.id)} className="w-full text-left px-4 py-3 hover:bg-surface-container-low transition-colors font-body-md text-secondary flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg">delete_sweep</span> Bỏ đi (lãng phí)
                         </button>
                         <button onClick={() => handleDelete(item.id)} className="w-full text-left px-4 py-3 hover:bg-error-container/50 transition-colors font-body-md text-error flex items-center gap-2">
                           <span className="material-symbols-outlined text-lg">delete</span> Đã dùng hết (Xoá)
@@ -187,14 +278,14 @@ export default function PantryDashboard() {
                       </div>
                     )}
                   </div>
-                  <p className="font-body-md text-body-md text-on-surface-variant mt-1">{item.category}</p>
+                  <p className="font-body-md text-body-md text-on-surface-variant mt-1">{LOCATION_LABELS[item.location]}</p>
                   <div className="mt-auto pt-3 flex justify-between items-center border-t border-outline-variant/30">
-                    <span className="font-body-md text-body-md font-bold text-on-surface">{item.quantity}</span>
-                    <span className={`font-label-sm text-label-sm text-${item.statusColor} font-medium`}>{item.expiryDate}</span>
+                    <span className="font-body-md text-body-md font-bold text-on-surface">{item.quantity} {item.unit}</span>
+                    <span className={`font-label-sm text-label-sm text-${badge.color} font-medium`}>{badge.text}</span>
                   </div>
                 </div>
               </div>
-            ))
+            );})
           ) : (
             <div className="col-span-2 md:col-span-3 lg:col-span-4 py-12 flex flex-col items-center justify-center text-center">
               <span className="material-symbols-outlined text-6xl text-surface-variant mb-4">kitchen</span>
@@ -223,23 +314,26 @@ export default function PantryDashboard() {
           <div className="bg-surface-container-lowest rounded-2xl p-6 w-full max-w-sm shadow-xl flex flex-col gap-4 animate-slide-up">
             <h2 className="font-headline-sm text-headline-sm font-bold text-on-surface">Cập nhật số lượng</h2>
             <p className="font-body-md text-on-surface-variant mb-2">Đang chỉnh sửa: <span className="font-semibold text-on-surface">{editingItem.name}</span></p>
-            
+
             <div className="flex flex-col gap-1">
-              <label className="font-label-sm text-label-sm font-medium text-on-surface">Số lượng còn lại</label>
-              <input 
+              <label className="font-label-sm text-label-sm font-medium text-on-surface">Số lượng còn lại ({editingItem.unit})</label>
+              <input
                 autoFocus
+                type="number"
+                min="0"
+                step="any"
                 className="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md text-on-surface"
-                placeholder="VD: 1 lít, 2 quả..."
+                placeholder="VD: 1, 0.5, 2..."
                 value={editQuantityInput}
                 onChange={(e) => setEditQuantityInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSaveEdit(); }}
               />
             </div>
-            
+
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setEditingItem(null)} className="px-4 py-2 font-label-md text-primary hover:bg-primary/10 rounded-full transition-colors">Hủy</button>
-              <button 
-                onClick={handleSaveEdit} 
+              <button
+                onClick={handleSaveEdit}
                 disabled={!editQuantityInput.trim()}
                 className={`px-4 py-2 font-label-md rounded-full transition-colors ${editQuantityInput.trim() ? 'bg-primary text-on-primary hover:bg-primary/90' : 'bg-surface-container-high text-on-surface-variant opacity-50'}`}
               >

@@ -75,6 +75,18 @@ export class User {
   @Prop({ type: String, select: false })
   refreshTokenHash?: string;
 
+  @Prop({ type: String, select: false })
+  resetPasswordTokenHash?: string;
+
+  @Prop({ type: Date, select: false })
+  resetPasswordExpiresAt?: Date;
+
+  @Prop({ type: String, select: false })
+  emailVerificationTokenHash?: string;
+
+  @Prop({ type: Date })
+  emailVerifiedAt?: Date;
+
   @Prop({ type: Date })
   lastLoginAt?: Date;
 }

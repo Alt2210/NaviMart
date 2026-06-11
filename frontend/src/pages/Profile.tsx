@@ -1,18 +1,44 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import SideNav from '../components/SideNav';
 import { useDialog } from '../contexts/DialogContext';
+import { useAuth } from '../contexts/AuthContext';
+import { familyApi } from '../api';
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Quản trị viên',
+  housewife: 'Người nội trợ chính',
+  member: 'Thành viên',
+};
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { showConfirm, showAlert } = useDialog();
+  const { showConfirm } = useDialog();
+  const { user, logout } = useAuth();
+  const [familyName, setFamilyName] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    familyApi
+      .current()
+      .then((family) => {
+        if (!cancelled) setFamilyName(family.name);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleLogout = () => {
-    showConfirm('Bạn có chắc chắn muốn đăng xuất không?', () => {
-      showAlert('Đã đăng xuất!');
+    showConfirm('Bạn có chắc chắn muốn đăng xuất không?', async () => {
+      await logout();
       navigate('/login');
     });
   };
+
+  const contact = [user?.email, user?.phone].filter(Boolean).join(' • ');
 
   return (
     <div className="bg-background text-on-background font-body-lg h-screen overflow-hidden flex">
@@ -49,15 +75,23 @@ export default function Profile() {
         </header>
 
         <section className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col md:flex-row items-center md:items-start gap-6 mb-6">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-container shrink-0">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyl8yaRsuYJ42CVzel8-hugkAllxoAD37iFPM_sRGu7rM6F_D1wlMdaVeMM99txYq6cFtErP4pbvEPn6KW8axA-TfBoSgYTfnQSsLJl6era0guCk8IcZrVFE6yen0zae41Ph2W9RZ9RnBTgKxWWQBOhIhxVwimrf-ggYb9GteJ_gdV_tK4vPmYzdZ6qm6Dk5o5nlN-n73JZ2JhhkfqsOuLT9xNb_A5BZ_ZtspMF99qeDfe_SVZwxL3ZRLdnHJtcFKceu-JFgnmoQTB" alt="Avatar" className="w-full h-full object-cover" />
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-container shrink-0 bg-primary-container flex items-center justify-center">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <span className="font-display-sm text-display-sm font-bold text-on-primary-container">
+                {(user?.displayName ?? '?').charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h2 className="font-display-sm text-display-sm font-bold text-on-surface">Nguyễn Thu</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-1">m.thu.nguyen@email.com • 0901234567</p>
+            <h2 className="font-display-sm text-display-sm font-bold text-on-surface">{user?.displayName ?? 'Người dùng'}</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-1">{contact || 'Chưa cập nhật liên hệ'}</p>
             <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
-              <span className="px-3 py-1 bg-primary-container text-on-primary-container text-label-sm rounded-full font-medium">Người nội trợ chính</span>
-              <span className="px-3 py-1 bg-surface-container-high text-on-surface text-label-sm rounded-full">Gia đình "Bếp Ấm Áp"</span>
+              <span className="px-3 py-1 bg-primary-container text-on-primary-container text-label-sm rounded-full font-medium">{ROLE_LABELS[user?.role ?? 'member']}</span>
+              {familyName && (
+                <span className="px-3 py-1 bg-surface-container-high text-on-surface text-label-sm rounded-full">Gia đình "{familyName}"</span>
+              )}
             </div>
           </div>
         </section>
@@ -86,6 +120,15 @@ export default function Profile() {
               </div>
               <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
             </div>
+            {user?.role === 'admin' && (
+              <Link to="/admin" className="flex items-center justify-between px-6 py-4 hover:bg-surface-container-low transition-colors cursor-pointer border-t border-outline-variant/30">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-on-surface-variant">admin_panel_settings</span>
+                  <span className="font-body-md text-body-md text-on-surface">Trang quản trị</span>
+                </div>
+                <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+              </Link>
+            )}
           </div>
         </section>
         

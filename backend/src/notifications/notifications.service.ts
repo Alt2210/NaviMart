@@ -15,6 +15,18 @@ export type CreateNotificationInput = {
   dedupeKey: string;
 };
 
+export type NotificationResponse = {
+  id: string;
+  userId: string;
+  familyId?: string;
+  type: Notification['type'];
+  title: string;
+  body: string;
+  data?: Record<string, unknown>;
+  readAt?: Date;
+  createdAt?: Date;
+};
+
 @Injectable()
 export class NotificationsService {
   constructor(
@@ -81,7 +93,7 @@ export class NotificationsService {
 
   async createManyDeduped(inputs: CreateNotificationInput[]) {
     if (inputs.length === 0) {
-      return { createdCount: 0 };
+      return { createdCount: 0, created: [] as NotificationResponse[] };
     }
 
     const operations = inputs.map((input) => ({
@@ -98,7 +110,20 @@ export class NotificationsService {
       ordered: false,
     });
 
-    return { createdCount: result.upsertedCount };
+    const upsertedIds = Object.values(result.upsertedIds ?? {});
+    const createdNotifications =
+      upsertedIds.length > 0
+        ? await this.notificationModel
+            .find({ _id: { $in: upsertedIds } })
+            .exec()
+        : [];
+
+    return {
+      createdCount: result.upsertedCount,
+      created: createdNotifications.map((notification) =>
+        this.toNotificationResponse(notification),
+      ),
+    };
   }
 
   private toNotificationResponse(notification: Notification) {
@@ -111,6 +136,7 @@ export class NotificationsService {
       body: notification.body,
       data: notification.data,
       readAt: notification.readAt,
+      createdAt: (notification as Notification & { createdAt?: Date }).createdAt,
     };
   }
 }

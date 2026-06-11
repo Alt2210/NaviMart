@@ -9,6 +9,9 @@ type EnvironmentVariables = {
   JWT_REFRESH_SECRET: string;
   JWT_REFRESH_EXPIRES_IN: string;
   EXPIRY_NOTIFICATION_CRON: string;
+  TIMELY_API_KEY?: string;
+  TIMELY_BASE_URL?: string;
+  TIMELY_MODEL?: string;
 };
 
 const allowedNodeEnvs = ['development', 'test', 'production'];
@@ -75,5 +78,19 @@ export function validateEnv(config: Record<string, unknown>): EnvironmentVariabl
       config.EXPIRY_NOTIFICATION_CRON.length > 0
         ? config.EXPIRY_NOTIFICATION_CRON
         : '0 8 * * *',
+    TIMELY_API_KEY:
+      typeof config.TIMELY_API_KEY === 'string' &&
+      config.TIMELY_API_KEY.length > 0
+        ? config.TIMELY_API_KEY
+        : undefined,
+    TIMELY_BASE_URL:
+      typeof config.TIMELY_BASE_URL === 'string' &&
+      config.TIMELY_BASE_URL.length > 0
+        ? config.TIMELY_BASE_URL
+        : undefined,
+    TIMELY_MODEL:
+      typeof config.TIMELY_MODEL === 'string' && config.TIMELY_MODEL.length > 0
+        ? config.TIMELY_MODEL
+        : undefined,
   };
 }

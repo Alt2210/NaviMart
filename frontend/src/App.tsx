@@ -1,50 +1,71 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Splash from './pages/Splash';
-import Onboarding from './pages/Onboarding';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Home from './pages/Home';
-import MyLists from './pages/MyLists';
-import ListDetail from './pages/ListDetail';
-import RecipeDetail from './pages/RecipeDetail';
-import PantryDashboard from './pages/PantryDashboard';
-import AddItem from './pages/AddItem';
-import RecipeSuggestion from './pages/RecipeSuggestion';
-import MealPlanner from './pages/MealPlanner';
-import FamilySharing from './pages/FamilySharing';
-import StatsDashboard from './pages/StatsDashboard';
-import Profile from './pages/Profile';
-import Settings from './pages/Settings';
-import Notifications from './pages/Notifications';
-import Scanner from './pages/Scanner';
-import AIChef from './pages/AIChef';
-import EditProfile from './pages/EditProfile';
+import ProtectedRoute from './components/ProtectedRoute';
+import RealtimeNotifications from './components/RealtimeNotifications';
+import { PageSkeleton } from './components/Skeleton';
+
+// Lazy routes: each page becomes its own chunk, so heavy deps
+// (zxing in Scanner, admin tables...) don't bloat the initial bundle.
+const Splash = lazy(() => import('./pages/Splash'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const Home = lazy(() => import('./pages/Home'));
+const MyLists = lazy(() => import('./pages/MyLists'));
+const ListDetail = lazy(() => import('./pages/ListDetail'));
+const RecipeDetail = lazy(() => import('./pages/RecipeDetail'));
+const PantryDashboard = lazy(() => import('./pages/PantryDashboard'));
+const AddItem = lazy(() => import('./pages/AddItem'));
+const RecipeSuggestion = lazy(() => import('./pages/RecipeSuggestion'));
+const RecipeEditor = lazy(() => import('./pages/RecipeEditor'));
+const MealPlanner = lazy(() => import('./pages/MealPlanner'));
+const FamilySharing = lazy(() => import('./pages/FamilySharing'));
+const StatsDashboard = lazy(() => import('./pages/StatsDashboard'));
+const Profile = lazy(() => import('./pages/Profile'));
+const EditProfile = lazy(() => import('./pages/EditProfile'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+const Scanner = lazy(() => import('./pages/Scanner'));
+const AIChef = lazy(() => import('./pages/AIChef'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Splash />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/lists" element={<MyLists />} />
-        <Route path="/list-detail" element={<ListDetail />} />
-        <Route path="/recipe-detail" element={<RecipeDetail />} />
-        <Route path="/pantry" element={<PantryDashboard />} />
-        <Route path="/add-item" element={<AddItem />} />
-        <Route path="/recipe-suggestion" element={<RecipeSuggestion />} />
-        <Route path="/meals" element={<MealPlanner />} />
-        <Route path="/family" element={<FamilySharing />} />
-        <Route path="/reports" element={<StatsDashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/scanner" element={<Scanner />} />
-        <Route path="/ai-chef" element={<AIChef />} />
-      </Routes>
+      <RealtimeNotifications />
+      <Suspense fallback={<PageSkeleton />}>
+        <Routes>
+          <Route path="/" element={<Splash />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/lists" element={<MyLists />} />
+            <Route path="/list-detail/:listId" element={<ListDetail />} />
+            <Route path="/recipe-detail/:recipeId" element={<RecipeDetail />} />
+            <Route path="/pantry" element={<PantryDashboard />} />
+            <Route path="/add-item" element={<AddItem />} />
+            <Route path="/recipe-suggestion" element={<RecipeSuggestion />} />
+            <Route path="/recipe-editor" element={<RecipeEditor />} />
+            <Route path="/recipe-editor/:recipeId" element={<RecipeEditor />} />
+            <Route path="/meals" element={<MealPlanner />} />
+            <Route path="/family" element={<FamilySharing />} />
+            <Route path="/reports" element={<StatsDashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/edit-profile" element={<EditProfile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/scanner" element={<Scanner />} />
+            <Route path="/ai-chef" element={<AIChef />} />
+          </Route>
+          <Route element={<ProtectedRoute requireAdmin />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

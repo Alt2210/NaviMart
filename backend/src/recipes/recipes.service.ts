@@ -8,44 +8,201 @@ import { Model, Types } from 'mongoose';
 import { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { Category } from '../catalog/schemas/category.schema';
 import { Food } from '../catalog/schemas/food.schema';
+import { Family } from '../families/schemas/family.schema';
 import { MissingIngredientsService } from '../meals/missing-ingredients.service';
 import { GenerateShoppingListDto } from '../meals/dto/generate-shopping-list.dto';
 import { ShoppingListGenerationService } from '../meals/shopping-list-generation.service';
+import { PantryItem } from '../pantry/schemas/pantry-item.schema';
+import { getExpiryStatus, getStartOfDay } from '../pantry/utils/expiry-status.util';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { ListRecipesQueryDto } from './dto/list-recipes-query.dto';
 import { RecipeIngredientDto } from './dto/recipe-ingredient.dto';
+import { RecipeSuggestionsQueryDto } from './dto/recipe-suggestions-query.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { RecipeFavorite } from './schemas/recipe-favorite.schema';
 import { Recipe, RecipeDocument, RecipeIngredient } from './schemas/recipe.schema';
+
+const SUGGESTION_RECIPE_SCAN_LIMIT = 500;
+const EXPIRING_SCORE_WEIGHT = 0.5;
 
 @Injectable()
 export class RecipesService {
   constructor(
     @InjectModel(Recipe.name) private readonly recipeModel: Model<Recipe>,
+    @InjectModel(RecipeFavorite.name)
+    private readonly recipeFavoriteModel: Model<RecipeFavorite>,
     @InjectModel(Food.name) private readonly foodModel: Model<Food>,
     @InjectModel(Category.name) private readonly categoryModel: Model<Category>,
+    @InjectModel(Family.name) private readonly familyModel: Model<Family>,
+    @InjectModel(PantryItem.name)
+    private readonly pantryItemModel: Model<PantryItem>,
     private readonly missingIngredientsService: MissingIngredientsService,
     private readonly shoppingListGenerationService: ShoppingListGenerationService,
   ) {}
 
-  async findAll(query: ListRecipesQueryDto) {
+  async findAll(user: AuthenticatedUser, query: ListRecipesQueryDto) {
     const filter = this.buildRecipeFilter(query);
     const recipes = await this.recipeModel
       .find(filter)
-      .sort(query.q ? { score: { $meta: 'textScore' } } : { createdAt: -1 })
+      .sort(this.buildRecipeSort(query))
       .limit(query.limit ?? 30)
       .exec();
 
-    return recipes.map((recipe) => this.toRecipeSummary(recipe));
+    const favoriteRecipeIds = await this.getFavoriteRecipeIdSet(
+      user,
+      recipes.map((recipe) => recipe._id),
+    );
+
+    return recipes.map((recipe) => ({
+      ...this.toRecipeSummary(recipe),
+      isFavorite: favoriteRecipeIds.has(recipe._id.toString()),
+    }));
   }
 
-  async findOne(recipeId: string) {
+  async findOne(user: AuthenticatedUser, recipeId: string) {
     const recipe = await this.recipeModel.findById(recipeId).exec();
 
     if (!recipe || recipe.status === 'archived') {
       throw new NotFoundException('Recipe not found');
     }
 
-    return this.toRecipeDetail(recipe);
+    const favorite = await this.recipeFavoriteModel
+      .exists({
+        userId: new Types.ObjectId(user.userId),
+        recipeId: recipe._id,
+      })
+      .exec();
+
+    return {
+      ...this.toRecipeDetail(recipe),
+      isFavorite: Boolean(favorite),
+    };
+  }
+
+  async getSuggestions(
+    user: AuthenticatedUser,
+    query: RecipeSuggestionsQueryDto,
+  ) {
+    const familyId = await this.getActiveFamilyId(user);
+    const startOfToday = getStartOfDay();
+    const pantryItems = await this.pantryItemModel
+      .find({
+        familyId,
+        status: 'active',
+        quantity: { $gt: 0 },
+        expiryDate: { $gte: startOfToday },
+      })
+      .lean()
+      .exec();
+
+    const recipes = await this.recipeModel
+      .find({ status: 'approved' })
+      .limit(SUGGESTION_RECIPE_SCAN_LIMIT)
+      .exec();
+
+    const limit = query.limit ?? 10;
+    const minMatch = query.minMatch ?? 0;
+    const prioritizeExpiring = query.prioritizeExpiring ?? false;
+
+    const suggestions = recipes
+      .map((recipe) => this.buildSuggestion(recipe, pantryItems))
+      .filter(
+        (suggestion) =>
+          suggestion.totalCount > 0 && suggestion.matchRatio >= minMatch,
+      )
+      .sort(
+        (a, b) =>
+          this.getSuggestionScore(b, prioritizeExpiring) -
+            this.getSuggestionScore(a, prioritizeExpiring) ||
+          b.availableCount - a.availableCount,
+      )
+      .slice(0, limit);
+
+    return suggestions;
+  }
+
+  async addFavorite(user: AuthenticatedUser, recipeId: string) {
+    const recipe = await this.getVisibleRecipe(recipeId);
+    const result = await this.recipeFavoriteModel
+      .updateOne(
+        {
+          userId: new Types.ObjectId(user.userId),
+          recipeId: recipe._id,
+        },
+        {
+          $setOnInsert: {
+            userId: new Types.ObjectId(user.userId),
+            recipeId: recipe._id,
+          },
+        },
+        { upsert: true },
+      )
+      .exec();
+
+    if (result.upsertedCount > 0) {
+      recipe.favoritesCount += 1;
+      await this.recipeModel
+        .updateOne({ _id: recipe._id }, { $inc: { favoritesCount: 1 } })
+        .exec();
+    }
+
+    return {
+      recipeId: recipe._id.toString(),
+      isFavorite: true,
+      favoritesCount: recipe.favoritesCount,
+    };
+  }
+
+  async removeFavorite(user: AuthenticatedUser, recipeId: string) {
+    const recipe = await this.getVisibleRecipe(recipeId);
+    const result = await this.recipeFavoriteModel
+      .deleteOne({
+        userId: new Types.ObjectId(user.userId),
+        recipeId: recipe._id,
+      })
+      .exec();
+
+    if (result.deletedCount > 0 && recipe.favoritesCount > 0) {
+      recipe.favoritesCount -= 1;
+      await this.recipeModel
+        .updateOne(
+          { _id: recipe._id, favoritesCount: { $gt: 0 } },
+          { $inc: { favoritesCount: -1 } },
+        )
+        .exec();
+    }
+
+    return {
+      recipeId: recipe._id.toString(),
+      isFavorite: false,
+      favoritesCount: recipe.favoritesCount,
+    };
+  }
+
+  async findFavorites(user: AuthenticatedUser) {
+    const favorites = await this.recipeFavoriteModel
+      .find({ userId: new Types.ObjectId(user.userId) })
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    const recipes = await this.recipeModel
+      .find({
+        _id: { $in: favorites.map((favorite) => favorite.recipeId) },
+        status: { $ne: 'archived' },
+      })
+      .exec();
+    const recipesById = new Map(
+      recipes.map((recipe) => [recipe._id.toString(), recipe]),
+    );
+
+    return favorites
+      .map((favorite) => recipesById.get(favorite.recipeId.toString()))
+      .filter((recipe): recipe is RecipeDocument => Boolean(recipe))
+      .map((recipe) => ({
+        ...this.toRecipeSummary(recipe),
+        isFavorite: true,
+      }));
   }
 
   async create(user: AuthenticatedUser, dto: CreateRecipeDto) {
@@ -151,6 +308,143 @@ export class RecipesService {
     );
   }
 
+  private buildSuggestion(
+    recipe: RecipeDocument,
+    pantryItems: Array<{
+      foodId?: Types.ObjectId;
+      name: string;
+      quantity: number;
+      unit: string;
+      expiryDate: Date;
+    }>,
+  ) {
+    const requiredIngredients = recipe.ingredients.filter(
+      (ingredient) => !ingredient.optional,
+    );
+    const missingIngredients: string[] = [];
+    let availableCount = 0;
+    let expiringMatchedCount = 0;
+
+    for (const ingredient of requiredIngredients) {
+      const matchingItems = this.missingIngredientsService.findMatchingPantryItems(
+        pantryItems,
+        {
+          foodId: ingredient.foodId?.toString(),
+          name: ingredient.name,
+          unit: ingredient.unit,
+        },
+      );
+      const availableQuantity = matchingItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0,
+      );
+
+      if (availableQuantity >= ingredient.quantity) {
+        availableCount += 1;
+        if (
+          matchingItems.some(
+            (item) => getExpiryStatus(item.expiryDate) === 'expiring',
+          )
+        ) {
+          expiringMatchedCount += 1;
+        }
+      } else {
+        missingIngredients.push(ingredient.name);
+      }
+    }
+
+    const totalCount = requiredIngredients.length;
+    const matchRatio =
+      totalCount > 0 ? Number((availableCount / totalCount).toFixed(3)) : 0;
+
+    return {
+      recipe: this.toRecipeSummary(recipe),
+      availableCount,
+      totalCount,
+      matchRatio,
+      expiringMatchedCount,
+      missingIngredients,
+    };
+  }
+
+  private getSuggestionScore(
+    suggestion: { matchRatio: number; expiringMatchedCount: number; totalCount: number },
+    prioritizeExpiring: boolean,
+  ) {
+    if (!prioritizeExpiring || suggestion.totalCount === 0) {
+      return suggestion.matchRatio;
+    }
+
+    return (
+      suggestion.matchRatio +
+      (suggestion.expiringMatchedCount / suggestion.totalCount) *
+        EXPIRING_SCORE_WEIGHT
+    );
+  }
+
+  private async getVisibleRecipe(recipeId: string) {
+    const recipe = await this.recipeModel.findById(recipeId).exec();
+
+    if (!recipe || recipe.status === 'archived') {
+      throw new NotFoundException('Recipe not found');
+    }
+
+    return recipe;
+  }
+
+  private async getFavoriteRecipeIdSet(
+    user: AuthenticatedUser,
+    recipeIds: Types.ObjectId[],
+  ) {
+    if (!recipeIds.length) {
+      return new Set<string>();
+    }
+
+    const favorites = await this.recipeFavoriteModel
+      .find({
+        userId: new Types.ObjectId(user.userId),
+        recipeId: { $in: recipeIds },
+      })
+      .select('recipeId')
+      .lean()
+      .exec();
+
+    return new Set(favorites.map((favorite) => favorite.recipeId.toString()));
+  }
+
+  private buildRecipeSort(
+    query: ListRecipesQueryDto,
+  ): Record<string, 1 | -1 | { $meta: 'textScore' }> {
+    if (query.sort === 'popular') {
+      return { favoritesCount: -1, createdAt: -1 };
+    }
+
+    return query.q ? { score: { $meta: 'textScore' } } : { createdAt: -1 };
+  }
+
+  private async getActiveFamilyId(user: AuthenticatedUser) {
+    if (!user.activeFamilyId) {
+      throw new ForbiddenException('User is not attached to a family');
+    }
+
+    const family = await this.familyModel
+      .findById(user.activeFamilyId)
+      .select('_id members')
+      .lean()
+      .exec();
+
+    const member = family?.members.find(
+      (item) =>
+        item.userId.toString() === user.userId && item.status === 'active',
+    );
+
+    if (!member) {
+      throw new ForbiddenException('User is not an active family member');
+    }
+
+    return new Types.ObjectId(user.activeFamilyId);
+  }
+
   private buildRecipeFilter(query: ListRecipesQueryDto) {
     const filter: Record<string, unknown> = {
       status: query.status ?? 'approved',
@@ -250,6 +544,7 @@ export class RecipesService {
       status: recipe.status,
       tags: recipe.tags,
       ingredientCount: recipe.ingredients.length,
+      favoritesCount: recipe.favoritesCount ?? 0,
     };
   }
 

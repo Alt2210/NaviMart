@@ -10,6 +10,7 @@ import {
   getExpiryStatus,
   getStartOfDay,
 } from '../pantry/utils/expiry-status.util';
+import { RealtimeService } from '../realtime/realtime.service';
 import { User } from '../users/schemas/user.schema';
 import {
   CreateNotificationInput,
@@ -26,6 +27,7 @@ export class ExpiryNotificationsService {
     @InjectModel(Family.name) private readonly familyModel: Model<Family>,
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly notificationsService: NotificationsService,
+    private readonly realtimeService: RealtimeService,
   ) {}
 
   @Cron(process.env.EXPIRY_NOTIFICATION_CRON ?? '0 8 * * *')
@@ -112,6 +114,15 @@ export class ExpiryNotificationsService {
 
     const result =
       await this.notificationsService.createManyDeduped(notifications);
+
+    for (const notification of result.created) {
+      this.realtimeService.emitToUser(
+        notification.userId,
+        'notification:new',
+        notification,
+      );
+    }
+
     this.logger.log(
       `Created ${result.createdCount} expiry notifications from ${pantryItems.length} pantry items`,
     );

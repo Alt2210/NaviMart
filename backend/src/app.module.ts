@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AdminModule } from './admin/admin.module';
+import { AiChefModule } from './ai-chef/ai-chef.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -13,6 +15,7 @@ import { InventoryEventsModule } from './inventory-events/inventory-events.modul
 import { MealsModule } from './meals/meals.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PantryModule } from './pantry/pantry.module';
+import { RealtimeModule } from './realtime/realtime.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { ReportsModule } from './reports/reports.module';
 import { ShoppingListsModule } from './shopping-lists/shopping-lists.module';
@@ -29,6 +32,9 @@ import { UsersModule } from './users/users.module';
       useFactory: createMongooseOptions,
     }),
     ScheduleModule.forRoot(),
+    RealtimeModule,
+    AdminModule,
+    AiChefModule,
     AuthModule,
     UsersModule,
     FamiliesModule,

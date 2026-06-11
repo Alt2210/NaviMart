@@ -1,21 +1,44 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDialog } from '../contexts/DialogContext';
+import { useAuth } from '../contexts/AuthContext';
+import { usersApi } from '../api';
 
 export default function EditProfile() {
   const navigate = useNavigate();
   const { showAlert } = useDialog();
-  
-  // Fake initial state
-  const [name, setName] = useState('Nguyễn Thu');
-  const [email, setEmail] = useState('m.thu.nguyen@email.com');
-  const [phone, setPhone] = useState('0901234567');
-  const [avatar] = useState('https://lh3.googleusercontent.com/aida-public/AB6AXuDyl8yaRsuYJ42CVzel8-hugkAllxoAD37iFPM_sRGu7rM6F_D1wlMdaVeMM99txYq6cFtErP4pbvEPn6KW8axA-TfBoSgYTfnQSsLJl6era0guCk8IcZrVFE6yen0zae41Ph2W9RZ9RnBTgKxWWQBOhIhxVwimrf-ggYb9GteJ_gdV_tK4vPmYzdZ6qm6Dk5o5nlN-n73JZ2JhhkfqsOuLT9xNb_A5BZ_ZtspMF99qeDfe_SVZwxL3ZRLdnHJtcFKceu-JFgnmoQTB');
+  const { user, refreshSession } = useAuth();
 
-  const handleSave = (e: React.FormEvent) => {
+  const [name, setName] = useState(user?.displayName ?? '');
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    showAlert('Đã cập nhật thông tin thành công!');
-    navigate('/profile');
+    const trimmedName = name.trim();
+    if (!trimmedName || saving) return;
+
+    const nameParts = trimmedName.split(/\s+/);
+    const lastName = nameParts.pop()!;
+    const firstName = nameParts.join(' ') || lastName;
+
+    setSaving(true);
+    try {
+      await usersApi.updateMe({
+        firstName,
+        lastName,
+        displayName: trimmedName,
+        avatarUrl: avatarUrl.trim() || undefined,
+      });
+      // Sync the locally cached auth user with the new profile.
+      await refreshSession();
+      showAlert('Đã cập nhật thông tin thành công!');
+      navigate('/profile');
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không cập nhật được hồ sơ.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -27,8 +50,8 @@ export default function EditProfile() {
           </button>
           <h1 className="font-headline-sm text-headline-sm font-bold text-on-surface">Chỉnh sửa hồ sơ</h1>
         </div>
-        <button onClick={handleSave} className="text-primary font-label-md font-bold px-4 py-2 hover:bg-primary/10 rounded-lg transition-colors">
-          Lưu
+        <button onClick={handleSave} disabled={saving} className="text-primary font-label-md font-bold px-4 py-2 hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-50">
+          {saving ? 'Đang lưu...' : 'Lưu'}
         </button>
       </header>
 
@@ -36,21 +59,23 @@ export default function EditProfile() {
         <div className="pt-6 px-4 md:px-8 max-w-2xl mx-auto w-full pb-[100px] md:pb-8">
           
           <div className="flex flex-col items-center justify-center mb-8">
-            <div className="relative w-28 h-28 rounded-full border-4 border-primary-container overflow-hidden group mb-4">
-              <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                <span className="material-symbols-outlined text-white text-3xl">photo_camera</span>
-              </div>
+            <div className="relative w-28 h-28 rounded-full border-4 border-primary-container overflow-hidden group mb-4 bg-primary-container flex items-center justify-center">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="font-display-sm text-display-sm font-bold text-on-primary-container">
+                  {(name || '?').charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
-            <button className="text-primary font-label-sm font-bold hover:underline">Thay đổi ảnh đại diện</button>
           </div>
 
           <form onSubmit={handleSave} className="space-y-5">
             <div className="flex flex-col gap-1.5">
               <label htmlFor="name" className="font-label-md text-on-surface">Họ và tên</label>
-              <input 
-                type="text" 
-                id="name" 
+              <input
+                type="text"
+                id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
@@ -58,31 +83,25 @@ export default function EditProfile() {
                 required
               />
             </div>
-            
+
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="email" className="font-label-md text-on-surface">Email</label>
-              <input 
-                type="email" 
-                id="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              <label htmlFor="avatarUrl" className="font-label-md text-on-surface">Ảnh đại diện (URL)</label>
+              <input
+                type="url"
+                id="avatarUrl"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
                 className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                placeholder="Nhập email"
-                required
+                placeholder="https://..."
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="phone" className="font-label-md text-on-surface">Số điện thoại</label>
-              <input 
-                type="tel" 
-                id="phone" 
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                placeholder="Nhập số điện thoại"
-                required
-              />
+              <label className="font-label-md text-on-surface">Email / Số điện thoại</label>
+              <p className="font-body-md text-on-surface-variant px-4 py-3 bg-surface-container-low border border-outline-variant/40 rounded-xl">
+                {[user?.email, user?.phone].filter(Boolean).join(' • ') || 'Chưa cập nhật'}
+              </p>
+              <p className="font-label-sm text-label-sm text-on-surface-variant">Thông tin đăng nhập không thể thay đổi tại đây.</p>
             </div>
           </form>
 

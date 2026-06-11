@@ -1,36 +1,75 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import SideNav from '../components/SideNav';
+import { CardGridSkeleton } from '../components/Skeleton';
+import { shoppingListsApi } from '../api';
+import type { ShoppingList } from '../api';
+import { onSocketEvent } from '../api/socket';
+import { useDialog } from '../contexts/DialogContext';
+
+function formatDate(value?: string) {
+  if (!value) return 'N/A';
+  return new Date(value).toLocaleDateString('vi-VN');
+}
 
 export default function MyLists() {
+  const { showAlert } = useDialog();
   const [activeTab, setActiveTab] = useState<'Đang mua' | 'Đã mua'>('Đang mua');
-  const [activeLists, setActiveLists] = useState([
-    {
-      id: 1,
-      name: 'Đi chợ cuối tuần',
-      date: '20/10/2024',
-      itemsCount: '12 món đồ',
-      status: 'Đang chuẩn bị',
-      progress: '0/12 đã chọn',
-      color: 'tertiary'
-    },
-    {
-      id: 2,
-      name: 'Đồ dùng nhà bếp',
-      date: 'N/A',
-      itemsCount: '3 món đồ',
-      status: 'Đang chuẩn bị',
-      progress: '1/3 đã chọn',
-      color: 'secondary'
-    }
-  ]);
+  const [activeLists, setActiveLists] = useState<ShoppingList[]>([]);
+  const [completedLists, setCompletedLists] = useState<ShoppingList[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [listNameInput, setListNameInput] = useState('');
-  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const loadLists = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [active, completed] = await Promise.all([
+        shoppingListsApi.list('active'),
+        shoppingListsApi.list('completed'),
+      ]);
+      setActiveLists(active);
+      setCompletedLists(completed);
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không tải được danh sách mua sắm.');
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    loadLists();
+  }, [loadLists]);
+
+  // Live refresh when another family member changes any list.
+  useEffect(() => {
+    const apply = (updated: ShoppingList) => {
+      setActiveLists((lists) => {
+        const without = lists.filter((list) => list.id !== updated.id);
+        return updated.status === 'active' ? [updated, ...without] : without;
+      });
+      setCompletedLists((lists) => {
+        const without = lists.filter((list) => list.id !== updated.id);
+        return updated.status === 'completed' ? [updated, ...without] : without;
+      });
+    };
+    const offUpdated = onSocketEvent('shoppingList:updated', apply);
+    const offRemoved = onSocketEvent('shoppingList:removed', ({ id }) => {
+      setActiveLists((lists) => lists.filter((list) => list.id !== id));
+      setCompletedLists((lists) => lists.filter((list) => list.id !== id));
+    });
+    return () => {
+      offUpdated();
+      offRemoved();
+    };
+  }, []);
 
   const openCreateModal = () => {
     setModalMode('create');
@@ -38,37 +77,40 @@ export default function MyLists() {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (id: number, name: string) => {
+  const openEditModal = (id: string, name: string) => {
     setModalMode('edit');
     setEditingId(id);
     setListNameInput(name);
     setIsModalOpen(true);
   };
 
-  const handleSaveList = () => {
-    if (!listNameInput.trim()) return;
-    
-    if (modalMode === 'create') {
-      setActiveLists([...activeLists, { 
-        id: Date.now(), 
-        name: listNameInput.trim(), 
-        date: 'Hôm nay', 
-        itemsCount: '0 món đồ', 
-        status: 'Trống', 
-        progress: '0/0', 
-        color: 'primary' 
-      }]);
-    } else if (modalMode === 'edit' && editingId) {
-      setActiveLists(activeLists.map(list => 
-        list.id === editingId ? { ...list, name: listNameInput.trim() } : list
-      ));
+  const handleSaveList = async () => {
+    if (!listNameInput.trim() || saving) return;
+    setSaving(true);
+    try {
+      if (modalMode === 'create') {
+        const created = await shoppingListsApi.create({ name: listNameInput.trim() });
+        setActiveLists((lists) => [created, ...lists]);
+      } else if (modalMode === 'edit' && editingId) {
+        const updated = await shoppingListsApi.update(editingId, { name: listNameInput.trim() });
+        setActiveLists((lists) => lists.map((list) => (list.id === editingId ? updated : list)));
+      }
+      setIsModalOpen(false);
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không lưu được danh sách.');
+    } finally {
+      setSaving(false);
     }
-    setIsModalOpen(false);
   };
 
-  const confirmDelete = () => {
-    if (deleteConfirmId) {
-      setActiveLists(activeLists.filter(l => l.id !== deleteConfirmId));
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
+    try {
+      await shoppingListsApi.remove(deleteConfirmId);
+      setActiveLists((lists) => lists.filter((list) => list.id !== deleteConfirmId));
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không xóa được danh sách.');
+    } finally {
       setDeleteConfirmId(null);
     }
   };
@@ -113,12 +155,16 @@ export default function MyLists() {
           </div>
         </div>
 
-        {activeTab === 'Đang mua' ? (
+        {loading ? (
+          <div className="px-margin-mobile grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-md">
+            <CardGridSkeleton count={6} />
+          </div>
+        ) : activeTab === 'Đang mua' ? (
           <div className="px-margin-mobile grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-md">
             {activeLists.length > 0 ? (
               activeLists.map(list => (
-                <Link key={list.id} to="/list-detail" className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-4 flex flex-col relative overflow-hidden transition-shadow hover:shadow-md cursor-pointer group">
-                  <div className={`absolute top-0 left-0 w-full h-1 bg-${list.color}-container group-hover:bg-${list.color} transition-colors`}></div>
+                <Link key={list.id} to={`/list-detail/${list.id}`} className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-4 flex flex-col relative overflow-hidden transition-shadow hover:shadow-md cursor-pointer group">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-primary-container group-hover:bg-primary transition-colors"></div>
                   <div className="flex justify-between items-start mt-1 mb-3">
                     <h3 className="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors pr-2">{list.name}</h3>
                     <div className="flex">
@@ -133,19 +179,19 @@ export default function MyLists() {
                   <div className="flex flex-col gap-2 font-body-md text-body-md text-on-surface-variant mb-4">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-outline">calendar_today</span>
-                      <span>{list.date}</span>
+                      <span>{formatDate(list.plannedFor)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-outline">shopping_basket</span>
-                      <span>{list.itemsCount}</span>
+                      <span>{list.items.length} món đồ</span>
                     </div>
                   </div>
                   <div className="mt-auto pt-3 border-t border-outline-variant flex justify-between items-center">
-                    <span className={`inline-flex items-center gap-1 font-label-sm text-label-sm px-2 py-1 bg-surface-container-low text-primary rounded-full`}>
+                    <span className="inline-flex items-center gap-1 font-label-sm text-label-sm px-2 py-1 bg-surface-container-low text-primary rounded-full">
                       <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>progress_activity</span>
-                      {list.status}
+                      {list.items.length === 0 ? 'Trống' : 'Đang chuẩn bị'}
                     </span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">{list.progress}</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant">{list.progress.bought}/{list.progress.total} đã chọn</span>
                   </div>
                 </Link>
               ))
@@ -156,13 +202,41 @@ export default function MyLists() {
                 <p className="font-body-md text-body-md mb-6">Tạo danh sách mới để bắt đầu mua sắm.</p>
               </div>
             )}
-            
+
             <article onClick={openCreateModal} className="hidden md:flex bg-surface-container-lowest rounded-2xl p-6 border border-dashed border-outline hover:border-primary hover:bg-primary-container/20 transition-all cursor-pointer flex-col items-center justify-center min-h-[200px] gap-4">
               <div className="w-14 h-14 rounded-full bg-primary-container text-primary flex items-center justify-center">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
               </div>
               <span className="font-headline-sm text-headline-sm text-primary">Tạo danh sách mới</span>
             </article>
+          </div>
+        ) : completedLists.length > 0 ? (
+          <div className="px-margin-mobile grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-md">
+            {completedLists.map(list => (
+              <Link key={list.id} to={`/list-detail/${list.id}`} className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-4 flex flex-col relative overflow-hidden transition-shadow hover:shadow-md cursor-pointer group opacity-90">
+                <div className="absolute top-0 left-0 w-full h-1 bg-tertiary-container group-hover:bg-tertiary transition-colors"></div>
+                <div className="flex justify-between items-start mt-1 mb-3">
+                  <h3 className="font-headline-sm text-headline-sm text-on-surface pr-2">{list.name}</h3>
+                </div>
+                <div className="flex flex-col gap-2 font-body-md text-body-md text-on-surface-variant mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-outline">event_available</span>
+                    <span>Hoàn thành: {formatDate(list.completedAt)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-outline">shopping_basket</span>
+                    <span>{list.items.length} món đồ</span>
+                  </div>
+                </div>
+                <div className="mt-auto pt-3 border-t border-outline-variant flex justify-between items-center">
+                  <span className="inline-flex items-center gap-1 font-label-sm text-label-sm px-2 py-1 bg-tertiary-container/40 text-tertiary rounded-full">
+                    <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    Đã hoàn thành
+                  </span>
+                  <span className="font-label-sm text-label-sm text-on-surface-variant">{list.progress.bought}/{list.progress.total} đã mua</span>
+                </div>
+              </Link>
+            ))}
           </div>
         ) : (
           <div className="px-margin-mobile flex flex-col items-center justify-center py-20 text-on-surface-variant">

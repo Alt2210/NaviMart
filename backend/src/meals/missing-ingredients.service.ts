@@ -82,6 +82,25 @@ export class MissingIngredientsService {
     };
   }
 
+  findMatchingPantryItems<
+    T extends { foodId?: Types.ObjectId; name: string; unit: string },
+  >(pantryItems: T[], ingredient: { foodId?: string; name: string; unit: string }) {
+    return pantryItems.filter((item) => {
+      const sameUnit = item.unit.toLowerCase() === ingredient.unit.toLowerCase();
+      if (!sameUnit) {
+        return false;
+      }
+
+      if (ingredient.foodId && item.foodId) {
+        return item.foodId.toString() === ingredient.foodId;
+      }
+
+      return (
+        item.name.trim().toLowerCase() === ingredient.name.trim().toLowerCase()
+      );
+    });
+  }
+
   private getAvailableQuantity(
     pantryItems: Array<{
       foodId?: Types.ObjectId;
@@ -91,22 +110,10 @@ export class MissingIngredientsService {
     }>,
     ingredient: { foodId?: string; name: string; unit: string },
   ) {
-    return pantryItems
-      .filter((item) => {
-        const sameUnit = item.unit.toLowerCase() === ingredient.unit.toLowerCase();
-        if (!sameUnit) {
-          return false;
-        }
-
-        if (ingredient.foodId && item.foodId) {
-          return item.foodId.toString() === ingredient.foodId;
-        }
-
-        return (
-          item.name.trim().toLowerCase() === ingredient.name.trim().toLowerCase()
-        );
-      })
-      .reduce((sum, item) => sum + item.quantity, 0);
+    return this.findMatchingPantryItems(pantryItems, ingredient).reduce(
+      (sum, item) => sum + item.quantity,
+      0,
+    );
   }
 
   private async getActiveFamilyId(user: AuthenticatedUser) {

@@ -11,6 +11,8 @@ import {
 } from 'class-validator';
 import { RECIPE_DIFFICULTIES, RECIPE_STATUSES } from '../schemas/recipe.schema';
 
+export const RECIPE_SORTS = ['newest', 'popular'] as const;
+
 export class ListRecipesQueryDto {
   @ApiPropertyOptional({ example: 'thit bo' })
   @IsOptional()
@@ -44,6 +46,11 @@ export class ListRecipesQueryDto {
   @IsOptional()
   @IsIn(RECIPE_STATUSES)
   status?: (typeof RECIPE_STATUSES)[number];
+
+  @ApiPropertyOptional({ example: 'popular', enum: RECIPE_SORTS })
+  @IsOptional()
+  @IsIn(RECIPE_SORTS)
+  sort?: (typeof RECIPE_SORTS)[number];
 
   @ApiPropertyOptional({ example: 20 })
   @IsOptional()

@@ -1,20 +1,24 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { aiChefApi } from '../api';
+
+type ChatMessage = { id: number; text: string; sender: 'ai' | 'user'; time: string };
+
+const WELCOME_MESSAGE: ChatMessage = {
+  id: 1,
+  text: 'Chào bạn! Tôi là **NaviChef** - trợ lý bếp ảo của NaviMart. Tôi biết rõ tủ lạnh của bạn đang có gì, nên cứ hỏi tôi: hôm nay nấu gì, cách chế biến món, hay mẹo bảo quản thực phẩm nhé!',
+  sender: 'ai',
+  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+};
 
 export default function AIChef() {
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const conversationIdRef = useRef<string | undefined>(undefined);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  
-  const [messages, setMessages] = useState<{id: number, text: string, sender: 'ai' | 'user', time: string}[]>([
-    {
-      id: 1,
-      text: 'Chào bạn! Tôi là NaviChef - trợ lý bếp ảo của bạn. Tôi thấy trong tủ lạnh bạn đang có **Súp lơ xanh**, **Thịt bò**, và **Trứng**. Bạn muốn tôi gợi ý món gì hôm nay?',
-      sender: 'ai',
-      time: '10:00'
-    }
-  ]);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -24,31 +28,47 @@ export default function AIChef() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSend = (text: string) => {
-    if (!text.trim()) return;
-    
-    // Add user message
-    const userMsg = {
-      id: Date.now(),
-      text: text,
-      sender: 'user' as const,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    setMessages(prev => [...prev, userMsg]);
+  const now = () =>
+    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const handleSend = async (text: string) => {
+    if (!text.trim() || isTyping) return;
+
+    setMessages(prev => [
+      ...prev,
+      { id: Date.now(), text: text.trim(), sender: 'user', time: now() },
+    ]);
     setInputText('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const result = await aiChefApi.chat(text.trim(), conversationIdRef.current);
+      conversationIdRef.current = result.conversationId;
+      setMessages(prev => [
+        ...prev,
+        { id: Date.now() + 1, text: result.reply, sender: 'ai', time: now() },
+      ]);
+    } catch (err) {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          text:
+            err instanceof Error && err.message
+              ? `⚠️ ${err.message}`
+              : '⚠️ NaviChef đang gặp sự cố, bạn thử lại sau nhé.',
+          sender: 'ai',
+          time: now(),
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-      const aiMsg = {
-        id: Date.now() + 1,
-        text: 'Tuyệt vời! Với súp lơ xanh và thịt bò, bạn có thể làm món **Thịt bò xào súp lơ**. Chỉ mất khoảng 15 phút thôi.\n\n**Nguyên liệu bổ sung cần có:**\n- Tỏi băm\n- Dầu hào, nước tương\n\nBạn có muốn tôi hướng dẫn chi tiết từng bước không?',
-        sender: 'ai' as const,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, aiMsg]);
-    }, 1500);
+    }
+  };
+
+  const handleReset = () => {
+    conversationIdRef.current = undefined;
+    setMessages([{ ...WELCOME_MESSAGE, time: now() }]);
   };
 
   const suggestions = [
@@ -76,8 +96,12 @@ export default function AIChef() {
             </p>
           </div>
         </div>
-        <button className="p-2 -mr-2 rounded-full hover:bg-surface-container-high transition-colors active:opacity-80">
-          <span className="material-symbols-outlined text-on-surface-variant">more_vert</span>
+        <button
+          onClick={handleReset}
+          title="Bắt đầu hội thoại mới"
+          className="p-2 -mr-2 rounded-full hover:bg-surface-container-high transition-colors active:opacity-80"
+        >
+          <span className="material-symbols-outlined text-on-surface-variant">restart_alt</span>
         </button>
       </header>
 

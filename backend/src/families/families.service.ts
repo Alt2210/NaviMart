@@ -267,6 +267,7 @@ export class FamiliesService {
           permissions: member.permissions,
           status: member.status,
           joinedAt: member.joinedAt,
+          user: this.getMemberUserInfo(member),
         })),
       activeInvites: family.inviteCodes
         .filter((invite) => invite.expiresAt > new Date() && !invite.usedAt)
@@ -281,5 +282,31 @@ export class FamiliesService {
   private getMemberUserId(member: FamilyMember) {
     const userId = member.userId as unknown as { _id?: Types.ObjectId };
     return (userId._id ?? member.userId).toString();
+  }
+
+  // Present only when members.userId has been populated (e.g. getCurrentFamily).
+  private getMemberUserInfo(member: FamilyMember) {
+    const populated = member.userId as unknown as {
+      _id?: Types.ObjectId;
+      firstName?: string;
+      lastName?: string;
+      displayName?: string;
+      email?: string;
+      phone?: string;
+      avatarUrl?: string;
+    };
+
+    if (!populated._id) {
+      return undefined;
+    }
+
+    return {
+      firstName: populated.firstName,
+      lastName: populated.lastName,
+      displayName: populated.displayName,
+      email: populated.email,
+      phone: populated.phone,
+      avatarUrl: populated.avatarUrl,
+    };
   }
 }

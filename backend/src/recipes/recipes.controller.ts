@@ -26,6 +26,7 @@ import { GenerateShoppingListDto } from '../meals/dto/generate-shopping-list.dto
 import { MissingIngredientsQueryDto } from '../meals/dto/missing-ingredients-query.dto';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { ListRecipesQueryDto } from './dto/list-recipes-query.dto';
+import { RecipeSuggestionsQueryDto } from './dto/recipe-suggestions-query.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { RecipesService } from './recipes.service';
 
@@ -38,14 +39,55 @@ export class RecipesController {
 
   @Get()
   @ApiOkResponse({ description: 'Recipe search results.' })
-  findAll(@Query() query: ListRecipesQueryDto) {
-    return this.recipesService.findAll(query);
+  findAll(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: ListRecipesQueryDto,
+  ) {
+    return this.recipesService.findAll(user, query);
+  }
+
+  @Get('suggestions')
+  @ApiOkResponse({
+    description: 'Recipe suggestions ranked by pantry ingredient match.',
+  })
+  getSuggestions(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: RecipeSuggestionsQueryDto,
+  ) {
+    return this.recipesService.getSuggestions(user, query);
+  }
+
+  @Get('favorites')
+  @ApiOkResponse({ description: 'Current user favorite recipes.' })
+  findFavorites(@CurrentUser() user: AuthenticatedUser) {
+    return this.recipesService.findFavorites(user);
   }
 
   @Get(':recipeId')
   @ApiOkResponse({ description: 'Recipe detail.' })
-  findOne(@Param('recipeId') recipeId: string) {
-    return this.recipesService.findOne(recipeId);
+  findOne(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('recipeId') recipeId: string,
+  ) {
+    return this.recipesService.findOne(user, recipeId);
+  }
+
+  @Post(':recipeId/favorite')
+  @ApiCreatedResponse({ description: 'Recipe added to favorites.' })
+  addFavorite(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('recipeId') recipeId: string,
+  ) {
+    return this.recipesService.addFavorite(user, recipeId);
+  }
+
+  @Delete(':recipeId/favorite')
+  @ApiOkResponse({ description: 'Recipe removed from favorites.' })
+  removeFavorite(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('recipeId') recipeId: string,
+  ) {
+    return this.recipesService.removeFavorite(user, recipeId);
   }
 
   @Get(':recipeId/missing-ingredients')
