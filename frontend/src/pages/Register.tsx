@@ -1,0 +1,135 @@
+import { Link, useNavigate } from 'react-router-dom';
+import Button from '../components/Button';
+import { useDialog } from '../contexts/DialogContext';
+
+export default function Register() {
+  const navigate = useNavigate();
+  const { showAlert } = useDialog();
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    showAlert('Đăng ký thành công!');
+    navigate('/login');
+  };
+
+  return (
+    <div className="bg-background h-screen overflow-y-auto w-full flex items-center justify-center p-4 md:p-8">
+      <main className="w-full max-w-[1200px] bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row min-h-[600px] mx-auto my-auto">
+      {/* Form Section */}
+      <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+        <div className="md:hidden flex justify-center mb-8">
+          <img src="/src/assets/logo-1-primary.png" alt="NaviMart" className="h-10 object-contain" />
+        </div>
+        <div className="mb-8">
+          <h2 className="font-headline-md text-headline-md text-on-surface mb-2">Tạo tài khoản mới</h2>
+          <p className="font-body-md text-body-md text-on-surface-variant">Đăng ký để bắt đầu hành trình nấu ăn tuyệt vời của bạn.</p>
+        </div>
+
+        <form className="space-y-6" onSubmit={handleRegister}>
+          {/* Input Group: Name */}
+          <div>
+            <label className="block font-body-md text-body-md text-on-surface mb-2" htmlFor="fullname">Họ và tên</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <span className="material-symbols-outlined text-outline">badge</span>
+              </span>
+              <input 
+                className="w-full pl-10 pr-4 py-3 bg-transparent border border-[#C1C1C1] rounded-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline-variant transition-colors" 
+                id="fullname" 
+                name="fullname" 
+                placeholder="Nhập họ và tên" 
+                type="text"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Input Group: Email/Phone */}
+          <div>
+            <label className="block font-body-md text-body-md text-on-surface mb-2" htmlFor="identifier">Số điện thoại hoặc Email</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <span className="material-symbols-outlined text-outline">person</span>
+              </span>
+              <input 
+                className="w-full pl-10 pr-4 py-3 bg-transparent border border-[#C1C1C1] rounded-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline-variant transition-colors" 
+                id="identifier" 
+                name="identifier" 
+                placeholder="Nhập số điện thoại hoặc email" 
+                type="text"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Input Group: Password */}
+          <div>
+            <label className="block font-body-md text-body-md text-on-surface mb-2" htmlFor="password">Mật khẩu</label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <span className="material-symbols-outlined text-outline">lock</span>
+              </span>
+              <input 
+                className="w-full pl-10 pr-10 py-3 bg-transparent border border-[#C1C1C1] rounded-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline-variant transition-colors" 
+                id="password" 
+                name="password" 
+                placeholder="Nhập mật khẩu" 
+                type="password"
+                required
+              />
+              <button className="absolute inset-y-0 right-0 flex items-center pr-3 text-outline hover:text-on-surface transition-colors" type="button">
+                <span className="material-symbols-outlined">visibility_off</span>
+              </button>
+            </div>
+          </div>
+
+          <Button type="submit" fullWidth icon="person_add">
+            Đăng ký
+          </Button>
+        </form>
+
+        {/* Divider */}
+        <div className="mt-8 mb-6 relative">
+          <div aria-hidden="true" className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-outline-variant"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-surface-container-lowest font-label-sm text-label-sm text-outline">Hoặc đăng ký với</span>
+          </div>
+        </div>
+
+        {/* Social Login */}
+        <div className="grid grid-cols-2 gap-4">
+          <button className="flex items-center justify-center px-4 py-3 border border-outline-variant rounded-lg bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-body-md text-body-md text-on-surface gap-2" type="button">
+            <span>Google</span>
+          </button>
+          <button className="flex items-center justify-center px-4 py-3 border border-outline-variant rounded-lg bg-surface-container-lowest hover:bg-surface-container-low transition-colors font-body-md text-body-md text-on-surface gap-2" type="button">
+            <span>Facebook</span>
+          </button>
+        </div>
+
+        {/* Login Link */}
+        <p className="mt-8 text-center font-body-md text-body-md text-on-surface-variant">
+          Đã có tài khoản? 
+          <Link to="/login" className="ml-1 font-body-md text-body-md font-semibold text-primary hover:text-primary-container transition-colors underline-offset-4 hover:underline">Đăng nhập</Link>
+        </p>
+      </div>
+
+      {/* Image Section */}
+      <div className="hidden md:block w-1/2 relative">
+        <img 
+          alt="Nội trợ chuẩn bị nguyên liệu" 
+          className="absolute inset-0 w-full h-full object-cover" 
+          src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070&auto=format&fit=crop"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-12">
+          <h2 className="font-headline-md text-[40px] font-bold text-white mb-4">Tham gia cùng chúng tôi</h2>
+          <p className="font-body-lg text-body-lg text-white/90">
+            Lên kế hoạch nấu ăn chưa bao giờ dễ dàng đến thế! Bắt đầu tạo thực đơn cho riêng bạn.
+          </p>
+        </div>
+      </div>
+    </main>
+    </div>
+  );
+}
