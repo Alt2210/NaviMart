@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 1 (Auth)
+title Combined Communication Diagram - Module_1_Auth
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,12 +24,52 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "AuthUI" as UI
-control "AuthController" as Controller
-entity "AuthDB" as Entity
 
-Actor -right--- UI : " ▶ Các thao tác người dùng: \n1. Đăng ký tài khoản\n2. Đăng nhập (Email/SĐT/Social)\n3. Quên mật khẩu\n4. Cập nhật thông tin/Đổi mật khẩu\n5. Đăng xuất"
-UI -right---- Controller : " ▶ Xử lý nghiệp vụ (register, login, logout, update...) \n ◀ Trả kết quả thành công/thất bại"
-Controller -down- Entity : " ▼ Truy vấn/Cập nhật dữ liệu: \n(Lưu user mới, xác thực credentials, \nlưu session, đổi password)"
+actor "Guest" as Guest_Alias
+boundary "RegisterUI" as RegisterUI_Alias
+boundary "OTPVerificationUI" as OTPVerificationUI_Alias
+control "AuthController" as AuthController_Alias
+control "EmailService" as EmailService_Alias
+entity "UserAccount" as UserAccount_Alias
+actor "User" as User_Alias
+boundary "LoginUI" as LoginUI_Alias
+control "OAuthProvider" as OAuthProvider_Alias
+boundary "ForgotPassUI" as ForgotPassUI_Alias
+boundary "ProfileUI" as ProfileUI_Alias
+control "ProfileController" as ProfileController_Alias
+entity "UserProfile" as UserProfile_Alias
+boundary "ChangePassUI" as ChangePassUI_Alias
+boundary "SettingsUI" as SettingsUI_Alias
+entity "SessionManager" as SessionManager_Alias
+
+Guest_Alias -right-> RegisterUI_Alias  : "1: Nhập thông tin & Submit"
+Guest_Alias -down-> OTPVerificationUI_Alias  : "7: Nhập OTP"
+RegisterUI_Alias -down-> AuthController_Alias  : "2: register(name, email, pass)"
+OTPVerificationUI_Alias -right-> AuthController_Alias  : "7.1: verifyOTP()"
+AuthController_Alias -up-> RegisterUI_Alias  : "9: Success & Redirect          "
+AuthController_Alias -right-> EmailService_Alias  : "5: sendOTP()"
+AuthController_Alias -down-> UserAccount_Alias  : "3: checkExists()\n4: savePending()\n8: activateAccount()"
+User_Alias -right---- LoginUI_Alias  : " ▶ 1: Submit Credentials "
+LoginUI_Alias -right------ AuthController_Alias  : " ▶ 2: login(email, pass) \n ◀ 4: Return Error / Success (Token) "
+AuthController_Alias -down- UserAccount_Alias  : " ▼ 3: fetchUserRecord() "
+Guest_Alias -right--- LoginUI_Alias  : " ▶ 1: Select OAuth "
+LoginUI_Alias -right--- OAuthProvider_Alias  : " ▶ 2: Request Auth "
+Guest_Alias -down- OAuthProvider_Alias  : " ▼ 3: Grant Permission "
+OAuthProvider_Alias -down- AuthController_Alias  : " ▼ 4: Callback with Data "
+AuthController_Alias -left---- UserAccount_Alias  : " ◀ 5: Check/Create User "
+AuthController_Alias -up- LoginUI_Alias  : " ▲ 6: Success Token "
+User_Alias -right--- ForgotPassUI_Alias  : " ▶ 1: Submit Email "
+ForgotPassUI_Alias -right--- AuthController_Alias  : " ▶ 2: reqReset() "
+AuthController_Alias -down- UserAccount_Alias  : " ▼ 3: checkEmail() "
+AuthController_Alias -left--- EmailService_Alias  : " ◀ 4: sendOTP() "
+User_Alias -right--- ProfileUI_Alias  : " ▶ 1: Sửa & Lưu "
+ProfileUI_Alias -right----- ProfileController_Alias  : " ▶ 2: updateProfile() \n ◀ 4: Return status "
+ProfileController_Alias -down- UserProfile_Alias  : " ▼ 3: update(data) "
+User_Alias -right---- ChangePassUI_Alias  : " ▶ 1: Submit Passwords "
+ChangePassUI_Alias -right----- AuthController_Alias  : " ▶ 2: changePass() \n ◀ 4: Return Result "
+AuthController_Alias -down- UserAccount_Alias  : " ▼ 3: getHash() & updateHash() "
+User_Alias -right--- SettingsUI_Alias  : " ▶ 1: Bấm Đăng xuất "
+SettingsUI_Alias -right---- AuthController_Alias  : " ▶ 2: logout(token) \n ◀ 4: Redirect "
+AuthController_Alias -down- SessionManager_Alias  : " ▼ 3: revokeToken() "
+
 @enduml

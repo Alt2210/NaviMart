@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 8 (Admin)
+title Combined Communication Diagram - Module_8_Admin
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,29 +24,36 @@ skinparam {
 }
 
 allow_mixing
-actor "Admin" as Actor
-boundary "AdminUI\n(User, MasterData)" as AdminUI
-boundary "ApproveRecipeUI" as ApproveUI
-boundary "DashboardUI" as DashboardUI
-control "AdminController" as Controller
-control "MasterDataController" as MDController
-entity "UserDB" as UserDB
-entity "MasterDataDB" as MasterDataDB
-entity "RecipeDB" as RecipeDB
-entity "SystemDB" as SystemDB
 
-Actor -right--- AdminUI : " ▶ Quản lý User/Master Data"
-Actor -right--- ApproveUI : " ▶ Duyệt công thức"
-Actor -down--- DashboardUI : " ▶ Xem Dashboard"
+actor "Admin" as Admin_Alias
+boundary "UserManagementUI" as UserManagementUI_Alias
+control "UserManagementController" as UserManagementController_Alias
+entity "UserDB" as UserDB_Alias
+boundary "UserStatusUI" as UserStatusUI_Alias
+boundary "MasterDataUI" as MasterDataUI_Alias
+control "MasterDataController" as MasterDataController_Alias
+entity "MasterDataDB" as MasterDataDB_Alias
+boundary "RecipeApprovalUI" as RecipeApprovalUI_Alias
+control "RecipeApprovalController" as RecipeApprovalController_Alias
+entity "RecipeDB" as RecipeDB_Alias
+boundary "AdminDashboardUI" as AdminDashboardUI_Alias
+control "AdminDashboardController" as AdminDashboardController_Alias
+entity "SystemDB" as SystemDB_Alias
 
-AdminUI -right---- Controller : " ▶ login(), getUsers(), toggleLock()"
-AdminUI -down---- MDController : " ▶ executeCRUD()"
-ApproveUI -up---- Controller : " ▶ approveOrRejectRecipe()"
-DashboardUI -right---- Controller : " ▶ getOverviewStats()"
-
-Controller -down- UserDB : " ▼ queryAllUsers(), updateUserStatus()"
-Controller -down- RecipeDB : " ▼ updateRecipeStatus()"
-Controller -right- SystemDB : " ▶ querySystemMetrics()"
-MDController -right- MasterDataDB : " ▶ updateDatabase()"
+Admin_Alias -right--- UserManagementUI_Alias  : " ▶ 1: Quản lý người dùng "
+UserManagementUI_Alias -right---- UserManagementController_Alias  : " ▶ 2: getUsersList() \n ◀ 4: trả danh sách "
+UserManagementController_Alias -down- UserDB_Alias  : " ▼ 3: queryAllUsers() "
+Admin_Alias -right--- UserStatusUI_Alias  : " ▶ 1: Khóa / Mở khóa User "
+UserStatusUI_Alias -right---- UserManagementController_Alias  : " ▶ 2: toggleUserLock() \n ◀ 4: trả kết quả "
+UserManagementController_Alias -down- UserDB_Alias  : " ▼ 3: updateUserStatus() "
+Admin_Alias -right--- MasterDataUI_Alias  : " ▶ 1: Quản lý Master Data "
+MasterDataUI_Alias -right---- MasterDataController_Alias  : " ▶ 2: executeCRUD() \n ◀ 4: trả kết quả "
+MasterDataController_Alias -down- MasterDataDB_Alias  : " ▼ 3: updateDatabase() "
+Admin_Alias -right--- RecipeApprovalUI_Alias  : " ▶ 1: Xem / Duyệt công thức "
+RecipeApprovalUI_Alias -right---- RecipeApprovalController_Alias  : " ▶ 2: approveOrRejectRecipe() \n ◀ 4: trả kết quả "
+RecipeApprovalController_Alias -down- RecipeDB_Alias  : " ▼ 3: updateRecipeStatus() "
+Admin_Alias -right--- AdminDashboardUI_Alias  : " ▶ 1: Truy cập Dashboard "
+AdminDashboardUI_Alias -right---- AdminDashboardController_Alias  : " ▶ 2: getOverviewStats() \n ◀ 4: trả số liệu "
+AdminDashboardController_Alias -down- SystemDB_Alias  : " ▼ 3: querySystemMetrics() "
 
 @enduml

@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 6 (AIRecipes)
+title Combined Communication Diagram - Module_6_AI_Recipes
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,19 +24,41 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "RecipeUI" as UI
-control "RecipeController" as Controller
-entity "RecipeDB" as Entity
-entity "PantryDB" as PantryDB
-control "ShoppingController" as ShoppingController
-control "AIService" as AIService
 
-Actor -right--- UI : " ▶ Các thao tác: \n1. Gợi ý món ăn\n2. Tìm kiếm/Xem chi tiết\n3. Lưu yêu thích\n4. Thêm nguyên liệu thiếu\n5. Chat với AI"
-UI -right---- Controller : " ▶ Xử lý nghiệp vụ \n ◀ Trả kết quả hiển thị"
-Controller -down- Entity : " ▼ Truy vấn/Cập nhật công thức \n(queryRecipes, updateBookmark)"
-Controller -down- PantryDB : " ▼ Truy xuất tồn kho \n(getAvailableIngredients)"
-Controller -right- ShoppingController : " ▶ addItemsToList()"
-Controller -up- AIService : " ▲ generateRecipes(), callAiAPI()"
+actor "User" as User_Alias
+boundary "SuggestRecipeUI" as SuggestRecipeUI_Alias
+control "AISuggestionController" as AISuggestionController_Alias
+entity "PantryDB" as PantryDB_Alias
+control "AIService" as AIService_Alias
+boundary "SearchRecipeUI" as SearchRecipeUI_Alias
+control "RecipeSearchController" as RecipeSearchController_Alias
+entity "RecipeDB" as RecipeDB_Alias
+boundary "BookmarkRecipeUI" as BookmarkRecipeUI_Alias
+control "BookmarkController" as BookmarkController_Alias
+boundary "MissingIngredientUI" as MissingIngredientUI_Alias
+control "ShoppingIntegrationController" as ShoppingIntegrationController_Alias
+control "ShoppingController" as ShoppingController_Alias
+entity "ShoppingDB" as ShoppingDB_Alias
+boundary "AIChatUI" as AIChatUI_Alias
+control "ChatController" as ChatController_Alias
+
+User_Alias -right--- SuggestRecipeUI_Alias  : " ▶ 1: Gợi ý món ăn "
+SuggestRecipeUI_Alias -right---- AISuggestionController_Alias  : " ▶ 2: getSuggestions() \n ◀ 6: trả kết quả "
+AISuggestionController_Alias -down- PantryDB_Alias  : " ▼ 3: getAvailableIngredients() "
+AISuggestionController_Alias -right- AIService_Alias  : " ▶ 4: generateRecipes() "
+User_Alias -right--- SearchRecipeUI_Alias  : " ▶ 1: Tìm kiếm & Xem chi tiết "
+SearchRecipeUI_Alias -right---- RecipeSearchController_Alias  : " ▶ 2: searchRecipes() / getRecipeDetail() \n ◀ 4: trả kết quả "
+RecipeSearchController_Alias -down- RecipeDB_Alias  : " ▼ 3: queryRecipes() / queryRecipeById() "
+User_Alias -right--- BookmarkRecipeUI_Alias  : " ▶ 1: Click lưu công thức "
+BookmarkRecipeUI_Alias -right---- BookmarkController_Alias  : " ▶ 2: toggleBookmark() \n ◀ 4: trả kết quả "
+BookmarkController_Alias -down- RecipeDB_Alias  : " ▼ 3: updateBookmarkStatus() "
+User_Alias -right--- MissingIngredientUI_Alias  : " ▶ 1: Thêm nguyên liệu thiếu "
+MissingIngredientUI_Alias -right---- ShoppingIntegrationController_Alias  : " ▶ 2: findMissingIngredients() \n ◀ 7: trả kết quả "
+ShoppingIntegrationController_Alias -down- PantryDB_Alias  : " ▼ 3: checkAvailable() "
+ShoppingIntegrationController_Alias -right- ShoppingController_Alias  : " ▶ 4: addItemsToList() "
+ShoppingController_Alias -down- ShoppingDB_Alias  : " ▼ 5: saveItems() "
+User_Alias -right--- AIChatUI_Alias  : " ▶ 1: Nhập câu hỏi "
+AIChatUI_Alias -right---- ChatController_Alias  : " ▶ 2: sendMessage() \n ◀ 4: trả kết quả "
+ChatController_Alias -right- AIService_Alias  : " ▶ 3: callAiAPI() "
 
 @enduml

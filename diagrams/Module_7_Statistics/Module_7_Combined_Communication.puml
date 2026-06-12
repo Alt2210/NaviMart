@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 7 (Statistics)
+title Combined Communication Diagram - Module_7_Statistics
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,13 +24,14 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "StatisticsUI" as UI
-control "StatController" as Controller
-entity "StatDB" as Entity
 
-Actor -right--- UI : " ▶ Các thao tác: \n1. Xem thống kê tiêu dùng và lãng phí"
-UI -right---- Controller : " ▶ getStatistics() \n ◀ Trả kết quả hiển thị"
-Controller -down- Entity : " ▼ queryUsageAndWasteData()"
+actor "User" as User_Alias
+boundary "StatisticsDashboardUI" as StatisticsDashboardUI_Alias
+control "StatisticsController" as StatisticsController_Alias
+entity "StatDB" as StatDB_Alias
+
+User_Alias -right--- StatisticsDashboardUI_Alias  : " ▶ 1: Chọn khoảng thời gian "
+StatisticsDashboardUI_Alias -right---- StatisticsController_Alias  : " ▶ 2: getStatistics() \n ◀ 4: trả dữ liệu "
+StatisticsController_Alias -down- StatDB_Alias  : " ▼ 3: queryUsageAndWasteData() "
 
 @enduml

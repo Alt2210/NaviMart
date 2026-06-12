@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 2 (FamilyGroup)
+title Combined Communication Diagram - Module_2_FamilyGroup
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,12 +24,45 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
-entity "FamilyDB" as Entity
 
-Actor -right--- UI : " ▶ Các thao tác người dùng: \n1. Tạo/Xem thông tin nhóm\n2. Tạo mã mời/Tham gia nhóm\n3. Quản lý thành viên (Kick, Đổi quyền)\n4. Rời nhóm"
-UI -right---- Controller : " ▶ Xử lý nghiệp vụ (create, join, leave, update...) \n ◀ Trả kết quả thành công/thất bại"
-Controller -down- Entity : " ▼ Truy vấn/Cập nhật dữ liệu: \n(Lưu nhóm, xác thực token, \ncập nhật members)"
+actor "User" as User_Alias
+boundary "CreateGroupUI" as CreateGroupUI_Alias
+control "CreateGroupController" as CreateGroupController_Alias
+entity "FamilyDB" as FamilyDB_Alias
+boundary "ViewGroupUI" as ViewGroupUI_Alias
+control "ViewGroupController" as ViewGroupController_Alias
+actor "User (Admin)" as UserAdmin_Alias
+boundary "InviteMemberUI" as InviteMemberUI_Alias
+control "InviteController" as InviteController_Alias
+boundary "JoinGroupUI" as JoinGroupUI_Alias
+control "JoinGroupController" as JoinGroupController_Alias
+boundary "ManageRoleUI" as ManageRoleUI_Alias
+control "RoleController" as RoleController_Alias
+boundary "RemoveMemberUI" as RemoveMemberUI_Alias
+control "MemberController" as MemberController_Alias
+boundary "LeaveGroupUI" as LeaveGroupUI_Alias
+control "LeaveGroupController" as LeaveGroupController_Alias
+
+User_Alias -right--- CreateGroupUI_Alias  : " ▶ 1: Nhập tên nhóm "
+CreateGroupUI_Alias -right---- CreateGroupController_Alias  : " ▶ 2: createGroup() \n ◀ 4: trả về thông báo "
+CreateGroupController_Alias -down- FamilyDB_Alias  : " ▼ 3: saveNewGroup() "
+User_Alias -right--- ViewGroupUI_Alias  : " ▶ 1: Chọn xem chi tiết "
+ViewGroupUI_Alias -right---- ViewGroupController_Alias  : " ▶ 2: getGroupDetails() \n ◀ 4: trả dữ liệu nhóm "
+ViewGroupController_Alias -down- FamilyDB_Alias  : " ▼ 3: queryGroupInfoAndMembers() "
+UserAdmin_Alias -right--- InviteMemberUI_Alias  : " ▶ 1: Chọn tạo mã mời "
+InviteMemberUI_Alias -right---- InviteController_Alias  : " ▶ 2: generateInvite() \n ◀ 4: trả mã mời "
+InviteController_Alias -down- FamilyDB_Alias  : " ▼ 3: saveInviteToken() "
+User_Alias -right--- JoinGroupUI_Alias  : " ▶ 1: Nhập mã mời "
+JoinGroupUI_Alias -right---- JoinGroupController_Alias  : " ▶ 2: joinGroup() \n ◀ 4: trả kết quả "
+JoinGroupController_Alias -down- FamilyDB_Alias  : " ▼ 3: validateToken() & addMemberToGroup() "
+UserAdmin_Alias -right--- ManageRoleUI_Alias  : " ▶ 1: Đổi phân quyền "
+ManageRoleUI_Alias -right---- RoleController_Alias  : " ▶ 2: updateRole() \n ◀ 4: thông báo "
+RoleController_Alias -down- FamilyDB_Alias  : " ▼ 3: updateMemberRole() "
+UserAdmin_Alias -right--- RemoveMemberUI_Alias  : " ▶ 1: Chọn xóa thành viên "
+RemoveMemberUI_Alias -right---- MemberController_Alias  : " ▶ 2: removeMember() \n ◀ 4: trả kết quả "
+MemberController_Alias -down- FamilyDB_Alias  : " ▼ 3: deleteMember() "
+User_Alias -right--- LeaveGroupUI_Alias  : " ▶ 1: Rời nhóm "
+LeaveGroupUI_Alias -right---- LeaveGroupController_Alias  : " ▶ 2: leaveGroup() \n ◀ 4: trả kết quả "
+LeaveGroupController_Alias -down- FamilyDB_Alias  : " ▼ 3: removeMember() "
+
 @enduml

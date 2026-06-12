@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 3 (ShoppingList)
+title Combined Communication Diagram - Module_3_ShoppingList
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,16 +24,36 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "ShoppingUI" as UI
-control "ShoppingController" as Controller
-entity "ShoppingDB" as Entity
-control "PantryController" as PantryController
-entity "PantryDB" as PantryDB
 
-Actor -right--- UI : " ▶ Các thao tác: \n1. Tạo/Xem/Sửa/Xóa Danh sách\n2. Thêm/Sửa/Xóa Mặt hàng\n3. Đánh dấu đã mua"
-UI -right---- Controller : " ▶ Xử lý nghiệp vụ (create, update, delete, markBought) \n ◀ Trả kết quả thành công/thất bại"
-Controller -down- Entity : " ▼ Truy vấn/Cập nhật dữ liệu: \n(Lưu danh sách, mặt hàng, \ncập nhật trạng thái)"
-Controller -right- PantryController : " ▶ transferItemToPantry() \n(Khi đánh dấu đã mua)"
-PantryController -down- PantryDB : " ▼ addFood()"
+actor "User" as User_Alias
+boundary "CreateShoppingListUI" as CreateShoppingListUI_Alias
+control "CreateListController" as CreateListController_Alias
+entity "ShoppingDB" as ShoppingDB_Alias
+boundary "ManageListUI" as ManageListUI_Alias
+control "ManageListController" as ManageListController_Alias
+boundary "AddShoppingItemUI" as AddShoppingItemUI_Alias
+control "ShoppingItemController" as ShoppingItemController_Alias
+boundary "UpdateItemUI" as UpdateItemUI_Alias
+boundary "MarkItemBoughtUI" as MarkItemBoughtUI_Alias
+control "PantryController" as PantryController_Alias
+entity "PantryDB" as PantryDB_Alias
+
+User_Alias -right--- CreateShoppingListUI_Alias  : " ▶ 1: Nhập tên danh sách "
+CreateShoppingListUI_Alias -right---- CreateListController_Alias  : " ▶ 2: createList() \n ◀ 4: trả kết quả "
+CreateListController_Alias -down- ShoppingDB_Alias  : " ▼ 3: saveNewList() "
+User_Alias -right--- ManageListUI_Alias  : " ▶ 1: Chọn thao tác (xem/sửa/xóa) "
+ManageListUI_Alias -right---- ManageListController_Alias  : " ▶ 2: handleListAction() \n ◀ 4: trả kết quả "
+ManageListController_Alias -down- ShoppingDB_Alias  : " ▼ 3: executeDbQuery() "
+User_Alias -right--- AddShoppingItemUI_Alias  : " ▶ 1: Thêm mặt hàng "
+AddShoppingItemUI_Alias -right---- ShoppingItemController_Alias  : " ▶ 2: addItem() \n ◀ 4: trả kết quả "
+ShoppingItemController_Alias -down- ShoppingDB_Alias  : " ▼ 3: saveItem() "
+User_Alias -right--- UpdateItemUI_Alias  : " ▶ 1: Chọn mặt hàng "
+UpdateItemUI_Alias -right---- ShoppingItemController_Alias  : " ▶ 2: updateOrRemoveItem() \n ◀ 4: trả kết quả "
+ShoppingItemController_Alias -down- ShoppingDB_Alias  : " ▼ 3: executeItemDbAction() "
+User_Alias -right--- MarkItemBoughtUI_Alias  : " ▶ 1: Đánh dấu đã mua "
+MarkItemBoughtUI_Alias -right---- ShoppingItemController_Alias  : " ▶ 2: markItemAsBought() \n ◀ 9: trả thông báo "
+ShoppingItemController_Alias -down- ShoppingDB_Alias  : " ▼ 3: updateItemStatus() "
+ShoppingItemController_Alias -right- PantryController_Alias  : " ▶ 5: transferItemToPantry() "
+PantryController_Alias -down- PantryDB_Alias  : " ▼ 6: addFood() "
+
 @enduml

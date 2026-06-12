@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 5 (MealPlanner)
+title Combined Communication Diagram - Module_5_MealPlanner
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,12 +24,23 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "MealPlanUI" as UI
-control "MealPlanController" as Controller
-entity "MealPlanDB" as Entity
 
-Actor -right--- UI : " ▶ Các thao tác: \n1. Mở Lịch trình/Tạo phiên ăn\n2. Gán món ăn vào phiên\n3. Xóa món ăn khỏi phiên"
-UI -right---- Controller : " ▶ Xử lý nghiệp vụ (getMealPlan, \ncreateSession, addOrUpdateMeal, removeMeal)"
-Controller -down- Entity : " ▼ Truy vấn/Cập nhật: \n(querySessions, insertSession, \nsaveMeal, deleteMeal)"
+actor "User" as User_Alias
+boundary "ViewMealPlanUI" as ViewMealPlanUI_Alias
+control "MealPlanController" as MealPlanController_Alias
+entity "MealPlanDB" as MealPlanDB_Alias
+boundary "ManageMealSessionUI" as ManageMealSessionUI_Alias
+control "MealSessionController" as MealSessionController_Alias
+boundary "RemoveMealUI" as RemoveMealUI_Alias
+
+User_Alias -right--- ViewMealPlanUI_Alias  : " ▶ 1: Mở Lịch trình "
+ViewMealPlanUI_Alias -right---- MealPlanController_Alias  : " ▶ 2: getMealPlan() \n ◀ 4: trả kết quả "
+MealPlanController_Alias -down- MealPlanDB_Alias  : " ▼ 3: querySessions() "
+User_Alias -right--- ManageMealSessionUI_Alias  : " ▶ 1: Chọn & gán món ăn "
+ManageMealSessionUI_Alias -right---- MealSessionController_Alias  : " ▶ 2: addOrUpdateMeal() \n ◀ 4: trả kết quả "
+MealSessionController_Alias -down- MealPlanDB_Alias  : " ▼ 3: saveMealToSession() "
+User_Alias -right--- RemoveMealUI_Alias  : " ▶ 1: Chọn xóa món ăn "
+RemoveMealUI_Alias -right---- MealSessionController_Alias  : " ▶ 2: removeMeal() \n ◀ 4: trả kết quả "
+MealSessionController_Alias -down- MealPlanDB_Alias  : " ▼ 3: deleteMeal() "
+
 @enduml

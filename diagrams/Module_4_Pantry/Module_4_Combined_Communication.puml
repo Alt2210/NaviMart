@@ -1,5 +1,5 @@
 @startuml
-title Combined Communication Diagram - Module 4 (Pantry)
+title Combined Communication Diagram - Module_4_Pantry
 
 ' Cấu hình nét thẳng và tắt đổ bóng
 skinparam linetype ortho
@@ -24,24 +24,41 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "PantryUI" as UI
-control "PantryController" as Controller
-entity "PantryDB" as Entity
-control "MealController" as MealController
-control "NotificationController" as NotifController
-control "NotificationService" as NotifService
-actor "System (CronJob)" as Cron
 
-Actor -right--- UI : " ▶ Các thao tác: \n1. Xem/Tìm kiếm\n2. Thêm/Sửa/Xóa thực phẩm\n3. Xác nhận nấu xong"
-UI -right---- Controller : " ▶ Xử lý (search, add, update, remove)"
-UI -up- MealController : " ▶ Xác nhận nấu"
-MealController -right- Controller : " ▶ deductIngredients()"
-Controller -down- Entity : " ▼ Truy vấn/Cập nhật (lưu/xóa/trừ tồn)"
+actor "User" as User_Alias
+boundary "ViewPantryUI" as ViewPantryUI_Alias
+control "PantrySearchController" as PantrySearchController_Alias
+entity "PantryDB" as PantryDB_Alias
+boundary "AddFoodUI" as AddFoodUI_Alias
+control "FoodManagementController" as FoodManagementController_Alias
+boundary "UpdateFoodUI" as UpdateFoodUI_Alias
+boundary "RemoveFoodUI" as RemoveFoodUI_Alias
+boundary "MealPlanUI" as MealPlanUI_Alias
+control "MealController" as MealController_Alias
+control "PantryController" as PantryController_Alias
+actor "System (CronJob)" as SystemCronJob_Alias
+control "NotificationController" as NotificationController_Alias
+control "NotificationService" as NotificationService_Alias
 
-Cron -right- NotifController : " ▶ triggerCheckExpiryDaily()"
-NotifController -down- Entity : " ▼ queryExpiringFoods()"
-NotifController -down- NotifService : " ▼ sendExpiryWarning()"
-NotifService -down- Actor : " ▼ Gửi thông báo hết hạn"
+User_Alias -right--- ViewPantryUI_Alias  : " ▶ 1: Tìm kiếm/Lọc "
+ViewPantryUI_Alias -right---- PantrySearchController_Alias  : " ▶ 2: searchFood() \n ◀ 4: trả kết quả "
+PantrySearchController_Alias -down- PantryDB_Alias  : " ▼ 3: queryFoodList() "
+User_Alias -right--- AddFoodUI_Alias  : " ▶ 1: Nhập thông tin thực phẩm "
+AddFoodUI_Alias -right---- FoodManagementController_Alias  : " ▶ 2: addFood() \n ◀ 4: trả kết quả "
+FoodManagementController_Alias -down- PantryDB_Alias  : " ▼ 3: saveFood() "
+User_Alias -right--- UpdateFoodUI_Alias  : " ▶ 1: Cập nhật thông tin thực phẩm "
+UpdateFoodUI_Alias -right---- FoodManagementController_Alias  : " ▶ 2: updateFood() \n ◀ 4: trả kết quả "
+FoodManagementController_Alias -down- PantryDB_Alias  : " ▼ 3: updateFoodData() "
+User_Alias -right--- RemoveFoodUI_Alias  : " ▶ 1: Chọn xóa thực phẩm "
+RemoveFoodUI_Alias -right---- FoodManagementController_Alias  : " ▶ 2: removeFood() \n ◀ 4: trả kết quả "
+FoodManagementController_Alias -down- PantryDB_Alias  : " ▼ 3: deleteFoodData() "
+User_Alias -right--- MealPlanUI_Alias  : " ▶ 1: Xác nhận nấu xong "
+MealPlanUI_Alias -right---- MealController_Alias  : " ▶ 2: confirmMealCooked() \n ◀ 7: trả kết quả "
+MealController_Alias -down- PantryController_Alias  : " ▼ 3: deductIngredients() "
+PantryController_Alias -down- PantryDB_Alias  : " ▼ 4: decreaseFoodQuantity() "
+SystemCronJob_Alias -right--- NotificationController_Alias  : " ▶ 1: triggerCheckExpiryDaily() "
+NotificationController_Alias -right---- PantryDB_Alias  : " ▶ 2: queryExpiringFoods() \n ◀ 3: trả list "
+NotificationController_Alias -down- NotificationService_Alias  : " ▼ 4: sendExpiryWarning() "
+NotificationService_Alias -down- User_Alias  : " ▼ 5: gửi thông báo "
 
 @enduml
