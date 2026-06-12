@@ -5,13 +5,7 @@ import SideNav from '../components/SideNav';
 import { pantryApi, recipesApi, shoppingListsApi } from '../api';
 import type { PantryItem, RecipeSuggestion, ShoppingList } from '../api';
 import { useAuth } from '../contexts/AuthContext';
-
-function daysLeft(expiryDate: string) {
-  return Math.max(
-    0,
-    Math.ceil((new Date(expiryDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000)),
-  );
-}
+import { daysLeft } from '../utils/expiry';
 
 function greeting() {
   const hour = new Date().getHours();

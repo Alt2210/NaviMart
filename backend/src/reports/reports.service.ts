@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { Family } from '../families/schemas/family.schema';
+import { resolveActiveFamilyId } from '../families/family-access.util';
 import { InventoryEvent } from '../inventory-events/schemas/inventory-event.schema';
 import { PantryItem } from '../pantry/schemas/pantry-item.schema';
 import { ShoppingList } from '../shopping-lists/schemas/shopping-list.schema';
@@ -259,26 +260,7 @@ export class ReportsService {
     };
   }
 
-  private async getActiveFamilyId(user: AuthenticatedUser) {
-    if (!user.activeFamilyId) {
-      throw new ForbiddenException('User is not attached to a family');
-    }
-
-    const family = await this.familyModel
-      .findById(user.activeFamilyId)
-      .select('_id members')
-      .lean()
-      .exec();
-
-    const member = family?.members.find(
-      (item) =>
-        item.userId.toString() === user.userId && item.status === 'active',
-    );
-
-    if (!member) {
-      throw new ForbiddenException('User is not an active family member');
-    }
-
-    return new Types.ObjectId(user.activeFamilyId);
+  private getActiveFamilyId(user: AuthenticatedUser) {
+    return resolveActiveFamilyId(this.familyModel, user);
   }
 }

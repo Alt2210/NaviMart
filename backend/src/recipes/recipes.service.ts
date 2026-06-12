@@ -9,6 +9,7 @@ import { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { Category } from '../catalog/schemas/category.schema';
 import { Food } from '../catalog/schemas/food.schema';
 import { Family } from '../families/schemas/family.schema';
+import { resolveActiveFamilyId } from '../families/family-access.util';
 import { MissingIngredientsService } from '../meals/missing-ingredients.service';
 import { GenerateShoppingListDto } from '../meals/dto/generate-shopping-list.dto';
 import { ShoppingListGenerationService } from '../meals/shopping-list-generation.service';
@@ -422,27 +423,8 @@ export class RecipesService {
     return query.q ? { score: { $meta: 'textScore' } } : { createdAt: -1 };
   }
 
-  private async getActiveFamilyId(user: AuthenticatedUser) {
-    if (!user.activeFamilyId) {
-      throw new ForbiddenException('User is not attached to a family');
-    }
-
-    const family = await this.familyModel
-      .findById(user.activeFamilyId)
-      .select('_id members')
-      .lean()
-      .exec();
-
-    const member = family?.members.find(
-      (item) =>
-        item.userId.toString() === user.userId && item.status === 'active',
-    );
-
-    if (!member) {
-      throw new ForbiddenException('User is not an active family member');
-    }
-
-    return new Types.ObjectId(user.activeFamilyId);
+  private getActiveFamilyId(user: AuthenticatedUser) {
+    return resolveActiveFamilyId(this.familyModel, user);
   }
 
   private buildRecipeFilter(query: ListRecipesQueryDto) {

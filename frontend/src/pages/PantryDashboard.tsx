@@ -6,6 +6,7 @@ import { CardGridSkeleton } from '../components/Skeleton';
 import { pantryApi } from '../api';
 import type { PantryItem, StorageLocation } from '../api';
 import { useDialog } from '../contexts/DialogContext';
+import { daysLeft, daysOverdue } from '../utils/expiry';
 
 const LOCATION_FILTERS: { label: string; value?: StorageLocation }[] = [
   { label: 'Tất cả' },
@@ -23,14 +24,11 @@ const LOCATION_LABELS: Record<StorageLocation, string> = {
 };
 
 function expiryBadge(item: PantryItem) {
-  const days = Math.ceil(
-    (new Date(item.expiryDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000),
-  );
   if (item.expiryStatus === 'expired') {
-    return { status: 'Hết hạn', color: 'error', border: 'border-error/30', text: `Quá hạn ${Math.abs(days)} ngày` };
+    return { status: 'Hết hạn', color: 'error', border: 'border-error/30', text: `Quá hạn ${daysOverdue(item.expiryDate)} ngày` };
   }
   if (item.expiryStatus === 'expiring') {
-    return { status: `Còn ${Math.max(days, 0)} ngày`, color: 'secondary', border: 'border-secondary/30', text: `HSD: ${new Date(item.expiryDate).toLocaleDateString('vi-VN')}` };
+    return { status: `Còn ${daysLeft(item.expiryDate)} ngày`, color: 'secondary', border: 'border-secondary/30', text: `HSD: ${new Date(item.expiryDate).toLocaleDateString('vi-VN')}` };
   }
   return { status: 'An toàn', color: 'tertiary', border: 'border-outline-variant/50', text: `HSD: ${new Date(item.expiryDate).toLocaleDateString('vi-VN')}` };
 }

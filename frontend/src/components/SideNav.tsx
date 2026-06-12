@@ -5,6 +5,8 @@ const navItems = [
   { path: '/pantry', icon: 'kitchen', label: 'Kho' },
   { path: '/lists', icon: 'shopping_cart', label: 'Danh sách' },
   { path: '/meals', icon: 'restaurant', label: 'Bữa ăn' },
+  { path: '/recipe-suggestion', icon: 'skillet', label: 'Gợi ý món' },
+  { path: '/ai-chef', icon: 'robot_2', label: 'NaviChef AI' },
   { path: '/reports', icon: 'assessment', label: 'Báo cáo' },
   { path: '/family', icon: 'group', label: 'Gia đình' },
   { path: '/profile', icon: 'person', label: 'Hồ sơ' },

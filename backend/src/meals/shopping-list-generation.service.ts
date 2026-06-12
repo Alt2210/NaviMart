@@ -8,14 +8,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { Family } from '../families/schemas/family.schema';
+import { resolveActiveFamilyId } from '../families/family-access.util';
 import { Recipe, RecipeDocument } from '../recipes/schemas/recipe.schema';
 import {
   ShoppingList,
   ShoppingListDocument,
   ShoppingListItem,
 } from '../shopping-lists/schemas/shopping-list.schema';
+import { toShoppingListResponse } from '../shopping-lists/shopping-list.mapper';
 import { GenerateShoppingListDto } from './dto/generate-shopping-list.dto';
 import { MissingIngredientsService } from './missing-ingredients.service';
+import { RealtimeService } from '../realtime/realtime.service';
 
 @Injectable()
 export class ShoppingListGenerationService {
@@ -25,6 +28,7 @@ export class ShoppingListGenerationService {
     @InjectModel(ShoppingList.name)
     private readonly shoppingListModel: Model<ShoppingList>,
     private readonly missingIngredientsService: MissingIngredientsService,
+    private readonly realtimeService: RealtimeService,
   ) {}
 
   async generateFromRecipe(
@@ -100,8 +104,17 @@ export class ShoppingListGenerationService {
       })) as ShoppingListItem[],
     });
 
+    const shoppingList = this.toShoppingListResponse(list);
+    // Generated lists must show up live for other family members too,
+    // just like lists created through ShoppingListsService.
+    this.realtimeService.emitToFamily(
+      familyId.toString(),
+      'shoppingList:updated',
+      shoppingList,
+    );
+
     return {
-      shoppingList: this.toShoppingListResponse(list),
+      shoppingList,
       missingSummary,
     };
   }
@@ -118,55 +131,11 @@ export class ShoppingListGenerationService {
     return recipe;
   }
 
-  private async getActiveFamilyId(user: AuthenticatedUser) {
-    if (!user.activeFamilyId) {
-      throw new ForbiddenException('User is not attached to a family');
-    }
-
-    const family = await this.familyModel
-      .findById(user.activeFamilyId)
-      .select('_id members')
-      .lean()
-      .exec();
-
-    const member = family?.members.find(
-      (item) =>
-        item.userId.toString() === user.userId && item.status === 'active',
-    );
-
-    if (!member) {
-      throw new ForbiddenException('User is not an active family member');
-    }
-
-    return new Types.ObjectId(user.activeFamilyId);
+  private getActiveFamilyId(user: AuthenticatedUser) {
+    return resolveActiveFamilyId(this.familyModel, user);
   }
 
   private toShoppingListResponse(list: ShoppingListDocument | ShoppingList) {
-    return {
-      id: list._id.toString(),
-      familyId: list.familyId.toString(),
-      name: list.name,
-      type: list.type,
-      status: list.status,
-      plannedFor: list.plannedFor,
-      completedAt: list.completedAt,
-      createdBy: list.createdBy.toString(),
-      progress: {
-        bought: list.items.filter((item) => item.status === 'bought').length,
-        total: list.items.length,
-      },
-      items: list.items.map((item) => ({
-        id: item._id.toString(),
-        foodId: item.foodId?.toString(),
-        categoryId: item.categoryId?.toString(),
-        name: item.name,
-        quantity: item.quantity,
-        unit: item.unit,
-        checked: item.checked,
-        status: item.status,
-        note: item.note,
-        boughtAt: item.boughtAt,
-      })),
-    };
+    return toShoppingListResponse(list);
   }
 }

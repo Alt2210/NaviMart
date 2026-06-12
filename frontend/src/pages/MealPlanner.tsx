@@ -56,7 +56,6 @@ export default function MealPlanner() {
   const [activeDay, setActiveDay] = useState(() => (new Date().getDay() + 6) % 7);
 
   const [meals, setMeals] = useState<MealPlan[]>([]);
-  const [recipeNames, setRecipeNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [extraSessions, setExtraSessions] = useState<SessionDef[]>([]);
 
@@ -87,27 +86,8 @@ export default function MealPlanner() {
     try {
       const endOfWeek = new Date(weekStart);
       endOfWeek.setDate(weekStart.getDate() + 7);
-      const data = await mealsApi.list(weekStart.toISOString(), endOfWeek.toISOString());
-      setMeals(data);
-
-      const missingRecipeIds = Array.from(
-        new Set(
-          data
-            .filter((meal) => meal.recipeId && !meal.customName)
-            .map((meal) => meal.recipeId!),
-        ),
-      );
-      const entries = await Promise.all(
-        missingRecipeIds.map(async (id) => {
-          try {
-            const recipe = await recipesApi.get(id);
-            return [id, recipe.name] as const;
-          } catch {
-            return [id, 'Món theo công thức'] as const;
-          }
-        }),
-      );
-      setRecipeNames(Object.fromEntries(entries));
+      // meal.recipeName is populated server-side in one batched query
+      setMeals(await mealsApi.list(weekStart.toISOString(), endOfWeek.toISOString()));
     } catch (err) {
       handleError(err, 'Không tải được lịch trình bữa ăn.');
     } finally {
@@ -144,7 +124,7 @@ export default function MealPlanner() {
   ];
 
   const mealName = (meal: MealPlan) =>
-    meal.customName ?? (meal.recipeId ? recipeNames[meal.recipeId] ?? '...' : 'Món ăn');
+    meal.customName ?? meal.recipeName ?? 'Món ăn';
 
   const mealsOfSession = (session: SessionDef) =>
     dayMeals.filter((meal) =>
