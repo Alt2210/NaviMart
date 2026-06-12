@@ -7,10 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
-  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://*.vercel.app',
+    ...parseCorsOrigins(process.env.CORS_ORIGIN),
+  ];
 
   app.enableCors({
     origin: (origin, callback) => {
@@ -89,12 +90,32 @@ async function bootstrap() {
 }
 bootstrap();
 
+function parseCorsOrigins(value?: string) {
+  return (value ?? '')
+    .split(',')
+    .map((origin) => normalizeOrigin(origin))
+    .filter(Boolean);
+}
+
+function normalizeOrigin(origin: string) {
+  const trimmed = origin.trim().replace(/\/+$/, '');
+  if (trimmed === '*' || trimmed === 'https://*.vercel.app') return trimmed;
+
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return '';
+  }
+}
+
 function isAllowedCorsOrigin(origin: string, allowedOrigins: string[]) {
+  const normalizedOrigin = normalizeOrigin(origin);
+
   return allowedOrigins.some((allowedOrigin) => {
     if (allowedOrigin === '*') return true;
-    if (allowedOrigin === origin) return true;
+    if (allowedOrigin === normalizedOrigin) return true;
     if (allowedOrigin === 'https://*.vercel.app') {
-      return /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+      return /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(normalizedOrigin);
     }
     return false;
   });
