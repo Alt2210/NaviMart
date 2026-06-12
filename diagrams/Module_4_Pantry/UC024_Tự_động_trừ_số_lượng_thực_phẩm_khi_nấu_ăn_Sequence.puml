@@ -2,20 +2,25 @@
 title Sequence Diagram - UC024 AutoDeductFood
 
 actor "User" as Actor
-boundary "AutoDeductFoodUI" as UI
-control "AutoDeductFoodController" as Controller
-entity "AutoDeductFoodDB" as Entity
+boundary "MealPlanUI" as UI
+control "MealController" as MealController
+control "PantryController" as PantryController
+entity "PantryDB" as PantryDB
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn "Xác nhận đã nấu xong"
 activate UI
-UI -> Controller : 2. handleRequest()
-activate Controller
-Controller -> Entity : 3. executeDbAction()
-activate Entity
-Entity --> Controller : 4. resultData
-deactivate Entity
-Controller --> UI : 5. status/data
-deactivate Controller
-UI --> Actor : 6. showResult()
+UI -> MealController : 2. confirmMealCooked(mealId)
+activate MealController
+MealController -> PantryController : 3. deductIngredients(recipeIngredients)
+activate PantryController
+PantryController -> PantryDB : 4. decreaseFoodQuantity(ingredients)
+activate PantryDB
+PantryDB --> PantryController : 5. success
+deactivate PantryDB
+PantryController --> MealController : 6. deductionCompleted
+deactivate PantryController
+MealController --> UI : 7. Thông báo hoàn tất
+deactivate MealController
+UI --> Actor : 8. Đánh dấu bữa ăn hoàn thành & Cập nhật Tủ lạnh
 deactivate UI
 @enduml

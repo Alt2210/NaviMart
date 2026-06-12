@@ -2,20 +2,33 @@
 title Sequence Diagram - UC030 ViewRecipeDetail
 
 actor "User" as Actor
-boundary "ViewRecipeDetailUI" as UI
-control "ViewRecipeDetailController" as Controller
-entity "ViewRecipeDetailDB" as Entity
+boundary "RecipeUI" as UI
+control "RecipeController" as Controller
+entity "RecipeDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhập từ khóa & Tìm kiếm công thức
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. searchRecipes(keyword)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. queryRecipes(keyword)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return resultList
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. return resultList
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị danh sách kết quả
+deactivate UI
+
+Actor -> UI : 7. Chọn xem chi tiết một công thức
+activate UI
+UI -> Controller : 8. getRecipeDetail(recipeId)
+activate Controller
+Controller -> Entity : 9. queryRecipeById(recipeId)
+activate Entity
+Entity --> Controller : 10. return recipeDetails
+deactivate Entity
+Controller --> UI : 11. return recipeDetails
+deactivate Controller
+UI --> Actor : 12. Hiển thị chi tiết công thức (Nguyên liệu, Các bước nấu)
 deactivate UI
 @enduml

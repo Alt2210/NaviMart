@@ -2,20 +2,20 @@
 title Sequence Diagram - UC018 UpdateOrRemoveItem
 
 actor "User" as Actor
-boundary "UpdateOrRemoveItemUI" as UI
-control "UpdateOrRemoveItemController" as Controller
-entity "UpdateOrRemoveItemDB" as Entity
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn mặt hàng & Thực hiện sửa/xóa
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. updateOrRemoveItem(action, itemId, data)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. executeItemDbAction(action, itemId, data)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. success
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo thao tác thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Cập nhật danh sách mặt hàng hiển thị
 deactivate UI
 @enduml

@@ -1,21 +1,21 @@
 @startuml
 title Sequence Diagram - UC036 BlockUnblockUser
 
-actor "User" as Actor
-boundary "BlockUnblockUserUI" as UI
-control "BlockUnblockUserController" as Controller
-entity "BlockUnblockUserDB" as Entity
+actor "Admin" as Actor
+boundary "AdminUI" as UI
+control "AdminController" as Controller
+entity "UserDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn User & Nhấn "Khóa / Mở khóa"
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. toggleUserLock(userId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. updateUserStatus(userId, newStatus)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. success
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo cập nhật trạng thái thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Cập nhật trạng thái User trên danh sách
 deactivate UI
 @enduml

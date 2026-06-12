@@ -2,20 +2,20 @@
 title Sequence Diagram - UC022 UpdateFoodInfo
 
 actor "User" as Actor
-boundary "UpdateFoodInfoUI" as UI
-control "UpdateFoodInfoController" as Controller
-entity "UpdateFoodInfoDB" as Entity
+boundary "UpdateFoodUI" as UI
+control "PantryController" as Controller
+entity "PantryDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn thực phẩm & Cập nhật thông tin (Số lượng, HSD...)
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. updateFood(foodId, updatedData)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. updateFoodData(foodId, updatedData)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. success
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo cập nhật thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị thông tin thực phẩm mới
 deactivate UI
 @enduml

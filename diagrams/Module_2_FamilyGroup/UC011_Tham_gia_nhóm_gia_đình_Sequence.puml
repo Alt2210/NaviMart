@@ -2,20 +2,24 @@
 title Sequence Diagram - UC011 JoinFamilyGroup
 
 actor "User" as Actor
-boundary "JoinFamilyGroupUI" as UI
-control "JoinFamilyGroupController" as Controller
-entity "JoinFamilyGroupDB" as Entity
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhập mã mời / Click link
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. joinGroup(inviteCode)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. validateToken(inviteCode)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. tokenValid (groupId)
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller -> Entity : 5. addMemberToGroup(userId, groupId)
+activate Entity
+Entity --> Controller : 6. success
+deactivate Entity
+Controller --> UI : 7. Thông báo tham gia thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 8. Hiển thị trang nhóm gia đình mới tham gia
 deactivate UI
 @enduml

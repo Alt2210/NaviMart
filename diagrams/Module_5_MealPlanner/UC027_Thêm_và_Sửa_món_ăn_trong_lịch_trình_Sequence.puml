@@ -3,19 +3,19 @@ title Sequence Diagram - UC027 ManageMeal
 
 actor "User" as Actor
 boundary "ManageMealUI" as UI
-control "ManageMealController" as Controller
-entity "ManageMealDB" as Entity
+control "MealPlanController" as Controller
+entity "MealPlanDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn món ăn và gán vào phiên ăn
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. addOrUpdateMeal(sessionId, recipeId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. saveMealToSession(sessionId, recipeId)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. success
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Trả về trạng thái thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị món ăn trong phiên ăn
 deactivate UI
 @enduml

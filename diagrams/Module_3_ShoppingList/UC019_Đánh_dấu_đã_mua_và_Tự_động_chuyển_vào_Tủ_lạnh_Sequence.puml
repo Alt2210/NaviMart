@@ -2,20 +2,30 @@
 title Sequence Diagram - UC019 FinishShopping
 
 actor "User" as Actor
-boundary "FinishShoppingUI" as UI
-control "FinishShoppingController" as Controller
-entity "FinishShoppingDB" as Entity
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as ShoppingDB
+control "PantryController" as PantryController
+entity "PantryDB" as PantryDB
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Đánh dấu mặt hàng đã mua
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. markItemAsBought(itemId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
-activate Entity
-Entity --> Controller : 4. resultData
-deactivate Entity
-Controller --> UI : 5. status/data
+Controller -> ShoppingDB : 3. updateItemStatus(itemId, BOUGHT)
+activate ShoppingDB
+ShoppingDB --> Controller : 4. success
+deactivate ShoppingDB
+Controller -> PantryController : 5. transferItemToPantry(itemDetails)
+activate PantryController
+PantryController -> PantryDB : 6. addFood(itemDetails)
+activate PantryDB
+PantryDB --> PantryController : 7. success
+deactivate PantryDB
+PantryController --> Controller : 8. success
+deactivate PantryController
+Controller --> UI : 9. Thông báo chuyển vào tủ lạnh thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 10. Đánh dấu mặt hàng hoàn tất trên UI
 deactivate UI
 @enduml

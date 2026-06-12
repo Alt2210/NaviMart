@@ -2,20 +2,20 @@
 title Sequence Diagram - UC015 CreateShoppingList
 
 actor "User" as Actor
-boundary "CreateShoppingListUI" as UI
-control "CreateShoppingListController" as Controller
-entity "CreateShoppingListDB" as Entity
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhập tên danh sách & Nhấn "Tạo"
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. createList(listName, groupId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. saveNewList(listName, groupId)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return listId
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo tạo thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị danh sách mua sắm mới
 deactivate UI
 @enduml

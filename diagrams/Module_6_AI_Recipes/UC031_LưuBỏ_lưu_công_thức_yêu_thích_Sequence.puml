@@ -2,20 +2,20 @@
 title Sequence Diagram - UC031 BookmarkRecipe
 
 actor "User" as Actor
-boundary "BookmarkRecipeUI" as UI
-control "BookmarkRecipeController" as Controller
-entity "BookmarkRecipeDB" as Entity
+boundary "BookmarkUI" as UI
+control "RecipeController" as Controller
+entity "RecipeDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhấn biểu tượng "Yêu thích/Lưu" trên công thức
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. toggleBookmark(recipeId, userId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. updateBookmarkStatus(recipeId, userId)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return newStatus
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. success (newStatus)
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Cập nhật giao diện (Đổi màu icon yêu thích)
 deactivate UI
 @enduml

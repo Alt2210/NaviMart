@@ -2,20 +2,20 @@
 title Sequence Diagram - UC016 ManageShoppingList
 
 actor "User" as Actor
-boundary "ManageShoppingListUI" as UI
-control "ManageShoppingListController" as Controller
-entity "ManageShoppingListDB" as Entity
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn Danh sách mua sắm & Chọn hành động (Xem/Sửa/Xóa)
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. handleListAction(action, listId, data)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. executeDbQuery(action, listId, data)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return result
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. return success/data
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Cập nhật giao diện (hiển thị chi tiết, đổi tên, hoặc xóa)
 deactivate UI
 @enduml

@@ -2,20 +2,20 @@
 title Sequence Diagram - UC021 AddFoodManually
 
 actor "User" as Actor
-boundary "AddFoodManuallyUI" as UI
-control "AddFoodManuallyController" as Controller
-entity "AddFoodManuallyDB" as Entity
+boundary "AddFoodUI" as UI
+control "PantryController" as Controller
+entity "PantryDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhập thông tin thực phẩm (Tên, SL, HSD, Thể loại) & Thêm
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. addFood(foodDetails)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. saveFood(foodDetails)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return foodId
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo thêm thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Cập nhật giao diện Tủ lạnh
 deactivate UI
 @enduml

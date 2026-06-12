@@ -3,19 +3,19 @@ title Sequence Diagram - UC020 ViewPantry
 
 actor "User" as Actor
 boundary "ViewPantryUI" as UI
-control "ViewPantryController" as Controller
-entity "ViewPantryDB" as Entity
+control "PantryController" as Controller
+entity "PantryDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Truy cập Tủ lạnh & Nhập từ khóa tìm kiếm/Lọc
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. searchFood(keyword, filters)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. queryFoodList(keyword, filters)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return foodList
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Trả về danh sách thực phẩm
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị danh sách thực phẩm trong kho
 deactivate UI
 @enduml

@@ -2,20 +2,30 @@
 title Sequence Diagram - UC032 AddMissingIngredients
 
 actor "User" as Actor
-boundary "AddMissingIngredientsUI" as UI
-control "AddMissingIngredientsController" as Controller
-entity "AddMissingIngredientsDB" as Entity
+boundary "RecipeUI" as UI
+control "RecipeController" as Controller
+entity "PantryDB" as PantryDB
+control "ShoppingController" as ShoppingController
+entity "ShoppingDB" as ShoppingDB
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn "Thêm nguyên liệu còn thiếu vào Giỏ đi chợ"
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. findMissingIngredients(recipeIngredients)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
-activate Entity
-Entity --> Controller : 4. resultData
-deactivate Entity
-Controller --> UI : 5. status/data
+Controller -> PantryDB : 3. checkAvailable(recipeIngredients)
+activate PantryDB
+PantryDB --> Controller : 4. return missingIngredientsList
+deactivate PantryDB
+Controller -> ShoppingController : 5. addItemsToList(missingIngredientsList)
+activate ShoppingController
+ShoppingController -> ShoppingDB : 6. saveItems()
+activate ShoppingDB
+ShoppingDB --> ShoppingController : 7. success
+deactivate ShoppingDB
+ShoppingController --> Controller : 8. success
+deactivate ShoppingController
+Controller --> UI : 9. return successMessage
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 10. Thông báo đã thêm vào Danh sách mua sắm
 deactivate UI
 @enduml

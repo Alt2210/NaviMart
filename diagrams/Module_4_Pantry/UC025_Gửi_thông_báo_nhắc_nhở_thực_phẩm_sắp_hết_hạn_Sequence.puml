@@ -1,21 +1,23 @@
 @startuml
 title Sequence Diagram - UC025 ExpiryNotification
 
+actor "System (CronJob)" as Cron
+control "NotificationController" as Controller
+entity "PantryDB" as DB
+control "NotificationService" as NotifService
 actor "User" as Actor
-boundary "ExpiryNotificationUI" as UI
-control "ExpiryNotificationController" as Controller
-entity "ExpiryNotificationDB" as Entity
 
-Actor -> UI : 1. Interact
-activate UI
-UI -> Controller : 2. handleRequest()
+Cron -> Controller : 1. triggerCheckExpiryDaily()
 activate Controller
-Controller -> Entity : 3. executeDbAction()
-activate Entity
-Entity --> Controller : 4. resultData
-deactivate Entity
-Controller --> UI : 5. status/data
+Controller -> DB : 2. queryExpiringFoods(daysLimit)
+activate DB
+DB --> Controller : 3. return expiringFoodsList
+deactivate DB
+Controller -> NotifService : 4. sendExpiryWarning(userId, foods)
+activate NotifService
+NotifService --> Actor : 5. Gửi Push Notification / Email nhắc nhở
+NotifService --> Controller : 6. deliveryStatus
+deactivate NotifService
+Controller --> Cron : 7. jobCompleted
 deactivate Controller
-UI --> Actor : 6. showResult()
-deactivate UI
 @enduml

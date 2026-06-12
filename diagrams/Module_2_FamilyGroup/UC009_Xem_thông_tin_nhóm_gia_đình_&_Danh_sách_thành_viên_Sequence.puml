@@ -2,20 +2,20 @@
 title Sequence Diagram - UC009 ViewFamilyMembers
 
 actor "User" as Actor
-boundary "ViewFamilyMembersUI" as UI
-control "ViewFamilyMembersController" as Controller
-entity "ViewFamilyMembersDB" as Entity
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn xem chi tiết nhóm gia đình
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. getGroupDetails(groupId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. queryGroupInfoAndMembers(groupId)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return groupData, memberList
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Trả về dữ liệu nhóm
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị danh sách thành viên và thông tin nhóm
 deactivate UI
 @enduml

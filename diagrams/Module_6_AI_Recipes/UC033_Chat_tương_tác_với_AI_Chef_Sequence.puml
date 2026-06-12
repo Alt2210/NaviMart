@@ -2,20 +2,20 @@
 title Sequence Diagram - UC033 ChatWithAIChef
 
 actor "User" as Actor
-boundary "ChatWithAIChefUI" as UI
-control "ChatWithAIChefController" as Controller
-entity "ChatWithAIChefDB" as Entity
+boundary "ChatUI" as UI
+control "ChatController" as Controller
+control "AIService" as AIService
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhập câu hỏi (VD: "Cách thay thế trứng bằng gì?")
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. sendMessage(question, context)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
-activate Entity
-Entity --> Controller : 4. resultData
-deactivate Entity
-Controller --> UI : 5. status/data
+Controller -> AIService : 3. callAiAPI(question, context)
+activate AIService
+AIService --> Controller : 4. return answerText
+deactivate AIService
+Controller --> UI : 5. return answerText
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị câu trả lời của AI Chef trong khung chat
 deactivate UI
 @enduml

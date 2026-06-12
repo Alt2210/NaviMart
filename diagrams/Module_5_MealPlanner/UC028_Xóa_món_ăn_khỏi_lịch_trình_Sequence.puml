@@ -3,19 +3,19 @@ title Sequence Diagram - UC028 RemoveMeal
 
 actor "User" as Actor
 boundary "RemoveMealUI" as UI
-control "RemoveMealController" as Controller
-entity "RemoveMealDB" as Entity
+control "MealPlanController" as Controller
+entity "MealPlanDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn món ăn trong phiên và nhấn "Xóa"
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. removeMeal(sessionId, mealId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. deleteMeal(sessionId, mealId)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. success
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo xóa thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Xóa món ăn khỏi giao diện lịch trình
 deactivate UI
 @enduml

@@ -2,20 +2,20 @@
 title Sequence Diagram - UC008 CreateFamilyGroup
 
 actor "User" as Actor
-boundary "CreateFamilyGroupUI" as UI
-control "CreateFamilyGroupController" as Controller
-entity "CreateFamilyGroupDB" as Entity
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhập tên nhóm & Chọn "Tạo nhóm"
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. createGroup(groupName)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. saveNewGroup(groupName, ownerId)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return groupId
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Trả về thông báo thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị thông báo & Chuyển đến trang chi tiết nhóm
 deactivate UI
 @enduml

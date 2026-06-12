@@ -1,21 +1,32 @@
 @startuml
 title Sequence Diagram - UC038 ApproveRecipe
 
-actor "User" as Actor
+actor "Admin" as Actor
 boundary "ApproveRecipeUI" as UI
-control "ApproveRecipeController" as Controller
-entity "ApproveRecipeDB" as Entity
+control "AdminController" as Controller
+entity "RecipeDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Xem danh sách công thức chờ duyệt
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. getPendingRecipes()
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. queryPending()
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return pendingList
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. return pendingList
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị danh sách chờ duyệt
+
+Actor -> UI : 7. Xem chi tiết & Nhấn "Duyệt" / "Từ chối"
+UI -> Controller : 8. approveOrRejectRecipe(recipeId, status)
+activate Controller
+Controller -> Entity : 9. updateRecipeStatus(recipeId, status)
+activate Entity
+Entity --> Controller : 10. success
+deactivate Entity
+Controller --> UI : 11. Thông báo xử lý thành công
+deactivate Controller
+UI --> Actor : 12. Cập nhật lại danh sách công thức
 deactivate UI
 @enduml

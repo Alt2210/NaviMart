@@ -2,20 +2,20 @@
 title Sequence Diagram - UC014 LeaveFamilyGroup
 
 actor "User" as Actor
-boundary "LeaveFamilyGroupUI" as UI
-control "LeaveFamilyGroupController" as Controller
-entity "LeaveFamilyGroupDB" as Entity
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn "Rời nhóm"
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. leaveGroup(groupId, userId)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. removeMember(groupId, userId)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. success
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo rời nhóm thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Chuyển về màn hình danh sách nhóm
 deactivate UI
 @enduml

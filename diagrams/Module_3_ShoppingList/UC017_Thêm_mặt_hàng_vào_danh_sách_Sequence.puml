@@ -2,20 +2,20 @@
 title Sequence Diagram - UC017 AddItemToList
 
 actor "User" as Actor
-boundary "AddItemToListUI" as UI
-control "AddItemToListController" as Controller
-entity "AddItemToListDB" as Entity
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhập tên mặt hàng, số lượng & Thêm
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. addItem(listId, itemName, quantity)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. saveItem(listId, itemName, quantity)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return itemId
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo thêm thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Cập nhật danh sách mặt hàng
 deactivate UI
 @enduml

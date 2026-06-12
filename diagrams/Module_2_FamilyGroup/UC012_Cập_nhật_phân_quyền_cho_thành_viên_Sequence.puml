@@ -1,21 +1,21 @@
 @startuml
 title Sequence Diagram - UC012 UpdateMemberRole
 
-actor "User" as Actor
-boundary "UpdateMemberRoleUI" as UI
-control "UpdateMemberRoleController" as Controller
-entity "UpdateMemberRoleDB" as Entity
+actor "User (Admin)" as Actor
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn thành viên & Đổi quyền (Role)
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. updateRole(groupId, memberId, newRole)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. updateMemberRole(groupId, memberId, newRole)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. success
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. Thông báo cập nhật thành công
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị quyền mới của thành viên
 deactivate UI
 @enduml

@@ -1,21 +1,21 @@
 @startuml
 title Sequence Diagram - UC039 ViewAdminDashboard
 
-actor "User" as Actor
-boundary "ViewAdminDashboardUI" as UI
-control "ViewAdminDashboardController" as Controller
-entity "ViewAdminDashboardDB" as Entity
+actor "Admin" as Actor
+boundary "DashboardUI" as UI
+control "AdminController" as Controller
+entity "SystemDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Truy cập trang chủ Dashboard Admin
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. getOverviewStats()
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. querySystemMetrics()
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return metrics (users, recipes, active rate)
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. return metricsData
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị Dashboard (Số liệu tổng quan, Biểu đồ)
 deactivate UI
 @enduml

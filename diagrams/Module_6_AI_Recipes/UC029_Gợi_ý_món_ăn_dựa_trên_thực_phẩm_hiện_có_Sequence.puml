@@ -2,20 +2,25 @@
 title Sequence Diagram - UC029 SuggestRecipes
 
 actor "User" as Actor
-boundary "SuggestRecipesUI" as UI
-control "SuggestRecipesController" as Controller
-entity "SuggestRecipesDB" as Entity
+boundary "SuggestRecipeUI" as UI
+control "RecipeController" as Controller
+entity "PantryDB" as PantryDB
+control "AIService" as AIService
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Nhấn "Gợi ý món ăn"
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. getSuggestions()
 activate Controller
-Controller -> Entity : 3. executeDbAction()
-activate Entity
-Entity --> Controller : 4. resultData
-deactivate Entity
-Controller --> UI : 5. status/data
+Controller -> PantryDB : 3. getAvailableIngredients(userId)
+activate PantryDB
+PantryDB --> Controller : 4. return ingredientList
+deactivate PantryDB
+Controller -> AIService : 5. generateRecipes(ingredientList)
+activate AIService
+AIService --> Controller : 6. return suggestedRecipes
+deactivate AIService
+Controller --> UI : 7. return recipeList
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 8. Hiển thị danh sách món ăn gợi ý
 deactivate UI
 @enduml

@@ -2,20 +2,33 @@
 title Sequence Diagram - UC026 ViewMealPlan
 
 actor "User" as Actor
-boundary "ViewMealPlanUI" as UI
-control "ViewMealPlanController" as Controller
-entity "ViewMealPlanDB" as Entity
+boundary "MealPlanUI" as UI
+control "MealPlanController" as Controller
+entity "MealPlanDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Mở Lịch trình ăn uống
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. getMealPlan(dateRange)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. querySessions(dateRange)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return sessions
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. return mealPlanData
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Hiển thị Lịch trình tuần/ngày
+deactivate UI
+
+Actor -> UI : 7. Chọn "Thêm phiên ăn" (VD: Sáng, Trưa, Tối)
+activate UI
+UI -> Controller : 8. createSession(date, sessionType)
+activate Controller
+Controller -> Entity : 9. insertSession(date, sessionType)
+activate Entity
+Entity --> Controller : 10. return sessionId
+deactivate Entity
+Controller --> UI : 11. Cập nhật phiên ăn mới
+deactivate Controller
+UI --> Actor : 12. Hiển thị phiên ăn trống
 deactivate UI
 @enduml

@@ -2,20 +2,20 @@
 title Sequence Diagram - UC034 ViewStatistics
 
 actor "User" as Actor
-boundary "ViewStatisticsUI" as UI
-control "ViewStatisticsController" as Controller
-entity "ViewStatisticsDB" as Entity
+boundary "StatisticsUI" as UI
+control "StatController" as Controller
+entity "StatDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Chọn tab Thống kê & Chọn khoảng thời gian
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. getStatistics(dateRange)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
+Controller -> Entity : 3. queryUsageAndWasteData(dateRange)
 activate Entity
-Entity --> Controller : 4. resultData
+Entity --> Controller : 4. return aggregatedData
 deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 5. return chartData
 deactivate Controller
-UI --> Actor : 6. showResult()
+UI --> Actor : 6. Vẽ và hiển thị biểu đồ tiêu dùng & lãng phí
 deactivate UI
 @enduml

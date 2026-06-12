@@ -1,21 +1,27 @@
 @startuml
 title Sequence Diagram - UC035 AdminLoginAndViewUsers
 
-actor "User" as Actor
-boundary "AdminLoginAndViewUsersUI" as UI
-control "AdminLoginAndViewUsersController" as Controller
-entity "AdminLoginAndViewUsersDB" as Entity
+actor "Admin" as Actor
+boundary "AdminUI" as UI
+control "AdminController" as Controller
+entity "UserDB" as Entity
 
-Actor -> UI : 1. Interact
+Actor -> UI : 1. Đăng nhập với quyền Admin
 activate UI
-UI -> Controller : 2. handleRequest()
+UI -> Controller : 2. loginAdmin(credentials)
 activate Controller
-Controller -> Entity : 3. executeDbAction()
-activate Entity
-Entity --> Controller : 4. resultData
-deactivate Entity
-Controller --> UI : 5. status/data
+Controller --> UI : 3. Token & Redirect
 deactivate Controller
-UI --> Actor : 6. showResult()
+
+Actor -> UI : 4. Chọn "Quản lý Người dùng"
+UI -> Controller : 5. getUsersList(filters)
+activate Controller
+Controller -> Entity : 6. queryAllUsers(filters)
+activate Entity
+Entity --> Controller : 7. return userList
+deactivate Entity
+Controller --> UI : 8. return userList
+deactivate Controller
+UI --> Actor : 9. Hiển thị danh sách Người dùng
 deactivate UI
 @enduml
