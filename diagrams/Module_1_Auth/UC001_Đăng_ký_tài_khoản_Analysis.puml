@@ -1,0 +1,30 @@
+@startuml
+title Analysis Class Diagram - UC001 Đăng ký tài khoản
+
+class "RegisterUI" as RegisterUI <<boundary>> {
+  + Chọn Đăng ký() : void
+  + Điền & Gửi form() : void
+  + Success (Chuyển Đăng nhập) : void
+}
+class "OTPVerificationUI" as OTPUI <<boundary>> {
+  + Require OTP() : void
+  + Nhập OTP() : void
+}
+class "AuthController" as AuthController <<control>> {
+  + submit(name, email_phone, password) : void
+  + verifyOTP() : void
+}
+class "EmailService" as EmailService <<control>> {
+  + sendOTP() : void
+}
+class "UserAccount" as UserDB <<entity>> {
+  + checkExists() : void
+  + savePending() : void
+  + activateAccount() : void
+}
+
+AuthController -- RegisterUI
+AuthController -- UserDB
+AuthController -- EmailService
+AuthController -- OTPUI
+@enduml

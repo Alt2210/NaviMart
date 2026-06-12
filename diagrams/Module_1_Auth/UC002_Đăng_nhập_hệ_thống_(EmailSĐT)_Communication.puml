@@ -1,0 +1,35 @@
+@startuml
+title Communication Diagram - UC002 Đăng nhập hệ thống
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "LoginUI" as UI
+control "AuthController" as Controller
+entity "UserAccount" as UserDB
+
+Actor -right---- UI : " ▶ 1: Submit Credentials "
+UI -right------ Controller : " ▶ 2: login(email, pass) \n ◀ 4: Return Error / Success (Token) "
+Controller -down- UserDB : " ▼ 3: fetchUserRecord() "
+@enduml

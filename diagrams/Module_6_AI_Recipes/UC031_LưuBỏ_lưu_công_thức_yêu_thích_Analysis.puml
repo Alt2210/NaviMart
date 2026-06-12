@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC031 BookmarkRecipe
+
+class "BookmarkRecipeUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "BookmarkRecipeController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "BookmarkRecipeDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

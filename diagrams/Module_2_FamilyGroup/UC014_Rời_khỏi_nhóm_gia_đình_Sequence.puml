@@ -1,0 +1,21 @@
+@startuml
+title Sequence Diagram - UC014 LeaveFamilyGroup
+
+actor "User" as Actor
+boundary "LeaveFamilyGroupUI" as UI
+control "LeaveFamilyGroupController" as Controller
+entity "LeaveFamilyGroupDB" as Entity
+
+Actor -> UI : 1. Interact
+activate UI
+UI -> Controller : 2. handleRequest()
+activate Controller
+Controller -> Entity : 3. executeDbAction()
+activate Entity
+Entity --> Controller : 4. resultData
+deactivate Entity
+Controller --> UI : 5. status/data
+deactivate Controller
+UI --> Actor : 6. showResult()
+deactivate UI
+@enduml

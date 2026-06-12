@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC033 ChatWithAIChef
+
+class "ChatWithAIChefUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "ChatWithAIChefController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "ChatWithAIChefDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

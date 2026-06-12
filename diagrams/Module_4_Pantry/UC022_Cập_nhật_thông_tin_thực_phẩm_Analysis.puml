@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC022 UpdateFoodInfo
+
+class "UpdateFoodInfoUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "UpdateFoodInfoController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "UpdateFoodInfoDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

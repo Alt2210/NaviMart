@@ -1,0 +1,40 @@
+@startuml
+title Sequence Diagram - UC004 Quên mật khẩu
+
+actor "User" as Actor
+boundary "ForgotPassUI" as UI
+control "AuthController" as Controller
+control "EmailService" as EmailService
+entity "UserAccount" as UserDB
+
+Actor -> UI : 1. Nhập Email cần lấy lại MK
+activate UI
+UI -> Controller : 2. requestResetPass(email)
+activate Controller
+Controller -> UserDB : 3. checkEmail()
+activate UserDB
+UserDB --> Controller : exists
+deactivate UserDB
+Controller -> EmailService : 4. sendOTP()
+activate EmailService
+EmailService --> Controller : sent
+deactivate EmailService
+Controller --> UI : 5. Show OTP form
+deactivate Controller
+UI --> Actor : 6. Yêu cầu nhập OTP & Pass mới
+deactivate UI
+
+Actor -> UI : 7. Nhập OTP + Pass mới
+activate UI
+UI -> Controller : 8. resetPass(email, otp, newPass)
+activate Controller
+Controller -> Controller : 9. verifyOTP()
+Controller -> UserDB : 10. updatePassword(newPass)
+activate UserDB
+UserDB --> Controller : success
+deactivate UserDB
+Controller --> UI : 11. success
+deactivate Controller
+UI --> Actor : 12. Báo thành công, điều hướng Login
+deactivate UI
+@enduml

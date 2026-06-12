@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC038 ApproveRecipe
+
+class "ApproveRecipeUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "ApproveRecipeController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "ApproveRecipeDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

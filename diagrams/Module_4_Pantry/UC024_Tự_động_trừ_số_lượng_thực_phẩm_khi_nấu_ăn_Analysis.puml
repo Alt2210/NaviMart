@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC024 AutoDeductFood
+
+class "AutoDeductFoodUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "AutoDeductFoodController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "AutoDeductFoodDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title Analysis Class Diagram - UC003 Đăng nhập mạng xã hội
+
+class "OAuthUI" as UI <<boundary>> {
+  + Chọn Login with Google/FB() : void
+  + Success & Redirect() : void
+}
+class "OAuthProvider
+(Google/FB)" as Provider <<control>> {
+  + Request Auth URL() : void
+  + Đồng ý cấp quyền() : void
+}
+class "AuthController" as Controller <<control>> {
+  + Callback with Profile Data (Email, Name) : void
+}
+class "UserAccount" as UserDB <<entity>> {
+  + checkEmail() & autoCreateIfNeeded() : void
+}
+class "OAuthProvider" as OAuthProvider <<control>> {
+}
+
+Provider -- UI
+Controller -- Provider
+Controller -- UserDB
+Controller -- UI
+@enduml

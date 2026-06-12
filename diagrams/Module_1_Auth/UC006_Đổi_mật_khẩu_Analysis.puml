@@ -1,0 +1,20 @@
+@startuml
+title Analysis Class Diagram - UC006 Đổi mật khẩu
+
+class "ChangePassUI" as UI <<boundary>> {
+  + Nhập Pass cũ & Pass mới() : void
+  + Success Msg() : void
+}
+class "AuthController" as Controller <<control>> {
+  + changePassword(oldP, newP) : void
+  + verifyOldPassword() : void
+}
+class "UserAccount" as UserDB <<entity>> {
+  + fetchCurrentHash() : void
+  + updateHash() : void
+}
+
+Controller -- UI
+Controller -- UserDB
+Controller -- Controller
+@enduml

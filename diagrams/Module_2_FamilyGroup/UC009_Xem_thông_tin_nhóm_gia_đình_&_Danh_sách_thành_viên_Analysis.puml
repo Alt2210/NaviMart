@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC009 ViewFamilyMembers
+
+class "ViewFamilyMembersUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "ViewFamilyMembersController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "ViewFamilyMembersDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

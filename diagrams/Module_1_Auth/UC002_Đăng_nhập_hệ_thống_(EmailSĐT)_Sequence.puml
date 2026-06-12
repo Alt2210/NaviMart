@@ -1,0 +1,30 @@
+@startuml
+title Sequence Diagram - UC002 Đăng nhập hệ thống
+
+actor "User" as Actor
+boundary "LoginUI" as UI
+control "AuthController" as Controller
+entity "UserAccount" as UserDB
+
+Actor -> UI : 1. Nhập Email/SĐT & Pass
+activate UI
+UI -> Controller : 2. login(email, pass)
+activate Controller
+Controller -> UserDB : 3. findByEmail(email)
+activate UserDB
+UserDB --> Controller : userRecord
+deactivate UserDB
+
+Controller -> Controller : 4. checkPassword(pass, hash)
+alt Sai thông tin
+    Controller --> UI : 5a. Báo lỗi sai tài khoản/mật khẩu
+else Tài khoản bị khóa
+    Controller --> UI : 5b. Báo lỗi tài khoản bị khóa
+else Hợp lệ
+    Controller -> Controller : 6. generateAccessToken()
+    Controller --> UI : 7. Trả về Token
+    UI --> Actor : 8. Chuyển hướng Trang chủ
+end
+deactivate Controller
+deactivate UI
+@enduml

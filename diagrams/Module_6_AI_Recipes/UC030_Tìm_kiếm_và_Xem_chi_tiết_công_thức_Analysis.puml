@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC030 ViewRecipeDetail
+
+class "ViewRecipeDetailUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "ViewRecipeDetailController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "ViewRecipeDetailDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

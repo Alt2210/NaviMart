@@ -1,0 +1,30 @@
+@startuml
+title Sequence Diagram - UC006 Đổi mật khẩu
+
+actor "User" as Actor
+boundary "ChangePassUI" as UI
+control "AuthController" as Controller
+entity "UserAccount" as UserDB
+
+Actor -> UI : 1. Điền Pass cũ, Pass mới, Nhấn Lưu
+activate UI
+UI -> Controller : 2. changePass(userId, oldP, newP)
+activate Controller
+Controller -> UserDB : 3. getPasswordHash(userId)
+activate UserDB
+UserDB --> Controller : currentHash
+deactivate UserDB
+Controller -> Controller : 4. verify(oldP, currentHash)
+alt oldP sai
+    Controller --> UI : 5a. Báo lỗi sai mật khẩu cũ
+else hợp lệ
+    Controller -> UserDB : 6. updatePassword(hash(newP))
+    activate UserDB
+    UserDB --> Controller : success
+    deactivate UserDB
+    Controller --> UI : 7. Báo thành công
+end
+deactivate Controller
+UI --> Actor : 8. Hiển thị thông báo
+deactivate UI
+@enduml

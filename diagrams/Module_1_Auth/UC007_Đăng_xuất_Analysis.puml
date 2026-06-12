@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC007 Đăng xuất
+
+class "SettingsUI" as UI <<boundary>> {
+  + Bấm Đăng xuất() : void
+  + Redirect to Login() : void
+}
+class "AuthController" as Controller <<control>> {
+  + logout() : void
+}
+class "SessionManager" as SessionDB <<entity>> {
+  + invalidateToken() : void
+}
+
+Controller -- UI
+Controller -- SessionDB
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC011 JoinFamilyGroup
+
+class "JoinFamilyGroupUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "JoinFamilyGroupController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "JoinFamilyGroupDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC005 Cập nhật thông tin cá nhân
+
+class "ProfileUI" as UI <<boundary>> {
+  + Sửa Name/Avatar & Lưu() : void
+  + Cập nhật thành công() : void
+}
+class "ProfileController" as Controller <<control>> {
+  + updateProfile(data) : void
+}
+class "UserProfile" as ProfileDB <<entity>> {
+  + save(data) : void
+}
+
+Controller -- UI
+Controller -- ProfileDB
+@enduml
