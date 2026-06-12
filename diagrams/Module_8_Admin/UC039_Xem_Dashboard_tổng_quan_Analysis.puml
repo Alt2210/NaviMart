@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC039 ViewAdminDashboard
 
-class "ViewAdminDashboardUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "DashboardUI" as UI <<boundary>> {
+  + requestDashboardData() : void
+  + displayDashboard() : void
 }
-class "ViewAdminDashboardController" as Controller <<control>> {
-  + Process Request() : void
+class "AdminController" as Controller <<control>> {
+  + getOverviewStats() : void
 }
-class "ViewAdminDashboardDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "SystemDB" as Entity <<entity>> {
+  + querySystemMetrics() : Data
 }
 
 Controller -- UI

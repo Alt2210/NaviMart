@@ -2,14 +2,17 @@
 title Analysis Class Diagram - UC038 ApproveRecipe
 
 class "ApproveRecipeUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+  + viewPendingRecipes() : void
+  + approveOrReject() : void
+  + displayResult() : void
 }
-class "ApproveRecipeController" as Controller <<control>> {
-  + Process Request() : void
+class "AdminController" as Controller <<control>> {
+  + getPendingRecipes() : void
+  + approveOrRejectRecipe(recipeId: String, status: String) : void
 }
-class "ApproveRecipeDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "RecipeDB" as Entity <<entity>> {
+  + queryPending() : List
+  + updateRecipeStatus(recipeId: String, status: String) : Boolean
 }
 
 Controller -- UI

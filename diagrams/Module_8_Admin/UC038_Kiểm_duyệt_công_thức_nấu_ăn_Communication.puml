@@ -24,12 +24,12 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
+actor "Admin" as Actor
 boundary "ApproveRecipeUI" as UI
-control "ApproveRecipeController" as Controller
-entity "ApproveRecipeDB" as Entity
+control "AdminController" as Controller
+entity "RecipeDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Xem / Duyệt công thức "
+UI -right---- Controller : " ▶ 2: approveOrRejectRecipe() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: updateRecipeStatus() "
 @enduml

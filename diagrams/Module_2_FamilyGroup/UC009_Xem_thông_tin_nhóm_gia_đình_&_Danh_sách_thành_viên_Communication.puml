@@ -25,11 +25,11 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "ViewFamilyMembersUI" as UI
-control "ViewFamilyMembersController" as Controller
-entity "ViewFamilyMembersDB" as Entity
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Chọn xem chi tiết "
+UI -right---- Controller : " ▶ 2: getGroupDetails() \n ◀ 4: trả dữ liệu nhóm "
+Controller -down- Entity : " ▼ 3: queryGroupInfoAndMembers() "
 @enduml

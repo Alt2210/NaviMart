@@ -25,11 +25,15 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "FinishShoppingUI" as UI
-control "FinishShoppingController" as Controller
-entity "FinishShoppingDB" as Entity
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as ShoppingDB
+control "PantryController" as PantryController
+entity "PantryDB" as PantryDB
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Đánh dấu đã mua "
+UI -right---- Controller : " ▶ 2: markItemAsBought() \n ◀ 9: trả thông báo "
+Controller -down- ShoppingDB : " ▼ 3: updateItemStatus() "
+Controller -right- PantryController : " ▶ 5: transferItemToPantry() "
+PantryController -down- PantryDB : " ▼ 6: addFood() "
 @enduml

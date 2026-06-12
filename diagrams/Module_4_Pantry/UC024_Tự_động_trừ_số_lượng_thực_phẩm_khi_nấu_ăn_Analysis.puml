@@ -1,17 +1,21 @@
 @startuml
 title Analysis Class Diagram - UC024 AutoDeductFood
 
-class "AutoDeductFoodUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "MealPlanUI" as UI <<boundary>> {
+  + confirmMealCooked() : void
+  + displayUpdate() : void
 }
-class "AutoDeductFoodController" as Controller <<control>> {
-  + Process Request() : void
+class "MealController" as MealController <<control>> {
+  + confirmMealCooked(mealId: String) : void
 }
-class "AutoDeductFoodDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "PantryController" as PantryController <<control>> {
+  + deductIngredients(ingredients: List) : void
+}
+class "PantryDB" as PantryDB <<entity>> {
+  + decreaseFoodQuantity(ingredients: List) : Boolean
 }
 
-Controller -- UI
-Controller -- Entity
+MealController -- UI
+MealController -- PantryController
+PantryController -- PantryDB
 @enduml

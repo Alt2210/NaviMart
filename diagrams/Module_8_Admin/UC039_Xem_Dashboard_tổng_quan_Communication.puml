@@ -24,12 +24,12 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "ViewAdminDashboardUI" as UI
-control "ViewAdminDashboardController" as Controller
-entity "ViewAdminDashboardDB" as Entity
+actor "Admin" as Actor
+boundary "DashboardUI" as UI
+control "AdminController" as Controller
+entity "SystemDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Truy cập Dashboard "
+UI -right---- Controller : " ▶ 2: getOverviewStats() \n ◀ 4: trả số liệu "
+Controller -down- Entity : " ▼ 3: querySystemMetrics() "
 @enduml

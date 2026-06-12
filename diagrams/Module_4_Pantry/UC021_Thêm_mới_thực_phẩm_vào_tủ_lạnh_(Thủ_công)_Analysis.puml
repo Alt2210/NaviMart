@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC021 AddFoodManually
 
-class "AddFoodManuallyUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "AddFoodUI" as UI <<boundary>> {
+  + inputFoodDetails() : void
+  + displaySuccess() : void
 }
-class "AddFoodManuallyController" as Controller <<control>> {
-  + Process Request() : void
+class "PantryController" as Controller <<control>> {
+  + addFood(foodDetails: Data) : void
 }
-class "AddFoodManuallyDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "PantryDB" as Entity <<entity>> {
+  + saveFood(foodDetails: Data) : String
 }
 
 Controller -- UI

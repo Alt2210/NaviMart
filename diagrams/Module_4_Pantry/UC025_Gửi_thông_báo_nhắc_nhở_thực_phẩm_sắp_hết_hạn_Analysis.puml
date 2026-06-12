@@ -1,17 +1,20 @@
 @startuml
 title Analysis Class Diagram - UC025 ExpiryNotification
 
-class "ExpiryNotificationUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "CronJob" as Cron <<actor>>
+class "NotificationController" as Controller <<control>> {
+  + triggerCheckExpiryDaily() : void
 }
-class "ExpiryNotificationController" as Controller <<control>> {
-  + Process Request() : void
+class "PantryDB" as DB <<entity>> {
+  + queryExpiringFoods(daysLimit: Number) : List
 }
-class "ExpiryNotificationDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "NotificationService" as NotifService <<control>> {
+  + sendExpiryWarning(userId: String, foods: List) : void
 }
+class "User" as Actor <<actor>>
 
-Controller -- UI
-Controller -- Entity
+Cron -- Controller
+Controller -- DB
+Controller -- NotifService
+NotifService -- Actor
 @enduml

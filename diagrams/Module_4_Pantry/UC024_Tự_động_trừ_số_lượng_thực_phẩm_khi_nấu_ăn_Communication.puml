@@ -25,11 +25,13 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "AutoDeductFoodUI" as UI
-control "AutoDeductFoodController" as Controller
-entity "AutoDeductFoodDB" as Entity
+boundary "MealPlanUI" as UI
+control "MealController" as MealController
+control "PantryController" as PantryController
+entity "PantryDB" as PantryDB
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Xác nhận nấu xong "
+UI -right---- MealController : " ▶ 2: confirmMealCooked() \n ◀ 7: trả kết quả "
+MealController -down- PantryController : " ▼ 3: deductIngredients() "
+PantryController -down- PantryDB : " ▼ 4: decreaseFoodQuantity() "
 @enduml

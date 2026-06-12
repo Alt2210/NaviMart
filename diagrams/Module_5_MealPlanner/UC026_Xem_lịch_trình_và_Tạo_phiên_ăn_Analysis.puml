@@ -1,15 +1,17 @@
 @startuml
 title Analysis Class Diagram - UC026 ViewMealPlan
 
-class "ViewMealPlanUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "MealPlanUI" as UI <<boundary>> {
+  + selectDateRange() : void
+  + displayMealPlan() : void
 }
-class "ViewMealPlanController" as Controller <<control>> {
-  + Process Request() : void
+class "MealPlanController" as Controller <<control>> {
+  + getMealPlan(dateRange: Data) : void
+  + createSession(date: Date, type: String) : void
 }
-class "ViewMealPlanDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "MealPlanDB" as Entity <<entity>> {
+  + querySessions(dateRange: Data) : List
+  + insertSession(date: Date, type: String) : String
 }
 
 Controller -- UI

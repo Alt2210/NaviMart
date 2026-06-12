@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC009 ViewFamilyMembers
 
-class "ViewFamilyMembersUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "FamilyUI" as UI <<boundary>> {
+  + requestGroupDetails() : void
+  + displayGroupData() : void
 }
-class "ViewFamilyMembersController" as Controller <<control>> {
-  + Process Request() : void
+class "FamilyController" as Controller <<control>> {
+  + getGroupDetails(groupId: String) : void
 }
-class "ViewFamilyMembersDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "FamilyDB" as Entity <<entity>> {
+  + queryGroupInfoAndMembers(groupId: String) : Data
 }
 
 Controller -- UI

@@ -2,14 +2,14 @@
 title Analysis Class Diagram - UC023 RemoveFood
 
 class "RemoveFoodUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+  + selectFoodToRemove() : void
+  + displayResult() : void
 }
-class "RemoveFoodController" as Controller <<control>> {
-  + Process Request() : void
+class "PantryController" as Controller <<control>> {
+  + removeFood(foodId: String) : void
 }
-class "RemoveFoodDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "PantryDB" as Entity <<entity>> {
+  + deleteFoodData(foodId: String) : Boolean
 }
 
 Controller -- UI

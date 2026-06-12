@@ -24,12 +24,12 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "UpdateMemberRoleUI" as UI
-control "UpdateMemberRoleController" as Controller
-entity "UpdateMemberRoleDB" as Entity
+actor "User (Admin)" as Actor
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Đổi phân quyền "
+UI -right---- Controller : " ▶ 2: updateRole() \n ◀ 4: thông báo "
+Controller -down- Entity : " ▼ 3: updateMemberRole() "
 @enduml

@@ -24,12 +24,12 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "BlockUnblockUserUI" as UI
-control "BlockUnblockUserController" as Controller
-entity "BlockUnblockUserDB" as Entity
+actor "Admin" as Actor
+boundary "AdminUI" as UI
+control "AdminController" as Controller
+entity "UserDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Khóa / Mở khóa User "
+UI -right---- Controller : " ▶ 2: toggleUserLock() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: updateUserStatus() "
 @enduml

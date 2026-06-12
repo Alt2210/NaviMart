@@ -1,15 +1,18 @@
 @startuml
 title Analysis Class Diagram - UC030 ViewRecipeDetail
 
-class "ViewRecipeDetailUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "RecipeUI" as UI <<boundary>> {
+  + searchRecipes() : void
+  + viewRecipeDetail() : void
+  + displayDetails() : void
 }
-class "ViewRecipeDetailController" as Controller <<control>> {
-  + Process Request() : void
+class "RecipeController" as Controller <<control>> {
+  + searchRecipes(keyword: String) : void
+  + getRecipeDetail(recipeId: String) : void
 }
-class "ViewRecipeDetailDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "RecipeDB" as Entity <<entity>> {
+  + queryRecipes(keyword: String) : List
+  + queryRecipeById(recipeId: String) : Data
 }
 
 Controller -- UI

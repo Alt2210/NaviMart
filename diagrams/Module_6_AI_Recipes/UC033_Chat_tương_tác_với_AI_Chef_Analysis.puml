@@ -1,17 +1,17 @@
 @startuml
 title Analysis Class Diagram - UC033 ChatWithAIChef
 
-class "ChatWithAIChefUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "ChatUI" as UI <<boundary>> {
+  + enterQuestion() : void
+  + displayAnswer() : void
 }
-class "ChatWithAIChefController" as Controller <<control>> {
-  + Process Request() : void
+class "ChatController" as Controller <<control>> {
+  + sendMessage(question: String, context: Data) : void
 }
-class "ChatWithAIChefDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "AIService" as AIService <<control>> {
+  + callAiAPI(question: String, context: Data) : String
 }
 
 Controller -- UI
-Controller -- Entity
+Controller -- AIService
 @enduml

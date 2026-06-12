@@ -24,12 +24,12 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "GenerateInviteCodeUI" as UI
-control "GenerateInviteCodeController" as Controller
-entity "GenerateInviteCodeDB" as Entity
+actor "User (Admin)" as Actor
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Chọn tạo mã mời "
+UI -right---- Controller : " ▶ 2: generateInvite() \n ◀ 4: trả mã mời "
+Controller -down- Entity : " ▼ 3: saveInviteToken() "
 @enduml

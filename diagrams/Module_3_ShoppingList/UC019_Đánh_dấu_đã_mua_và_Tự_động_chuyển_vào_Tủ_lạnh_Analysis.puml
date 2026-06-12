@@ -1,17 +1,25 @@
 @startuml
 title Analysis Class Diagram - UC019 FinishShopping
 
-class "FinishShoppingUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "ShoppingUI" as UI <<boundary>> {
+  + checkItemAsBought() : void
+  + displayUpdate() : void
 }
-class "FinishShoppingController" as Controller <<control>> {
-  + Process Request() : void
+class "ShoppingController" as Controller <<control>> {
+  + markItemAsBought(itemId: String) : void
 }
-class "FinishShoppingDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "ShoppingDB" as ShoppingDB <<entity>> {
+  + updateItemStatus(itemId: String, status: String) : Boolean
+}
+class "PantryController" as PantryController <<control>> {
+  + transferItemToPantry(itemDetails: Data) : void
+}
+class "PantryDB" as PantryDB <<entity>> {
+  + addFood(itemDetails: Data) : Boolean
 }
 
 Controller -- UI
-Controller -- Entity
+Controller -- ShoppingDB
+Controller -- PantryController
+PantryController -- PantryDB
 @enduml

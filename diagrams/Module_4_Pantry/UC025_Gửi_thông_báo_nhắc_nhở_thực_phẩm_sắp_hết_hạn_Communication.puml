@@ -24,12 +24,14 @@ skinparam {
 }
 
 allow_mixing
+actor "System (CronJob)" as Cron
+control "NotificationController" as Controller
+entity "PantryDB" as DB
+control "NotificationService" as NotifService
 actor "User" as Actor
-boundary "ExpiryNotificationUI" as UI
-control "ExpiryNotificationController" as Controller
-entity "ExpiryNotificationDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Cron -right--- Controller : " ▶ 1: triggerCheckExpiryDaily() "
+Controller -right---- DB : " ▶ 2: queryExpiringFoods() \n ◀ 3: trả list "
+Controller -down- NotifService : " ▼ 4: sendExpiryWarning() "
+NotifService -down- Actor : " ▼ 5: gửi thông báo "
 @enduml

@@ -1,15 +1,16 @@
 @startuml
 title Analysis Class Diagram - UC035 AdminLoginAndViewUsers
 
-class "AdminLoginAndViewUsersUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "AdminUI" as UI <<boundary>> {
+  + login() : void
+  + viewUsers() : void
 }
-class "AdminLoginAndViewUsersController" as Controller <<control>> {
-  + Process Request() : void
+class "AdminController" as Controller <<control>> {
+  + loginAdmin(credentials: Data) : void
+  + getUsersList(filters: Data) : void
 }
-class "AdminLoginAndViewUsersDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "UserDB" as Entity <<entity>> {
+  + queryAllUsers(filters: Data) : List
 }
 
 Controller -- UI

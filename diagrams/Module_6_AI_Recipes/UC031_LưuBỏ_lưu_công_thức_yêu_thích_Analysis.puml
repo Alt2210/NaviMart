@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC031 BookmarkRecipe
 
-class "BookmarkRecipeUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "BookmarkUI" as UI <<boundary>> {
+  + clickBookmark() : void
+  + displayUpdate() : void
 }
-class "BookmarkRecipeController" as Controller <<control>> {
-  + Process Request() : void
+class "RecipeController" as Controller <<control>> {
+  + toggleBookmark(recipeId: String, userId: String) : void
 }
-class "BookmarkRecipeDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "RecipeDB" as Entity <<entity>> {
+  + updateBookmarkStatus(recipeId: String, userId: String) : Boolean
 }
 
 Controller -- UI

@@ -25,11 +25,13 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "SuggestRecipesUI" as UI
-control "SuggestRecipesController" as Controller
-entity "SuggestRecipesDB" as Entity
+boundary "SuggestRecipeUI" as UI
+control "RecipeController" as Controller
+entity "PantryDB" as PantryDB
+control "AIService" as AIService
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Gợi ý món ăn "
+UI -right---- Controller : " ▶ 2: getSuggestions() \n ◀ 6: trả kết quả "
+Controller -down- PantryDB : " ▼ 3: getAvailableIngredients() "
+Controller -right- AIService : " ▶ 4: generateRecipes() "
 @enduml

@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC034 ViewStatistics
 
-class "ViewStatisticsUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "StatisticsUI" as UI <<boundary>> {
+  + selectDateRange() : void
+  + renderChart() : void
 }
-class "ViewStatisticsController" as Controller <<control>> {
-  + Process Request() : void
+class "StatController" as Controller <<control>> {
+  + getStatistics(dateRange: Data) : void
 }
-class "ViewStatisticsDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "StatDB" as Entity <<entity>> {
+  + queryUsageAndWasteData(dateRange: Data) : Data
 }
 
 Controller -- UI

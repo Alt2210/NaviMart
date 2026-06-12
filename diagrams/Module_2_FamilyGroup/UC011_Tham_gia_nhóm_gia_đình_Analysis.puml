@@ -1,15 +1,16 @@
 @startuml
 title Analysis Class Diagram - UC011 JoinFamilyGroup
 
-class "JoinFamilyGroupUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "FamilyUI" as UI <<boundary>> {
+  + enterInviteCode() : void
+  + displaySuccess() : void
 }
-class "JoinFamilyGroupController" as Controller <<control>> {
-  + Process Request() : void
+class "FamilyController" as Controller <<control>> {
+  + joinGroup(inviteCode: String) : void
 }
-class "JoinFamilyGroupDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "FamilyDB" as Entity <<entity>> {
+  + validateToken(inviteCode: String) : Boolean
+  + addMemberToGroup(userId: String, groupId: String) : Boolean
 }
 
 Controller -- UI

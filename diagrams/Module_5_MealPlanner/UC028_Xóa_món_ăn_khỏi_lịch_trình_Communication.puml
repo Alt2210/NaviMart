@@ -26,10 +26,10 @@ skinparam {
 allow_mixing
 actor "User" as Actor
 boundary "RemoveMealUI" as UI
-control "RemoveMealController" as Controller
-entity "RemoveMealDB" as Entity
+control "MealPlanController" as Controller
+entity "MealPlanDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Chọn xóa món ăn "
+UI -right---- Controller : " ▶ 2: removeMeal() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: deleteMeal() "
 @enduml

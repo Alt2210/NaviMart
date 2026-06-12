@@ -26,10 +26,10 @@ skinparam {
 allow_mixing
 actor "User" as Actor
 boundary "ViewPantryUI" as UI
-control "ViewPantryController" as Controller
-entity "ViewPantryDB" as Entity
+control "PantryController" as Controller
+entity "PantryDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Tìm kiếm/Lọc "
+UI -right---- Controller : " ▶ 2: searchFood() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: queryFoodList() "
 @enduml

@@ -25,11 +25,11 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "ViewRecipeDetailUI" as UI
-control "ViewRecipeDetailController" as Controller
-entity "ViewRecipeDetailDB" as Entity
+boundary "RecipeUI" as UI
+control "RecipeController" as Controller
+entity "RecipeDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Tìm kiếm & Xem chi tiết "
+UI -right---- Controller : " ▶ 2: searchRecipes() / getRecipeDetail() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: queryRecipes() / queryRecipeById() "
 @enduml

@@ -25,11 +25,15 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "AddMissingIngredientsUI" as UI
-control "AddMissingIngredientsController" as Controller
-entity "AddMissingIngredientsDB" as Entity
+boundary "RecipeUI" as UI
+control "RecipeController" as Controller
+entity "PantryDB" as PantryDB
+control "ShoppingController" as ShoppingController
+entity "ShoppingDB" as ShoppingDB
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Thêm nguyên liệu thiếu "
+UI -right---- Controller : " ▶ 2: findMissingIngredients() \n ◀ 7: trả kết quả "
+Controller -down- PantryDB : " ▼ 3: checkAvailable() "
+Controller -right- ShoppingController : " ▶ 4: addItemsToList() "
+ShoppingController -down- ShoppingDB : " ▼ 5: saveItems() "
 @enduml

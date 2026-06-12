@@ -24,12 +24,12 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "ManageMasterDataUI" as UI
-control "ManageMasterDataController" as Controller
-entity "ManageMasterDataDB" as Entity
+actor "Admin" as Actor
+boundary "AdminUI" as UI
+control "MasterDataController" as Controller
+entity "MasterDataDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Quản lý Master Data "
+UI -right---- Controller : " ▶ 2: executeCRUD() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: updateDatabase() "
 @enduml

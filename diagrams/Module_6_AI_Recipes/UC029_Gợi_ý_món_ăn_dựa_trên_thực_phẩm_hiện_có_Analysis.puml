@@ -1,17 +1,21 @@
 @startuml
 title Analysis Class Diagram - UC029 SuggestRecipes
 
-class "SuggestRecipesUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "SuggestRecipeUI" as UI <<boundary>> {
+  + requestSuggestion() : void
+  + displayRecipeList() : void
 }
-class "SuggestRecipesController" as Controller <<control>> {
-  + Process Request() : void
+class "RecipeController" as Controller <<control>> {
+  + getSuggestions() : void
 }
-class "SuggestRecipesDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "PantryDB" as PantryDB <<entity>> {
+  + getAvailableIngredients(userId: String) : List
+}
+class "AIService" as AIService <<control>> {
+  + generateRecipes(ingredientList: List) : List
 }
 
 Controller -- UI
-Controller -- Entity
+Controller -- PantryDB
+Controller -- AIService
 @enduml

@@ -2,14 +2,14 @@
 title Analysis Class Diagram - UC027 ManageMeal
 
 class "ManageMealUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+  + assignMealToSession() : void
+  + displayResult() : void
 }
-class "ManageMealController" as Controller <<control>> {
-  + Process Request() : void
+class "MealPlanController" as Controller <<control>> {
+  + addOrUpdateMeal(sessionId: String, recipeId: String) : void
 }
-class "ManageMealDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "MealPlanDB" as Entity <<entity>> {
+  + saveMealToSession(sessionId: String, recipeId: String) : Boolean
 }
 
 Controller -- UI

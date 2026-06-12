@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC036 BlockUnblockUser
 
-class "BlockUnblockUserUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "AdminUI" as UI <<boundary>> {
+  + toggleLock() : void
+  + displayStatus() : void
 }
-class "BlockUnblockUserController" as Controller <<control>> {
-  + Process Request() : void
+class "AdminController" as Controller <<control>> {
+  + toggleUserLock(userId: String) : void
 }
-class "BlockUnblockUserDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "UserDB" as Entity <<entity>> {
+  + updateUserStatus(userId: String, newStatus: String) : Boolean
 }
 
 Controller -- UI

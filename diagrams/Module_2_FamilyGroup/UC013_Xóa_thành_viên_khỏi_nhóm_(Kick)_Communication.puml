@@ -24,12 +24,12 @@ skinparam {
 }
 
 allow_mixing
-actor "User" as Actor
-boundary "RemoveMemberUI" as UI
-control "RemoveMemberController" as Controller
-entity "RemoveMemberDB" as Entity
+actor "User (Admin)" as Actor
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Chọn xóa thành viên "
+UI -right---- Controller : " ▶ 2: removeMember() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: deleteMember() "
 @enduml

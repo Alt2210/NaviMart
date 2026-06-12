@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC012 UpdateMemberRole
 
-class "UpdateMemberRoleUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "FamilyUI" as UI <<boundary>> {
+  + selectRole() : void
+  + displayUpdate() : void
 }
-class "UpdateMemberRoleController" as Controller <<control>> {
-  + Process Request() : void
+class "FamilyController" as Controller <<control>> {
+  + updateRole(groupId: String, memberId: String, newRole: String) : void
 }
-class "UpdateMemberRoleDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "FamilyDB" as Entity <<entity>> {
+  + updateMemberRole(groupId: String, memberId: String, newRole: String) : Boolean
 }
 
 Controller -- UI

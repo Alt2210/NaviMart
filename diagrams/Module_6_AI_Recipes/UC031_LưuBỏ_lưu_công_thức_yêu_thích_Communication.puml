@@ -25,11 +25,11 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "BookmarkRecipeUI" as UI
-control "BookmarkRecipeController" as Controller
-entity "BookmarkRecipeDB" as Entity
+boundary "BookmarkUI" as UI
+control "RecipeController" as Controller
+entity "RecipeDB" as Entity
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Click lưu công thức "
+UI -right---- Controller : " ▶ 2: toggleBookmark() \n ◀ 4: trả kết quả "
+Controller -down- Entity : " ▼ 3: updateBookmarkStatus() "
 @enduml

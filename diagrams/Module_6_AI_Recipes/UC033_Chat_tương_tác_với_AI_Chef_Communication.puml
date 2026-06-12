@@ -25,11 +25,11 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "ChatWithAIChefUI" as UI
-control "ChatWithAIChefController" as Controller
-entity "ChatWithAIChefDB" as Entity
+boundary "ChatUI" as UI
+control "ChatController" as Controller
+control "AIService" as AIService
 
-Actor -right--- UI : " ▶ 1: Interact "
-UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
-Controller -down- Entity : " ▼ 3: dbAction() "
+Actor -right--- UI : " ▶ 1: Nhập câu hỏi "
+UI -right---- Controller : " ▶ 2: sendMessage() \n ◀ 4: trả kết quả "
+Controller -right- AIService : " ▶ 3: callAiAPI() "
 @enduml

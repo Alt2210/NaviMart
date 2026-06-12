@@ -1,15 +1,15 @@
 @startuml
 title Analysis Class Diagram - UC022 UpdateFoodInfo
 
-class "UpdateFoodInfoUI" as UI <<boundary>> {
-  + Interact() : void
-  + Return Data() : void
+class "UpdateFoodUI" as UI <<boundary>> {
+  + selectFoodToUpdate() : void
+  + displayUpdate() : void
 }
-class "UpdateFoodInfoController" as Controller <<control>> {
-  + Process Request() : void
+class "PantryController" as Controller <<control>> {
+  + updateFood(foodId: String, updatedData: Data) : void
 }
-class "UpdateFoodInfoDB" as Entity <<entity>> {
-  + Query/Update DB() : void
+class "PantryDB" as Entity <<entity>> {
+  + updateFoodData(foodId: String, updatedData: Data) : Boolean
 }
 
 Controller -- UI
