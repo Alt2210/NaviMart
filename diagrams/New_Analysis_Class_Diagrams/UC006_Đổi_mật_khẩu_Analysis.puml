@@ -7,35 +7,35 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + Nhập Pass cũ & Pass mới() : void
           + Success Msg() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + changePassword(oldP, newP) : void
           + verifyOldPassword() : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + changePassword(oldP, newP) : void
           + verifyOldPassword() : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + changePassword(oldP, newP) : void
           + verifyOldPassword() : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class UserEntity <<Entity>> {
   - user_id: INT
   - email: VARCHAR

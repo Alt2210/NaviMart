@@ -8,7 +8,7 @@ skinparam class {
 }
 
 package "View" {
-    class AdminDashboard <<View>> {
+    class AdminDashboard <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -16,7 +16,7 @@ package "View" {
 }
 
 package "API Client" {
-    class AdminApiClient <<API Client>> {
+    class AdminApiClient <<Boundary>> {
         - baseUrl: String
         + findAllCategories(data: any): Promise<any>
         + createCategory(data: any): Promise<any>
@@ -42,7 +42,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class AdminController <<Controller>> {
+    class AdminController <<Control>> {
         + findAllCategories(@Body dto: any): Response
         + createCategory(@Body dto: any): Response
         + updateCategory(@Body dto: any): Response
@@ -67,7 +67,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class AdminService <<Service>> {
+    class AdminService <<Control>> {
         + findAllCategories(data: any): any
         + createCategory(data: any): any
         + updateCategory(data: any): any

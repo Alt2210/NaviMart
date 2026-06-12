@@ -8,17 +8,17 @@ skinparam class {
 }
 
 package "View" {
-    class RecipeEditor <<View>> {
+    class RecipeEditor <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class RecipeDetail <<View>> {
+    class RecipeDetail <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class RecipeSuggestion <<View>> {
+    class RecipeSuggestion <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -26,7 +26,7 @@ package "View" {
 }
 
 package "API Client" {
-    class RecipesApiClient <<API Client>> {
+    class RecipesApiClient <<Boundary>> {
         - baseUrl: String
         + findAll(data: any): Promise<any>
         + getSuggestions(data: any): Promise<any>
@@ -43,7 +43,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class RecipesController <<Controller>> {
+    class RecipesController <<Control>> {
         + findAll(@Body dto: any): Response
         + getSuggestions(@Body dto: any): Response
         + findFavorites(@Body dto: any): Response
@@ -59,7 +59,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class RecipesService <<Service>> {
+    class RecipesService <<Control>> {
         + findAll(data: any): any
         + getSuggestions(data: any): any
         + findFavorites(data: any): any

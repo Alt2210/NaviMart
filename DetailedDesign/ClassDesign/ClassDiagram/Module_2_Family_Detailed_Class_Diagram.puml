@@ -8,22 +8,22 @@ skinparam class {
 }
 
 package "View" {
-    class FamilySharing <<View>> {
+    class FamilySharing <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Profile <<View>> {
+    class Profile <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class EditProfile <<View>> {
+    class EditProfile <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Settings <<View>> {
+    class Settings <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -31,7 +31,7 @@ package "View" {
 }
 
 package "API Client" {
-    class FamilyApiClient <<API Client>> {
+    class FamilyApiClient <<Boundary>> {
         - baseUrl: String
         + getCurrentFamily(data: any): Promise<any>
         + create(data: any): Promise<any>
@@ -43,7 +43,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class FamilyController <<Controller>> {
+    class FamilyController <<Control>> {
         + getCurrentFamily(@Body dto: any): Response
         + create(@Body dto: any): Response
         + createInvite(@Body dto: any): Response
@@ -54,7 +54,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class FamilyService <<Service>> {
+    class FamilyService <<Control>> {
         + getCurrentFamily(data: any): any
         + create(data: any): any
         + createInvite(data: any): any

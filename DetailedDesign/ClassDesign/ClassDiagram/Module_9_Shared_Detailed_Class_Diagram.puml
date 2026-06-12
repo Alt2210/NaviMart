@@ -8,17 +8,17 @@ skinparam class {
 }
 
 package "View" {
-    class Home <<View>> {
+    class Home <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class AIChef <<View>> {
+    class AIChef <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Notifications <<View>> {
+    class Notifications <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -26,25 +26,25 @@ package "View" {
 }
 
 package "Context" {
-    class DialogContext <<Context>> {
+    class DialogContext <<Control>> {
         - state: any
         + Provider(props: any): JSX.Element
     }
 }
 
 package "API Client" {
-    class SharedApiClient <<API Client>> {
+    class SharedApiClient <<Boundary>> {
         - baseUrl: String
     }
 }
 
 package "Controller" {
-    class SharedController <<Controller>> {
+    class SharedController <<Control>> {
     }
 }
 
 package "Service" {
-    class SharedService <<Service>> {
+    class SharedService <<Control>> {
     }
 }
 

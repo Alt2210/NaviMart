@@ -1,92 +1,205 @@
-# RESTful API Specification - Recipes
+# Đặc tả Giao diện Hệ thống (API Specification) - Recipes
 
-Tài liệu mô tả chi tiết các endpoints được tự động đồng bộ từ mã nguồn backend.
-
-## 1. findAll
-- **URL**: `/api/recipes`
-- **Method**: `GET`
-- **Description**: Recipe search results.
-- **Source File**: `recipes.controller.ts`
+Tài liệu này mô tả chi tiết giao diện giao tiếp (API) cho phân hệ Công thức nấu ăn (Recipes).
 
 ---
 
-## 2. getSuggestions
+## 1. Tìm kiếm công thức (Find All)
+- **Method**: `GET`
+- **URL**: `/api/recipes`
+- **Description**: Lấy danh sách công thức nấu ăn, hỗ trợ tìm kiếm và phân trang.
+- **Yêu cầu quyền**: Người dùng đã đăng nhập (User).
+
+**Request Parameters (Query)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `search` | String | Không | Từ khóa tên món ăn |
+| `page` | Integer | Không | Trang hiện tại (Mặc định: 1) |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `{ "data": [{ "id": 1, "name": "Sườn xào chua ngọt" }], "total": 1 }` |
+
+---
+
+## 2. Gợi ý công thức (Get Suggestions)
+- **Method**: `GET`
 - **URL**: `/api/recipes/suggestions`
-- **Method**: `GET`
-- **Description**: Recipe suggestions ranked by pantry ingredient match.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Thuật toán gợi ý các món ăn dựa trên nguyên liệu hiện đang có sẵn trong Tủ lạnh (Pantry) của gia đình.
+- **Yêu cầu quyền**: Thành viên gia đình (Family Member).
+
+**Request Parameters**
+Không yêu cầu tham số.
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `[{ "id": 1, "name": "Trứng rán", "match_percentage": 100 }, { "id": 2, "name": "Thịt kho", "match_percentage": 80 }]` |
 
 ---
 
-## 3. findFavorites
+## 3. Danh sách yêu thích (Find Favorites)
+- **Method**: `GET`
 - **URL**: `/api/recipes/favorites`
-- **Method**: `GET`
-- **Description**: Current user favorite recipes.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Lấy danh sách các món ăn người dùng đã lưu vào mục yêu thích.
+- **Yêu cầu quyền**: Người dùng đã đăng nhập (User).
+
+**Request Parameters**
+Không yêu cầu tham số.
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `[{ "recipe_id": 5, "name": "Cơm rang" }]` |
 
 ---
 
-## 4. findOne
+## 4. Xem chi tiết công thức (Find One)
+- **Method**: `GET`
 - **URL**: `/api/recipes/:recipeId`
-- **Method**: `GET`
-- **Description**: Recipe detail.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Xem toàn bộ hướng dẫn nấu ăn và danh sách nguyên liệu của một món.
+- **Yêu cầu quyền**: Người dùng đã đăng nhập (User).
+
+**Request Parameters (Path)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `recipeId` | Integer | Có | ID của công thức |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `{ "id": 5, "name": "Cơm rang", "instructions": "...", "ingredients": [...] }` |
 
 ---
 
-## 5. addFavorite
-- **URL**: `/api/recipes/:recipeId/favorite`
+## 5. Thêm vào yêu thích (Add Favorite)
 - **Method**: `POST`
-- **Description**: Recipe added to favorites.
-- **Source File**: `recipes.controller.ts`
-
----
-
-## 6. removeFavorite
 - **URL**: `/api/recipes/:recipeId/favorite`
-- **Method**: `DELETE`
-- **Description**: Recipe removed from favorites.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Thêm món ăn vào danh sách yêu thích.
+- **Yêu cầu quyền**: Người dùng đã đăng nhập (User).
+
+**Request Parameters (Path)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `recipeId` | Integer | Có | ID của công thức |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `{ "message": "Added to favorites" }` |
 
 ---
 
-## 7. getMissingIngredients
+## 6. Bỏ yêu thích (Remove Favorite)
+- **Method**: `DELETE`
+- **URL**: `/api/recipes/:recipeId/favorite`
+- **Description**: Xóa món ăn khỏi danh sách yêu thích.
+- **Yêu cầu quyền**: Người dùng đã đăng nhập (User).
+
+**Request Parameters (Path)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `recipeId` | Integer | Có | ID của công thức |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `{ "message": "Removed from favorites" }` |
+
+---
+
+## 7. Tính toán nguyên liệu thiếu (Get Missing Ingredients)
+- **Method**: `GET`
 - **URL**: `/api/recipes/:recipeId/missing-ingredients`
-- **Method**: `GET`
-- **Description**: Missing ingredients compared with pantry.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Tính toán nguyên liệu cần mua để nấu món này (so với tủ lạnh hiện tại).
+- **Yêu cầu quyền**: Thành viên gia đình (Family Member).
+
+**Request Parameters (Path)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `recipeId` | Integer | Có | ID của công thức |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `[{ "food_id": 3, "name": "Cà chua", "needed": 2, "unit": "quả" }]` |
 
 ---
 
-## 8. generateShoppingList
+## 8. Tạo danh sách mua sắm (Generate Shopping List)
+- **Method**: `POST`
 - **URL**: `/api/recipes/:recipeId/generate-shopping-list`
-- **Method**: `POST`
-- **Description**: Shopping list generated from missing recipe ingredients.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Chuyển đổi các nguyên liệu thiếu thành một phiếu đi chợ (Shopping List).
+- **Yêu cầu quyền**: Thành viên gia đình (Family Member).
+
+**Request Parameters (Path)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `recipeId` | Integer | Có | ID của công thức |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **201 Created** | Thành công | `{ "list_id": 5, "items_added": 3 }` |
 
 ---
 
-## 9. create
+## 9. Đóng góp công thức mới (Create)
+- **Method**: `POST`
 - **URL**: `/api/recipes`
-- **Method**: `POST`
-- **Description**: Recipe created.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Người dùng tự thêm công thức nấu ăn mới vào hệ thống (Chờ Admin duyệt).
+- **Yêu cầu quyền**: Người dùng đã đăng nhập (User).
+
+**Request Body (JSON)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `name` | String | Có | Tên món ăn |
+| `instructions`| String | Có | Cách làm chi tiết |
+| `ingredients` | Array | Có | Danh sách `food_id`, `quantity`, `unit` |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **201 Created** | Thành công | `{ "id": 15, "status": "pending_approval" }` |
 
 ---
 
-## 10. update
-- **URL**: `/api/recipes/:recipeId`
+## 10. Chỉnh sửa công thức (Update)
 - **Method**: `PATCH`
-- **Description**: Recipe updated.
-- **Source File**: `recipes.controller.ts`
-
----
-
-## 11. remove
 - **URL**: `/api/recipes/:recipeId`
-- **Method**: `DELETE`
-- **Description**: Recipe archived.
-- **Source File**: `recipes.controller.ts`
+- **Description**: Sửa công thức cá nhân đã đóng góp.
+- **Yêu cầu quyền**: Tác giả (Tạo ra công thức đó) hoặc Admin.
+
+**Request Parameters (Path)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `recipeId` | Integer | Có | ID của công thức |
+
+**Request Body (JSON)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `instructions`| String | Không | Hướng dẫn mới |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `{ "message": "Recipe updated" }` |
 
 ---
 
+## 11. Xóa công thức (Remove)
+- **Method**: `DELETE`
+- **URL**: `/api/recipes/:recipeId`
+- **Description**: Xóa bỏ công thức khỏi hệ thống.
+- **Yêu cầu quyền**: Tác giả hoặc Admin.
+
+**Request Parameters (Path)**
+| Tham số | Kiểu dữ liệu | Bắt buộc | Mô tả |
+| :--- | :--- | :---: | :--- |
+| `recipeId` | Integer | Có | ID của công thức |
+
+**Responses**
+| HTTP Status | Trường hợp | Cấu trúc dữ liệu trả về (JSON) |
+| :--- | :--- | :--- |
+| **200 OK** | Thành công | `{ "message": "Recipe deleted" }` |

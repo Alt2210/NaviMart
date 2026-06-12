@@ -8,27 +8,27 @@ skinparam class {
 }
 
 package "View" {
-    class ForgotPassword <<View>> {
+    class ForgotPassword <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Login <<View>> {
+    class Login <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Onboarding <<View>> {
+    class Onboarding <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Register <<View>> {
+    class Register <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Splash <<View>> {
+    class Splash <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -36,14 +36,14 @@ package "View" {
 }
 
 package "Context" {
-    class AuthContext <<Context>> {
+    class AuthContext <<Control>> {
         - state: any
         + Provider(props: any): JSX.Element
     }
 }
 
 package "API Client" {
-    class AuthApiClient <<API Client>> {
+    class AuthApiClient <<Boundary>> {
         - baseUrl: String
         + register(data: any): Promise<any>
         + login(data: any): Promise<any>
@@ -57,7 +57,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class AuthController <<Controller>> {
+    class AuthController <<Control>> {
         + register(@Body dto: any): Response
         + login(@Body dto: any): Response
         + refresh(@Body dto: any): Response
@@ -70,7 +70,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class AuthService <<Service>> {
+    class AuthService <<Control>> {
         + register(data: any): any
         + login(data: any): any
         + refresh(data: any): any

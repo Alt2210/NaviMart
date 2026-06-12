@@ -7,41 +7,41 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + clickAddMissing() : void
           + displaySuccess() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + findMissingIngredients(recipeIngredients: List) : void
     }
-    class ShoppingApiClient <<API Client>> {
+    class ShoppingApiClient <<Boundary>> {
         + addItemsToList(missingIngredients: List) : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + findMissingIngredients(recipeIngredients: List) : void
     }
-    class ShoppingController <<Controller>> {
+    class ShoppingController <<Control>> {
         + addItemsToList(missingIngredients: List) : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + findMissingIngredients(recipeIngredients: List) : void
     }
-    class ShoppingService <<Service>> {
+    class ShoppingService <<Control>> {
         + addItemsToList(missingIngredients: List) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class PantryEntity <<Entity>> {
         + checkAvailable(recipeIngredients: List) : List
     }

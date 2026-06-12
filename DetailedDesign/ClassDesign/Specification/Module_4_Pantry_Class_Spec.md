@@ -4,67 +4,174 @@ Tài liệu mô tả chi tiết các phương thức và thuộc tính của cá
 
 ## 1. Views
 ### 1.1. Lớp `PantryDashboard`
-- **Stereotype**: `<<View>>`
-- **Mô tả**: Component React quản lý giao diện người dùng hiển thị.
-- **Phương thức**:
-  - `+ render(): JSX.Element`: Render giao diện HTML/CSS.
+- **Stereotype**: `<<Boundary>>`
+- **Mô tả**: Component React quản lý giao diện Dashboard của kho thực phẩm.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | render | JSX.Element | Render giao diện HTML/CSS |
+
+**Parameter:**
+Không
+
+**Exception:**
+Không
+
+**Method:**
+- Hiển thị lượng thực phẩm trong kho.
+
+**State:**
+Không
 
 ### 1.2. Lớp `Scanner`
-- **Stereotype**: `<<View>>`
-- **Mô tả**: Component React quản lý giao diện người dùng hiển thị.
-- **Phương thức**:
-  - `+ render(): JSX.Element`: Render giao diện HTML/CSS.
+- **Stereotype**: `<<Boundary>>`
+- **Mô tả**: Component React quản lý giao diện quét mã vạch sản phẩm.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | render | JSX.Element | Render giao diện HTML/CSS |
+
+**Parameter:**
+Không
+
+**Exception:**
+Không
+
+**Method:**
+- Mở camera và quét barcode để thêm thực phẩm.
+
+**State:**
+Không
 
 ## 2. API Clients
 ### 2.1. Lớp `PantryApiClient`
-- **Stereotype**: `<<API Client>>`
+- **Stereotype**: `<<Boundary>>`
 - **Mô tả**: Lớp gọi API bằng Axios để tương tác với Backend.
-- **Thuộc tính**:
-  - `- baseUrl: String`: URL gốc của backend.
-- **Phương thức**:
-  - `+ findAll(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/pantry`.
-  - `+ create(data: any): Promise<any>`: Gửi HTTP `POST` request lên `/api/pantry`.
-  - `+ findOne(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/pantry/:itemId`.
-  - `+ update(data: any): Promise<any>`: Gửi HTTP `PATCH` request lên `/api/pantry/:itemId`.
-  - `+ remove(data: any): Promise<any>`: Gửi HTTP `DELETE` request lên `/api/pantry/:itemId`.
-  - `+ consume(data: any): Promise<any>`: Gửi HTTP `POST` request lên `/api/pantry/:itemId/consume`.
-  - `+ markWasted(data: any): Promise<any>`: Gửi HTTP `POST` request lên `/api/pantry/:itemId/waste`.
+
+**Attribute**
+| # | Tên | Kiểu dữ liệu | Giá trị mặc định | Mô tả |
+|---|---|---|---|---|
+| 1 | baseUrl | String | `""` | URL gốc của backend |
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | findAll | Promise\<any\> | Lấy danh sách thực phẩm trong kho |
+| 2 | create | Promise\<any\> | Thêm thực phẩm mới vào kho |
+| 3 | findOne | Promise\<any\> | Xem chi tiết thực phẩm |
+| 4 | update | Promise\<any\> | Cập nhật số lượng/thông tin |
+| 5 | remove | Promise\<any\> | Xóa thực phẩm khỏi kho |
+| 6 | consume | Promise\<any\> | Ghi nhận đã tiêu thụ thực phẩm |
+| 7 | markWasted | Promise\<any\> | Ghi nhận thực phẩm bị lãng phí/hỏng |
+
+**Parameter:**
+- `data` – Đối tượng chứa payload request
+
+**Exception:**
+- Ngoại lệ kết nối mạng
+
+**Method:**
+- Gửi các HTTP request lên API `/api/pantry`.
+
+**State:**
+Không
 
 ## 3. Controllers
 ### 3.1. Lớp `PantryController`
-- **Stereotype**: `<<Controller>>`
-- **Mô tả**: NestJS Controller nhận request từ Frontend.
-- **Phương thức**:
-  - `+ findAll(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ create(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ findOne(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ update(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ remove(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ consume(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ markWasted(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
+- **Stereotype**: `<<Control>>`
+- **Mô tả**: NestJS Controller nhận request từ Frontend liên quan đến Pantry.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | findAll | Response | Nhận request lấy kho |
+| 2 | create | Response | Nhận request thêm đồ |
+| 3 | findOne | Response | Nhận request lấy chi tiết đồ |
+| 4 | update | Response | Nhận request sửa đồ |
+| 5 | remove | Response | Nhận request xóa đồ |
+| 6 | consume | Response | Nhận request tiêu thụ |
+| 7 | markWasted | Response | Nhận request đánh dấu hỏng |
+
+**Parameter:**
+- `dto` – Tham số từ request
+
+**Exception:**
+- `NotFoundException` – Nếu item không tồn tại
+
+**Method:**
+- Gọi đến `PantryService` tương ứng.
+
+**State:**
+Không
 
 ## 4. Services
 ### 4.1. Lớp `PantryService`
-- **Stereotype**: `<<Service>>`
-- **Mô tả**: Lớp chứa Business Logic xử lý nghiệp vụ chính.
-- **Phương thức**:
-  - `+ findAll(data: any): any`: Xử lý logic và tương tác database.
-  - `+ create(data: any): any`: Xử lý logic và tương tác database.
-  - `+ findOne(data: any): any`: Xử lý logic và tương tác database.
-  - `+ update(data: any): any`: Xử lý logic và tương tác database.
-  - `+ remove(data: any): any`: Xử lý logic và tương tác database.
-  - `+ consume(data: any): any`: Xử lý logic và tương tác database.
-  - `+ markWasted(data: any): any`: Xử lý logic và tương tác database.
+- **Stereotype**: `<<Control>>`
+- **Mô tả**: Lớp chứa Business Logic quản lý thực phẩm.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | findAll | any | Logic lấy danh sách kho |
+| 2 | create | any | Khởi tạo mặt hàng mới |
+| 3 | findOne | any | Tìm kiếm mặt hàng |
+| 4 | update | any | Sửa thông tin hạn sử dụng, số lượng... |
+| 5 | remove | any | Xóa khỏi database |
+| 6 | consume | any | Trừ đi số lượng khi dùng |
+| 7 | markWasted | any | Chuyển trạng thái sang hỏng/lãng phí |
+
+**Parameter:**
+- `data` – Dữ liệu truyền từ Controller
+
+**Exception:**
+- Lỗi nghiệp vụ (hết số lượng để tiêu thụ...)
+
+**Method:**
+- Tương tác CRUD với `InventoryEntity`.
+
+**State:**
+Không
 
 ## 5. Entities
 ### 5.1. Lớp `InventoryEntity`
 - **Stereotype**: `<<Entity>>`
 - **Mô tả**: Đối tượng dữ liệu ánh xạ từ Database bảng `inventory`.
-- **Thuộc tính**:
-  - `- inventory_id: INT`
-  - `- group_id: INT`
-  - `- food_id: INT`
-  - `- quantity: DECIMAL`
-  - `- expiry_date: DATE`
-  - `- location: VARCHAR`
 
+**Attribute**
+| # | Tên | Kiểu dữ liệu | Giá trị mặc định | Mô tả |
+|---|---|---|---|---|
+| 1 | inventory_id | INT | `null` | Khóa chính |
+| 2 | group_id | INT | `null` | Nhóm sở hữu |
+| 3 | food_id | INT | `null` | ID thực phẩm |
+| 4 | quantity | DECIMAL | `0` | Số lượng |
+| 5 | expiry_date | DATE | `null` | Ngày hết hạn |
+| 6 | location | VARCHAR | `""` | Vị trí lưu trữ (tủ lạnh, kệ bếp...) |
+
+**Operation**
+Không
+
+**Parameter:**
+Không
+
+**Exception:**
+Không
+
+**Method:**
+Không
+
+**State:**
+Không

@@ -4,37 +4,108 @@ Tài liệu mô tả chi tiết các phương thức và thuộc tính của cá
 
 ## 1. Views
 ### 1.1. Lớp `StatsDashboard`
-- **Stereotype**: `<<View>>`
-- **Mô tả**: Component React quản lý giao diện người dùng hiển thị.
-- **Phương thức**:
-  - `+ render(): JSX.Element`: Render giao diện HTML/CSS.
+- **Stereotype**: `<<Boundary>>`
+- **Mô tả**: Component React hiển thị bảng điều khiển báo cáo thống kê.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | render | JSX.Element | Render giao diện HTML/CSS |
+
+**Parameter:**
+Không
+
+**Exception:**
+Không
+
+**Method:**
+- Hiển thị các biểu đồ (charts) phân tích số liệu.
+
+**State:**
+Không
 
 ## 2. API Clients
 ### 2.1. Lớp `ReportsApiClient`
-- **Stereotype**: `<<API Client>>`
+- **Stereotype**: `<<Boundary>>`
 - **Mô tả**: Lớp gọi API bằng Axios để tương tác với Backend.
-- **Thuộc tính**:
-  - `- baseUrl: String`: URL gốc của backend.
-- **Phương thức**:
-  - `+ getDashboard(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/reports/dashboard`.
-  - `+ getConsumptionTrends(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/reports/consumption-trends`.
-  - `+ getWasteReport(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/reports/waste`.
+
+**Attribute**
+| # | Tên | Kiểu dữ liệu | Giá trị mặc định | Mô tả |
+|---|---|---|---|---|
+| 1 | baseUrl | String | `""` | URL gốc của backend |
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | getDashboard | Promise\<any\> | Lấy dữ liệu tổng hợp chung |
+| 2 | getConsumptionTrends | Promise\<any\> | Lấy báo cáo xu hướng tiêu thụ |
+| 3 | getWasteReport | Promise\<any\> | Lấy báo cáo thực phẩm lãng phí |
+
+**Parameter:**
+- `data` – Các bộ lọc tham số (ngày tháng, loại...).
+
+**Exception:**
+- Lỗi kết nối HTTP.
+
+**Method:**
+- Gọi đến `GET /api/reports/...` để tải số liệu JSON.
+
+**State:**
+Không
 
 ## 3. Controllers
 ### 3.1. Lớp `ReportsController`
-- **Stereotype**: `<<Controller>>`
-- **Mô tả**: NestJS Controller nhận request từ Frontend.
-- **Phương thức**:
-  - `+ getDashboard(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ getConsumptionTrends(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ getWasteReport(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
+- **Stereotype**: `<<Control>>`
+- **Mô tả**: NestJS Controller nhận request báo cáo.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | getDashboard | Response | Gọi Service tổng hợp chung |
+| 2 | getConsumptionTrends | Response | Gọi Service xu hướng tiêu dùng |
+| 3 | getWasteReport | Response | Gọi Service báo cáo hao phí |
+
+**Parameter:**
+- `dto` – Tham số thời gian, nhóm.
+
+**Exception:**
+- `BadRequestException` – Dữ liệu tham số sai.
+
+**Method:**
+- Validate query params rồi chuyển tiếp cho Service.
+
+**State:**
+Không
 
 ## 4. Services
 ### 4.1. Lớp `ReportsService`
-- **Stereotype**: `<<Service>>`
-- **Mô tả**: Lớp chứa Business Logic xử lý nghiệp vụ chính.
-- **Phương thức**:
-  - `+ getDashboard(data: any): any`: Xử lý logic và tương tác database.
-  - `+ getConsumptionTrends(data: any): any`: Xử lý logic và tương tác database.
-  - `+ getWasteReport(data: any): any`: Xử lý logic và tương tác database.
+- **Stereotype**: `<<Control>>`
+- **Mô tả**: Lớp chứa Business Logic thống kê dữ liệu.
 
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | getDashboard | any | Tính toán chỉ số tổng quát |
+| 2 | getConsumptionTrends | any | Tính toán xu hướng dùng |
+| 3 | getWasteReport | any | Tính lượng thực phẩm bỏ đi |
+
+**Parameter:**
+- `data` – Dữ liệu lọc từ Controller.
+
+**Exception:**
+- Logic exception.
+
+**Method:**
+- Chạy các câu query phức tạp với SQL Aggregate Functions (`COUNT`, `SUM`, `GROUP BY`) vào các entity liên quan (Inventory, Meals, Shopping Lists).
+
+**State:**
+Không

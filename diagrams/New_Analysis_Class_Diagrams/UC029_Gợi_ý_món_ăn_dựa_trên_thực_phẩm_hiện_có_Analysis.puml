@@ -7,41 +7,41 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + requestSuggestion() : void
           + displayRecipeList() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + getSuggestions() : void
     }
-    class AIApiClient <<API Client>> {
+    class AIApiClient <<Boundary>> {
         + generateRecipes(ingredientList: List) : List
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + getSuggestions() : void
     }
-    class AIController <<Controller>> {
+    class AIController <<Control>> {
         + generateRecipes(ingredientList: List) : List
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + getSuggestions() : void
     }
-    class AIService <<Service>> {
+    class AIService <<Control>> {
         + generateRecipes(ingredientList: List) : List
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class PantryEntity <<Entity>> {
         + getAvailableIngredients(userId: String) : List
     }

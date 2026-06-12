@@ -8,7 +8,7 @@ skinparam class {
 }
 
 package "View" {
-    class MealPlanner <<View>> {
+    class MealPlanner <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -16,7 +16,7 @@ package "View" {
 }
 
 package "API Client" {
-    class MealsApiClient <<API Client>> {
+    class MealsApiClient <<Boundary>> {
         - baseUrl: String
         + findAll(data: any): Promise<any>
         + create(data: any): Promise<any>
@@ -29,7 +29,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class MealsController <<Controller>> {
+    class MealsController <<Control>> {
         + findAll(@Body dto: any): Response
         + create(@Body dto: any): Response
         + findOne(@Body dto: any): Response
@@ -41,7 +41,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class MealsService <<Service>> {
+    class MealsService <<Control>> {
         + findAll(data: any): any
         + create(data: any): any
         + findOne(data: any): any

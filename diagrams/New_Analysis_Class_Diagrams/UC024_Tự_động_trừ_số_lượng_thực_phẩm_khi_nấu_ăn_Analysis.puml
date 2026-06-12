@@ -7,41 +7,41 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + confirmMealCooked() : void
           + displayUpdate() : void
     }
 }
 
-package "API Client" {
-    class MealApiClient <<API Client>> {
+package "Boundary" {
+    class MealApiClient <<Boundary>> {
         + confirmMealCooked(mealId: String) : void
     }
-    class PantryApiClient <<API Client>> {
+    class PantryApiClient <<Boundary>> {
         + deductIngredients(ingredients: List) : void
     }
 }
 
-package "Backend Controller" {
-    class MealController <<Controller>> {
+package "Control" {
+    class MealController <<Control>> {
         + confirmMealCooked(mealId: String) : void
     }
-    class PantryController <<Controller>> {
+    class PantryController <<Control>> {
         + deductIngredients(ingredients: List) : void
     }
 }
 
-package "Backend Service" {
-    class MealService <<Service>> {
+package "Control" {
+    class MealService <<Control>> {
         + confirmMealCooked(mealId: String) : void
     }
-    class PantryService <<Service>> {
+    class PantryService <<Control>> {
         + deductIngredients(ingredients: List) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class PantryEntity <<Entity>> {
         + decreaseFoodQuantity(ingredients: List) : Boolean
     }

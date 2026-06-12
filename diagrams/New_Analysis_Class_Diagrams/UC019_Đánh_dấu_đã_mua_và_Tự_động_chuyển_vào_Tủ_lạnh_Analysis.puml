@@ -7,41 +7,41 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + checkItemAsBought() : void
           + displayUpdate() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + markItemAsBought(itemId: String) : void
     }
-    class PantryApiClient <<API Client>> {
+    class PantryApiClient <<Boundary>> {
         + transferItemToPantry(itemDetails: Data) : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + markItemAsBought(itemId: String) : void
     }
-    class PantryController <<Controller>> {
+    class PantryController <<Control>> {
         + transferItemToPantry(itemDetails: Data) : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + markItemAsBought(itemId: String) : void
     }
-    class PantryService <<Service>> {
+    class PantryService <<Control>> {
         + transferItemToPantry(itemDetails: Data) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class ShoppingEntity <<Entity>> {
         + updateItemStatus(itemId: String, status: String) : Boolean
     }

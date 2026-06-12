@@ -7,49 +7,49 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class RegisterView <<View>> {
+package "Boundary" {
+    class RegisterView <<Boundary>> {
         + Chọn Đăng ký() : void
           + Điền & Gửi form() : void
           + Success (Chuyển Đăng nhập) : void
     }
-    class OTPView <<View>> {
+    class OTPView <<Boundary>> {
         + Require OTP() : void
           + Nhập OTP() : void
     }
 }
 
-package "API Client" {
-    class AuthApiClient <<API Client>> {
+package "Boundary" {
+    class AuthApiClient <<Boundary>> {
         + submit(name, email_phone, password) : void
           + verifyOTP() : void
     }
-    class EmailApiClient <<API Client>> {
+    class EmailApiClient <<Boundary>> {
         + sendOTP() : void
     }
 }
 
-package "Backend Controller" {
-    class AuthController <<Controller>> {
+package "Control" {
+    class AuthController <<Control>> {
         + submit(name, email_phone, password) : void
           + verifyOTP() : void
     }
-    class EmailController <<Controller>> {
+    class EmailController <<Control>> {
         + sendOTP() : void
     }
 }
 
-package "Backend Service" {
-    class AuthService <<Service>> {
+package "Control" {
+    class AuthService <<Control>> {
         + submit(name, email_phone, password) : void
           + verifyOTP() : void
     }
-    class EmailService <<Service>> {
+    class EmailService <<Control>> {
         + sendOTP() : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class UserEntity <<Entity>> {
   - user_id: INT
   - email: VARCHAR

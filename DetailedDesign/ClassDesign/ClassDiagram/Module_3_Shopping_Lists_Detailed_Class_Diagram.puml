@@ -8,12 +8,12 @@ skinparam class {
 }
 
 package "View" {
-    class MyLists <<View>> {
+    class MyLists <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class ListDetail <<View>> {
+    class ListDetail <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -21,7 +21,7 @@ package "View" {
 }
 
 package "API Client" {
-    class ShoppingListsApiClient <<API Client>> {
+    class ShoppingListsApiClient <<Boundary>> {
         - baseUrl: String
         + findAll(data: any): Promise<any>
         + create(data: any): Promise<any>
@@ -36,7 +36,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class ShoppingListsController <<Controller>> {
+    class ShoppingListsController <<Control>> {
         + findAll(@Body dto: any): Response
         + create(@Body dto: any): Response
         + findOne(@Body dto: any): Response
@@ -50,7 +50,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class ShoppingListsService <<Service>> {
+    class ShoppingListsService <<Control>> {
         + findAll(data: any): any
         + create(data: any): any
         + findOne(data: any): any

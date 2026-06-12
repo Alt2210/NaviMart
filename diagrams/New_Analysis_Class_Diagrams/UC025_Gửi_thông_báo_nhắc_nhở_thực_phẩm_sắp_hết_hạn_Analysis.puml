@@ -7,34 +7,34 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + triggerCheckExpiryDaily() : void
     }
-    class NotifApiClient <<API Client>> {
+    class NotifApiClient <<Boundary>> {
         + sendExpiryWarning(userId: String, foods: List) : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + triggerCheckExpiryDaily() : void
     }
-    class NotifController <<Controller>> {
+    class NotifController <<Control>> {
         + sendExpiryWarning(userId: String, foods: List) : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + triggerCheckExpiryDaily() : void
     }
-    class NotifService <<Service>> {
+    class NotifService <<Control>> {
         + sendExpiryWarning(userId: String, foods: List) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class Entity <<Entity>> {
         + queryExpiringFoods(daysLimit: Number) : List
     }

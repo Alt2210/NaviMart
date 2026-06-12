@@ -7,50 +7,50 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + Chọn Login with Google/FB() : void
           + Success & Redirect() : void
     }
 }
 
-package "API Client" {
-    class ProviderApiClient <<API Client>> {
+package "Boundary" {
+    class ProviderApiClient <<Boundary>> {
         + Request Auth URL() : void
           + Đồng ý cấp quyền() : void
     }
-    class ApiClient <<API Client>> {
+    class ApiClient <<Boundary>> {
         + Callback with Profile Data (Email, Name) : void
     }
-    class OAuthProviderApiClient <<API Client>> {
+    class OAuthProviderApiClient <<Boundary>> {
     }
 }
 
-package "Backend Controller" {
-    class ProviderController <<Controller>> {
+package "Control" {
+    class ProviderController <<Control>> {
         + Request Auth URL() : void
           + Đồng ý cấp quyền() : void
     }
-    class Controller <<Controller>> {
+    class Controller <<Control>> {
         + Callback with Profile Data (Email, Name) : void
     }
-    class OAuthProviderController <<Controller>> {
+    class OAuthProviderController <<Control>> {
     }
 }
 
-package "Backend Service" {
-    class ProviderService <<Service>> {
+package "Control" {
+    class ProviderService <<Control>> {
         + Request Auth URL() : void
           + Đồng ý cấp quyền() : void
     }
-    class Service <<Service>> {
+    class Service <<Control>> {
         + Callback with Profile Data (Email, Name) : void
     }
-    class OAuthProviderService <<Service>> {
+    class OAuthProviderService <<Control>> {
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class UserEntity <<Entity>> {
   - user_id: INT
   - email: VARCHAR

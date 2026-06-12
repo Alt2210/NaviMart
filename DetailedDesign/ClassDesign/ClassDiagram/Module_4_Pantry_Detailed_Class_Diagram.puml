@@ -8,12 +8,12 @@ skinparam class {
 }
 
 package "View" {
-    class PantryDashboard <<View>> {
+    class PantryDashboard <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
     }
-    class Scanner <<View>> {
+    class Scanner <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -21,7 +21,7 @@ package "View" {
 }
 
 package "API Client" {
-    class PantryApiClient <<API Client>> {
+    class PantryApiClient <<Boundary>> {
         - baseUrl: String
         + findAll(data: any): Promise<any>
         + create(data: any): Promise<any>
@@ -34,7 +34,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class PantryController <<Controller>> {
+    class PantryController <<Control>> {
         + findAll(@Body dto: any): Response
         + create(@Body dto: any): Response
         + findOne(@Body dto: any): Response
@@ -46,7 +46,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class PantryService <<Service>> {
+    class PantryService <<Control>> {
         + findAll(data: any): any
         + create(data: any): any
         + findOne(data: any): any

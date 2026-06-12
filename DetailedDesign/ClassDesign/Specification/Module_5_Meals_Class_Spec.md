@@ -4,61 +4,150 @@ Tài liệu mô tả chi tiết các phương thức và thuộc tính của cá
 
 ## 1. Views
 ### 1.1. Lớp `MealPlanner`
-- **Stereotype**: `<<View>>`
-- **Mô tả**: Component React quản lý giao diện người dùng hiển thị.
-- **Phương thức**:
-  - `+ render(): JSX.Element`: Render giao diện HTML/CSS.
+- **Stereotype**: `<<Boundary>>`
+- **Mô tả**: Component React quản lý giao diện lập kế hoạch bữa ăn.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | render | JSX.Element | Render giao diện HTML/CSS |
+
+**Parameter:**
+Không
+
+**Exception:**
+Không
+
+**Method:**
+- Hiển thị lịch ăn uống của gia đình.
+
+**State:**
+Không
 
 ## 2. API Clients
 ### 2.1. Lớp `MealsApiClient`
-- **Stereotype**: `<<API Client>>`
+- **Stereotype**: `<<Boundary>>`
 - **Mô tả**: Lớp gọi API bằng Axios để tương tác với Backend.
-- **Thuộc tính**:
-  - `- baseUrl: String`: URL gốc của backend.
-- **Phương thức**:
-  - `+ findAll(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/meals`.
-  - `+ create(data: any): Promise<any>`: Gửi HTTP `POST` request lên `/api/meals`.
-  - `+ findOne(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/meals/:mealId`.
-  - `+ getMissingIngredients(data: any): Promise<any>`: Gửi HTTP `GET` request lên `/api/meals/:mealId/missing-ingredients`.
-  - `+ generateShoppingList(data: any): Promise<any>`: Gửi HTTP `POST` request lên `/api/meals/:mealId/generate-shopping-list`.
-  - `+ update(data: any): Promise<any>`: Gửi HTTP `PATCH` request lên `/api/meals/:mealId`.
-  - `+ remove(data: any): Promise<any>`: Gửi HTTP `DELETE` request lên `/api/meals/:mealId`.
+
+**Attribute**
+| # | Tên | Kiểu dữ liệu | Giá trị mặc định | Mô tả |
+|---|---|---|---|---|
+| 1 | baseUrl | String | `""` | URL gốc của backend |
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | findAll | Promise\<any\> | Lấy danh sách kế hoạch bữa ăn |
+| 2 | create | Promise\<any\> | Thêm bữa ăn vào kế hoạch |
+| 3 | findOne | Promise\<any\> | Xem chi tiết kế hoạch |
+| 4 | getMissingIngredients | Promise\<any\> | Kiểm tra nguyên liệu còn thiếu |
+| 5 | generateShoppingList | Promise\<any\> | Tự động tạo danh sách mua sắm |
+| 6 | update | Promise\<any\> | Sửa kế hoạch bữa ăn |
+| 7 | remove | Promise\<any\> | Xóa kế hoạch |
+
+**Parameter:**
+- `data` – Đối tượng chứa tham số cho từng request
+
+**Exception:**
+- Lỗi kết nối API.
+
+**Method:**
+- Gọi đến đường dẫn `/api/meals`.
+
+**State:**
+Không
 
 ## 3. Controllers
 ### 3.1. Lớp `MealsController`
-- **Stereotype**: `<<Controller>>`
+- **Stereotype**: `<<Control>>`
 - **Mô tả**: NestJS Controller nhận request từ Frontend.
-- **Phương thức**:
-  - `+ findAll(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ create(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ findOne(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ getMissingIngredients(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ generateShoppingList(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ update(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
-  - `+ remove(@Body dto: any): Response`: Nhận request và gọi tới Service tương ứng.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | findAll | Response | Gọi Service tìm danh sách |
+| 2 | create | Response | Gọi Service tạo mới |
+| 3 | findOne | Response | Gọi Service lấy chi tiết |
+| 4 | getMissingIngredients | Response | Gọi Service phân tích nguyên liệu thiếu |
+| 5 | generateShoppingList | Response | Gọi Service sinh danh sách mua sắm |
+| 6 | update | Response | Gọi Service cập nhật |
+| 7 | remove | Response | Gọi Service xóa |
+
+**Parameter:**
+- `dto` – Tham số body/query truyền từ client.
+
+**Exception:**
+- `NotFoundException` – Nếu meal_id không hợp lệ.
+
+**Method:**
+- Trích xuất dữ liệu và truyền cho `MealsService`.
+
+**State:**
+Không
 
 ## 4. Services
 ### 4.1. Lớp `MealsService`
-- **Stereotype**: `<<Service>>`
-- **Mô tả**: Lớp chứa Business Logic xử lý nghiệp vụ chính.
-- **Phương thức**:
-  - `+ findAll(data: any): any`: Xử lý logic và tương tác database.
-  - `+ create(data: any): any`: Xử lý logic và tương tác database.
-  - `+ findOne(data: any): any`: Xử lý logic và tương tác database.
-  - `+ getMissingIngredients(data: any): any`: Xử lý logic và tương tác database.
-  - `+ generateShoppingList(data: any): any`: Xử lý logic và tương tác database.
-  - `+ update(data: any): any`: Xử lý logic và tương tác database.
-  - `+ remove(data: any): any`: Xử lý logic và tương tác database.
+- **Stereotype**: `<<Control>>`
+- **Mô tả**: Lớp chứa Business Logic xử lý nghiệp vụ bữa ăn.
+
+**Attribute**
+Không
+
+**Operation**
+| # | Tên | Kiểu dữ liệu trả về | Mô tả (mục đích) |
+|---|---|---|---|
+| 1 | findAll | any | Logic lấy kế hoạch bữa ăn |
+| 2 | create | any | Khởi tạo kế hoạch |
+| 3 | findOne | any | Tìm kiếm theo ID |
+| 4 | getMissingIngredients | any | Thuật toán đối chiếu Pantry để tìm đồ thiếu |
+| 5 | generateShoppingList | any | Tự động thêm đồ thiếu vào Shopping List |
+| 6 | update | any | Sửa ngày giờ/loại bữa ăn |
+| 7 | remove | any | Xóa khỏi database |
+
+**Parameter:**
+- `data` – Dữ liệu từ Controller.
+
+**Exception:**
+- Ngoại lệ logic.
+
+**Method:**
+- CRUD thông qua `MealPlansEntity`. Phối hợp với Module Pantry và Shopping List.
+
+**State:**
+Không
 
 ## 5. Entities
 ### 5.1. Lớp `MealPlansEntity`
 - **Stereotype**: `<<Entity>>`
 - **Mô tả**: Đối tượng dữ liệu ánh xạ từ Database bảng `meal_plans`.
-- **Thuộc tính**:
-  - `- plan_id: INT`
-  - `- group_id: INT`
-  - `- date: DATE`
-  - `- meal_type: VARCHAR`
-  - `- recipe_id: INT`
-  - `- is_completed: BOOLEAN`
 
+**Attribute**
+| # | Tên | Kiểu dữ liệu | Giá trị mặc định | Mô tả |
+|---|---|---|---|---|
+| 1 | plan_id | INT | `null` | Khóa chính |
+| 2 | group_id | INT | `null` | Nhóm sở hữu |
+| 3 | date | DATE | `null` | Ngày dự kiến |
+| 4 | meal_type | VARCHAR | `""` | Loại bữa (Sáng/Trưa/Tối) |
+| 5 | recipe_id | INT | `null` | ID công thức |
+| 6 | is_completed | BOOLEAN | `false` | Đã hoàn tất nấu chưa |
+
+**Operation**
+Không
+
+**Parameter:**
+Không
+
+**Exception:**
+Không
+
+**Method:**
+Không
+
+**State:**
+Không

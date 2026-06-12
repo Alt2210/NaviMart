@@ -7,32 +7,32 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + requestInviteToken() : void
           + displayInviteToken() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + generateInvite(groupId: String) : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + generateInvite(groupId: String) : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + generateInvite(groupId: String) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class Entity <<Entity>> {
         + saveInviteToken(groupId: String, token: String, expiry: Date) : Boolean
     }

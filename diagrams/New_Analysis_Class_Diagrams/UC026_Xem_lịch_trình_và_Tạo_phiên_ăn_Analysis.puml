@@ -7,35 +7,35 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + selectDateRange() : void
           + displayMealPlan() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + getMealPlan(dateRange: Data) : void
           + createSession(date: Date, type: String) : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + getMealPlan(dateRange: Data) : void
           + createSession(date: Date, type: String) : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + getMealPlan(dateRange: Data) : void
           + createSession(date: Date, type: String) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class Entity <<Entity>> {
         + querySessions(dateRange: Data) : List
           + insertSession(date: Date, type: String) : String

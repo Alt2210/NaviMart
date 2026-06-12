@@ -7,32 +7,32 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + selectMealToRemove() : void
           + displayResult() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + removeMeal(sessionId: String, mealId: String) : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + removeMeal(sessionId: String, mealId: String) : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + removeMeal(sessionId: String, mealId: String) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class Entity <<Entity>> {
         + deleteMeal(sessionId: String, mealId: String) : Boolean
     }

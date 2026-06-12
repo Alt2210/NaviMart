@@ -8,7 +8,7 @@ skinparam class {
 }
 
 package "View" {
-    class StatsDashboard <<View>> {
+    class StatsDashboard <<Boundary>> {
         - state: any
         - props: any
         + render(): JSX.Element
@@ -16,7 +16,7 @@ package "View" {
 }
 
 package "API Client" {
-    class ReportsApiClient <<API Client>> {
+    class ReportsApiClient <<Boundary>> {
         - baseUrl: String
         + getDashboard(data: any): Promise<any>
         + getConsumptionTrends(data: any): Promise<any>
@@ -25,7 +25,7 @@ package "API Client" {
 }
 
 package "Controller" {
-    class ReportsController <<Controller>> {
+    class ReportsController <<Control>> {
         + getDashboard(@Body dto: any): Response
         + getConsumptionTrends(@Body dto: any): Response
         + getWasteReport(@Body dto: any): Response
@@ -33,7 +33,7 @@ package "Controller" {
 }
 
 package "Service" {
-    class ReportsService <<Service>> {
+    class ReportsService <<Control>> {
         + getDashboard(data: any): any
         + getConsumptionTrends(data: any): any
         + getWasteReport(data: any): any

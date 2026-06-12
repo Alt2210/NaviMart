@@ -7,36 +7,36 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "View (React Component)" {
-    class View <<View>> {
+package "Boundary" {
+    class View <<Boundary>> {
         + searchRecipes() : void
           + viewRecipeDetail() : void
           + displayDetails() : void
     }
 }
 
-package "API Client" {
-    class ApiClient <<API Client>> {
+package "Boundary" {
+    class ApiClient <<Boundary>> {
         + searchRecipes(keyword: String) : void
           + getRecipeDetail(recipeId: String) : void
     }
 }
 
-package "Backend Controller" {
-    class Controller <<Controller>> {
+package "Control" {
+    class Controller <<Control>> {
         + searchRecipes(keyword: String) : void
           + getRecipeDetail(recipeId: String) : void
     }
 }
 
-package "Backend Service" {
-    class Service <<Service>> {
+package "Control" {
+    class Service <<Control>> {
         + searchRecipes(keyword: String) : void
           + getRecipeDetail(recipeId: String) : void
     }
 }
 
-package "Database Entity" {
+package "Entity" {
     class Entity <<Entity>> {
         + queryRecipes(keyword: String) : List
           + queryRecipeById(recipeId: String) : Data
