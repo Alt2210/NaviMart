@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+
+actor "Khách (Guest)" as Guest
+actor "Người dùng (User)" as User
+
+rectangle "Xác thực và Quản lý tài khoản" {
+  usecase "Đăng ký tài khoản" as UC001
+  usecase "Đăng nhập (Email/SĐT)" as UC002
+  usecase "Đăng nhập qua MXH" as UC003
+  usecase "Quên mật khẩu" as UC004
+  usecase "Xem và Cập nhật thông tin" as UC005
+  usecase "Đổi mật khẩu" as UC006
+  usecase "Đăng xuất" as UC007
+}
+
+Guest -- UC001
+Guest -- UC003
+
+User -- UC002
+User -- UC004
+User -- UC005
+User -- UC006
+User -- UC007
+@enduml

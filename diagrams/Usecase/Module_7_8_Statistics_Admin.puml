@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+
+actor "Người dùng" as User
+actor "Quản trị viên (Admin)" as Admin
+
+rectangle "Báo cáo & Thống kê" {
+  usecase "Xem thống kê tiêu dùng & lãng phí" as UC034
+}
+
+rectangle "Quản trị viên (Admin)" {
+  usecase "Đăng nhập & Xem danh sách User" as UC035
+  usecase "Khóa/Mở khóa tài khoản" as UC036
+  usecase "Quản lý Master Data" as UC037
+  usecase "Kiểm duyệt công thức" as UC038
+  usecase "Xem Dashboard tổng quan" as UC039
+}
+
+User -- UC034
+
+Admin -- UC035
+Admin -- UC036
+Admin -- UC037
+Admin -- UC038
+Admin -- UC039
+@enduml

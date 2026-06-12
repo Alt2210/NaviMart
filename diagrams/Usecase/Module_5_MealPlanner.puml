@@ -1,0 +1,15 @@
+@startuml
+left to right direction
+
+actor "Người dùng" as User
+
+rectangle "Lên kế hoạch bữa ăn" {
+  usecase "Xem lịch trình & Tạo phiên ăn" as UC026
+  usecase "Thêm và Sửa món ăn" as UC027
+  usecase "Xóa món ăn" as UC028
+}
+
+User -- UC026
+User -- UC027
+User -- UC028
+@enduml

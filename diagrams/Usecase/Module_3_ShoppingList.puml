@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+
+actor "Người dùng (Quyền Edit List)" as User
+
+rectangle "Quản lý Danh sách mua sắm" {
+  usecase "Tạo mới danh sách" as UC015
+  usecase "Xem, Sửa tên, Xóa danh sách" as UC016
+  usecase "Thêm mặt hàng" as UC017
+  usecase "Cập nhật và Xóa mặt hàng" as UC018
+  usecase "Đánh dấu đã mua\n(Tự động chuyển vào Tủ lạnh)" as UC019
+}
+
+User -- UC015
+User -- UC016
+User -- UC017
+User -- UC018
+User -- UC019
+@enduml

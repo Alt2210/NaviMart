@@ -1,0 +1,28 @@
+@startuml
+left to right direction
+
+actor "Owner (Chủ nhóm)" as Owner
+actor "Thành viên nhóm" as Member
+
+rectangle "Quản lý Nhóm gia đình" {
+  usecase "Tạo nhóm gia đình" as UC008
+  usecase "Xem thông tin & Thành viên" as UC009
+  usecase "Tạo mã mời" as UC010
+  usecase "Tham gia nhóm" as UC011
+  usecase "Cập nhật phân quyền" as UC012
+  usecase "Xóa thành viên (Kick)" as UC013
+  usecase "Rời khỏi nhóm" as UC014
+}
+
+Owner -- UC008
+Owner -- UC009
+Owner -- UC010
+Owner -- UC012
+Owner -- UC013
+
+Member -- UC009
+Member -- UC011
+Member -- UC014
+
+Owner --|> Member : "Owner cũng là Member"
+@enduml
