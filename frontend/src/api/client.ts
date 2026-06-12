@@ -61,7 +61,7 @@ export function clearSession() {
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
-  body?: unknown;
+  body?: unknown | FormData;
   query?: Record<string, string | number | boolean | undefined>;
   auth?: boolean;
 };
@@ -124,7 +124,8 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   const doFetch = async (): Promise<Response> => {
     const headers: Record<string, string> = {};
-    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    const isFormData = body instanceof FormData;
+    if (body !== undefined && !isFormData) headers['Content-Type'] = 'application/json';
     if (auth) {
       const tokens = getStoredTokens();
       if (tokens?.accessToken) headers.Authorization = `Bearer ${tokens.accessToken}`;
@@ -132,7 +133,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     return fetch(buildUrl(path, query), {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? body
+            : JSON.stringify(body),
     });
   };
 

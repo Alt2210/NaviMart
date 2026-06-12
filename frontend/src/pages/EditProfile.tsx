@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDialog } from '../contexts/DialogContext';
 import { useAuth } from '../contexts/AuthContext';
-import { usersApi } from '../api';
+import { uploadsApi, usersApi } from '../api';
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -12,6 +12,21 @@ export default function EditProfile() {
   const [name, setName] = useState(user?.displayName ?? '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? '');
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  const handleAvatarUpload = async (file?: File) => {
+    if (!file || uploadingAvatar) return;
+    setUploadingAvatar(true);
+    try {
+      const image = await uploadsApi.image(file);
+      setAvatarUrl(image.secureUrl);
+      showAlert('Đã tải ảnh lên Cloudinary.');
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không tải được ảnh.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,14 +100,29 @@ export default function EditProfile() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="avatarUrl" className="font-label-md text-on-surface">Ảnh đại diện (URL)</label>
+              <label htmlFor="avatarFile" className="font-label-md text-on-surface">Ảnh đại diện</label>
+              <label className="w-full px-4 py-3 bg-surface-container-lowest border border-dashed border-outline-variant rounded-xl hover:border-primary transition-colors cursor-pointer flex items-center justify-between gap-3">
+                <span className="font-body-md text-on-surface-variant truncate">
+                  {uploadingAvatar ? 'Đang tải lên Cloudinary...' : 'Chọn ảnh từ máy'}
+                </span>
+                <span className="material-symbols-outlined text-primary">cloud_upload</span>
+                <input
+                  id="avatarFile"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  disabled={uploadingAvatar}
+                  onChange={(e) => handleAvatarUpload(e.target.files?.[0])}
+                />
+              </label>
+              <label htmlFor="avatarUrl" className="font-label-md text-on-surface">URL ảnh</label>
               <input
                 type="url"
                 id="avatarUrl"
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
                 className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                placeholder="https://..."
+                placeholder="https://res.cloudinary.com/..."
               />
             </div>
 

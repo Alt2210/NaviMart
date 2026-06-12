@@ -151,6 +151,29 @@ export const usersApi = {
   }) => apiRequest<UserProfile>('/users/me', { method: 'PATCH', body: input }),
 };
 
+// ---------- Uploads ----------
+
+export type UploadedImage = {
+  publicId: string;
+  url: string;
+  secureUrl: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
+};
+
+export const uploadsApi = {
+  image: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiRequest<UploadedImage>('/uploads/image', {
+      method: 'POST',
+      body: formData,
+    });
+  },
+};
+
 // ---------- Shopping lists ----------
 
 export const shoppingListsApi = {

@@ -9,6 +9,15 @@ type EnvironmentVariables = {
   JWT_REFRESH_SECRET: string;
   JWT_REFRESH_EXPIRES_IN: string;
   EXPIRY_NOTIFICATION_CRON: string;
+  CLOUDINARY_CLOUD_NAME?: string;
+  CLOUDINARY_API_KEY?: string;
+  CLOUDINARY_API_SECRET?: string;
+  CLOUDINARY_UPLOAD_FOLDER?: string;
+  PASSWORD_RESET_MAIL_MODE?: string;
+  GMAIL_FROM_EMAIL?: string;
+  GMAIL_CLIENT_ID?: string;
+  GMAIL_CLIENT_SECRET?: string;
+  GMAIL_REFRESH_TOKEN?: string;
   TIMELY_API_KEY?: string;
   TIMELY_BASE_URL?: string;
   TIMELY_MODEL?: string;
@@ -78,6 +87,51 @@ export function validateEnv(config: Record<string, unknown>): EnvironmentVariabl
       config.EXPIRY_NOTIFICATION_CRON.length > 0
         ? config.EXPIRY_NOTIFICATION_CRON
         : '0 8 * * *',
+    CLOUDINARY_CLOUD_NAME:
+      typeof config.CLOUDINARY_CLOUD_NAME === 'string' &&
+      config.CLOUDINARY_CLOUD_NAME.length > 0
+        ? config.CLOUDINARY_CLOUD_NAME
+        : undefined,
+    CLOUDINARY_API_KEY:
+      typeof config.CLOUDINARY_API_KEY === 'string' &&
+      config.CLOUDINARY_API_KEY.length > 0
+        ? config.CLOUDINARY_API_KEY
+        : undefined,
+    CLOUDINARY_API_SECRET:
+      typeof config.CLOUDINARY_API_SECRET === 'string' &&
+      config.CLOUDINARY_API_SECRET.length > 0
+        ? config.CLOUDINARY_API_SECRET
+        : undefined,
+    CLOUDINARY_UPLOAD_FOLDER:
+      typeof config.CLOUDINARY_UPLOAD_FOLDER === 'string' &&
+      config.CLOUDINARY_UPLOAD_FOLDER.length > 0
+        ? config.CLOUDINARY_UPLOAD_FOLDER
+        : undefined,
+    PASSWORD_RESET_MAIL_MODE:
+      typeof config.PASSWORD_RESET_MAIL_MODE === 'string' &&
+      config.PASSWORD_RESET_MAIL_MODE.length > 0
+        ? config.PASSWORD_RESET_MAIL_MODE
+        : undefined,
+    GMAIL_FROM_EMAIL:
+      typeof config.GMAIL_FROM_EMAIL === 'string' &&
+      config.GMAIL_FROM_EMAIL.length > 0
+        ? config.GMAIL_FROM_EMAIL
+        : undefined,
+    GMAIL_CLIENT_ID:
+      typeof config.GMAIL_CLIENT_ID === 'string' &&
+      config.GMAIL_CLIENT_ID.length > 0
+        ? config.GMAIL_CLIENT_ID
+        : undefined,
+    GMAIL_CLIENT_SECRET:
+      typeof config.GMAIL_CLIENT_SECRET === 'string' &&
+      config.GMAIL_CLIENT_SECRET.length > 0
+        ? config.GMAIL_CLIENT_SECRET
+        : undefined,
+    GMAIL_REFRESH_TOKEN:
+      typeof config.GMAIL_REFRESH_TOKEN === 'string' &&
+      config.GMAIL_REFRESH_TOKEN.length > 0
+        ? config.GMAIL_REFRESH_TOKEN
+        : undefined,
     TIMELY_API_KEY:
       typeof config.TIMELY_API_KEY === 'string' &&
       config.TIMELY_API_KEY.length > 0

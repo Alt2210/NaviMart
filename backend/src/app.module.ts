@@ -19,6 +19,7 @@ import { RealtimeModule } from './realtime/realtime.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { ReportsModule } from './reports/reports.module';
 import { ShoppingListsModule } from './shopping-lists/shopping-lists.module';
+import { UploadsModule } from './uploads/uploads.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -46,6 +47,7 @@ import { UsersModule } from './users/users.module';
     RecipesModule,
     MealsModule,
     ReportsModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

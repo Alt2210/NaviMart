@@ -56,7 +56,8 @@ export class AuthController {
   @ApiOperation({
     description:
       'Always returns { success: true } regardless of whether the identifier matches an account. ' +
-      'When NODE_ENV is not production, the response also includes devResetToken (no SMTP in dev).',
+      'When PASSWORD_RESET_MAIL_MODE=gmail-api, the reset code is sent through Gmail API. ' +
+      'Otherwise, when NODE_ENV is not production, the response also includes devResetToken.',
   })
   @ApiOkResponse({ description: 'Password reset requested.' })
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
@@ -76,8 +77,9 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({
     description:
-      'Requires the account to have an email. When NODE_ENV is not production, ' +
-      'the response also includes devVerificationToken (no SMTP in dev).',
+      'Requires the account to have an email. When PASSWORD_RESET_MAIL_MODE=gmail-api, ' +
+      'the verification code is sent through Gmail API. Otherwise, when NODE_ENV is not production, ' +
+      'the response also includes devVerificationToken.',
   })
   @ApiOkResponse({ description: 'Email verification requested.' })
   sendVerification(@CurrentUser() user: AuthenticatedUser) {

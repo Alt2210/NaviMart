@@ -48,6 +48,7 @@ async function bootstrap() {
     .addTag('Recipes', 'Recipe search, detail, CRUD, missing ingredients, and generated shopping lists.')
     .addTag('Meals', 'Meal planner CRUD, missing ingredients, and generated shopping lists.')
     .addTag('Reports', 'Dashboard, consumption trend, and waste reports.')
+    .addTag('Uploads', 'Authenticated image uploads backed by Cloudinary.')
     .addBearerAuth(
       {
         type: 'http',
