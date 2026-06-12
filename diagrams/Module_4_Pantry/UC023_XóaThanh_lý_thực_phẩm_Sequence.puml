@@ -3,7 +3,7 @@ title Sequence Diagram - UC023 RemoveFood
 
 actor "User" as Actor
 boundary "RemoveFoodUI" as UI
-control "PantryController" as Controller
+control "FoodManagementController" as Controller
 entity "PantryDB" as Entity
 
 Actor -> UI : 1. Chọn thực phẩm & Nhấn "Xóa / Thanh lý"

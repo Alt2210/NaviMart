@@ -1,0 +1,35 @@
+@startuml
+title Combined Communication Diagram - Module 1 (Auth)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "AuthUI" as UI
+control "AuthController" as Controller
+entity "AuthDB" as Entity
+
+Actor -right--- UI : " ▶ Các thao tác người dùng: \n1. Đăng ký tài khoản\n2. Đăng nhập (Email/SĐT/Social)\n3. Quên mật khẩu\n4. Cập nhật thông tin/Đổi mật khẩu\n5. Đăng xuất"
+UI -right---- Controller : " ▶ Xử lý nghiệp vụ (register, login, logout, update...) \n ◀ Trả kết quả thành công/thất bại"
+Controller -down- Entity : " ▼ Truy vấn/Cập nhật dữ liệu: \n(Lưu user mới, xác thực credentials, \nlưu session, đổi password)"
+@enduml

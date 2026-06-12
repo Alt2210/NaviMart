@@ -2,8 +2,8 @@
 title Sequence Diagram - UC016 ManageShoppingList
 
 actor "User" as Actor
-boundary "ShoppingUI" as UI
-control "ShoppingController" as Controller
+boundary "ManageListUI" as UI
+control "ManageListController" as Controller
 entity "ShoppingDB" as Entity
 
 Actor -> UI : 1. Chọn Danh sách mua sắm & Chọn hành động (Xem/Sửa/Xóa)

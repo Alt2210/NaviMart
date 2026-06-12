@@ -2,8 +2,8 @@
 title Sequence Diagram - UC038 ApproveRecipe
 
 actor "Admin" as Actor
-boundary "ApproveRecipeUI" as UI
-control "AdminController" as Controller
+boundary "RecipeApprovalUI" as UI
+control "RecipeApprovalController" as Controller
 entity "RecipeDB" as Entity
 
 Actor -> UI : 1. Xem danh sách công thức chờ duyệt

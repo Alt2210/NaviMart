@@ -2,8 +2,8 @@
 title Sequence Diagram - UC027 ManageMeal
 
 actor "User" as Actor
-boundary "ManageMealUI" as UI
-control "MealPlanController" as Controller
+boundary "ManageMealSessionUI" as UI
+control "MealSessionController" as Controller
 entity "MealPlanDB" as Entity
 
 Actor -> UI : 1. Chọn món ăn và gán vào phiên ăn

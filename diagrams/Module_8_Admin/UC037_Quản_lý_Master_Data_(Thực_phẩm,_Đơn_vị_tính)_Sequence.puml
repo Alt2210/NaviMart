@@ -2,7 +2,7 @@
 title Sequence Diagram - UC037 ManageMasterData
 
 actor "Admin" as Actor
-boundary "AdminUI" as UI
+boundary "MasterDataUI" as UI
 control "MasterDataController" as Controller
 entity "MasterDataDB" as Entity
 

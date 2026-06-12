@@ -1,0 +1,42 @@
+@startuml
+title Combined Communication Diagram - Module 6 (AIRecipes)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "RecipeUI" as UI
+control "RecipeController" as Controller
+entity "RecipeDB" as Entity
+entity "PantryDB" as PantryDB
+control "ShoppingController" as ShoppingController
+control "AIService" as AIService
+
+Actor -right--- UI : " ▶ Các thao tác: \n1. Gợi ý món ăn\n2. Tìm kiếm/Xem chi tiết\n3. Lưu yêu thích\n4. Thêm nguyên liệu thiếu\n5. Chat với AI"
+UI -right---- Controller : " ▶ Xử lý nghiệp vụ \n ◀ Trả kết quả hiển thị"
+Controller -down- Entity : " ▼ Truy vấn/Cập nhật công thức \n(queryRecipes, updateBookmark)"
+Controller -down- PantryDB : " ▼ Truy xuất tồn kho \n(getAvailableIngredients)"
+Controller -right- ShoppingController : " ▶ addItemsToList()"
+Controller -up- AIService : " ▲ generateRecipes(), callAiAPI()"
+
+@enduml

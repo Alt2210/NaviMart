@@ -2,8 +2,8 @@
 title Sequence Diagram - UC011 JoinFamilyGroup
 
 actor "User" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "JoinGroupUI" as UI
+control "JoinGroupController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -> UI : 1. Nhập mã mời / Click link

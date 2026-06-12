@@ -1,0 +1,94 @@
+@startuml
+title Combined Sequence Diagram - Module 3 (ShoppingList)
+
+actor "User" as Actor
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as Entity
+control "PantryController" as PantryController
+entity "PantryDB" as PantryDB
+
+group UC015 Tạo danh sách
+  Actor -> UI : Nhập tên danh sách
+  activate UI
+  UI -> Controller : createList(listName)
+  activate Controller
+  Controller -> Entity : saveNewList()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Thông báo thành công
+  deactivate UI
+end
+
+group UC016 Quản lý danh sách (Xem/Sửa/Xóa)
+  Actor -> UI : Chọn thao tác
+  activate UI
+  UI -> Controller : handleListAction()
+  activate Controller
+  Controller -> Entity : executeDbQuery()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Cập nhật danh sách
+  deactivate UI
+end
+
+group UC017 Thêm mặt hàng
+  Actor -> UI : Thêm mặt hàng
+  activate UI
+  UI -> Controller : addItem(itemName, qty)
+  activate Controller
+  Controller -> Entity : saveItem()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Hiển thị mặt hàng
+  deactivate UI
+end
+
+group UC018 Cập nhật/Xóa mặt hàng
+  Actor -> UI : Chọn thao tác mặt hàng
+  activate UI
+  UI -> Controller : updateOrRemoveItem()
+  activate Controller
+  Controller -> Entity : executeItemDbAction()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Cập nhật mặt hàng
+  deactivate UI
+end
+
+group UC019 Đánh dấu đã mua
+  Actor -> UI : Đánh dấu đã mua
+  activate UI
+  UI -> Controller : markItemAsBought(itemId)
+  activate Controller
+  Controller -> Entity : updateItemStatus(itemId)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller -> PantryController : transferItemToPantry()
+  activate PantryController
+  PantryController -> PantryDB : addFood()
+  activate PantryDB
+  PantryDB --> PantryController : success
+  deactivate PantryDB
+  PantryController --> Controller : success
+  deactivate PantryController
+  Controller --> UI : thông báo
+  deactivate Controller
+  UI --> Actor : Cập nhật trạng thái
+  deactivate UI
+end
+
+@enduml

@@ -2,8 +2,8 @@
 title Sequence Diagram - UC018 UpdateOrRemoveItem
 
 actor "User" as Actor
-boundary "ShoppingUI" as UI
-control "ShoppingController" as Controller
+boundary "UpdateItemUI" as UI
+control "ShoppingItemController" as Controller
 entity "ShoppingDB" as Entity
 
 Actor -> UI : 1. Chọn mặt hàng & Thực hiện sửa/xóa

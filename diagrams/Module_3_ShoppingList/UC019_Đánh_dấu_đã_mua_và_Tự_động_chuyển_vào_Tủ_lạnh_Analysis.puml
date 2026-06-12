@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC019 FinishShopping
 
-class "ShoppingUI" as UI <<boundary>> {
+class "MarkItemBoughtUI" as UI <<boundary>> {
   + checkItemAsBought() : void
   + displayUpdate() : void
 }
-class "ShoppingController" as Controller <<control>> {
+class "ShoppingItemController" as Controller <<control>> {
   + markItemAsBought(itemId: String) : void
 }
 class "ShoppingDB" as ShoppingDB <<entity>> {

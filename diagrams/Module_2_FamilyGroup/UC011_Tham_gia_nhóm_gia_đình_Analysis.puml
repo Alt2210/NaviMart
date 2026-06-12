@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC011 JoinFamilyGroup
 
-class "FamilyUI" as UI <<boundary>> {
+class "JoinGroupUI" as UI <<boundary>> {
   + enterInviteCode() : void
   + displaySuccess() : void
 }
-class "FamilyController" as Controller <<control>> {
+class "JoinGroupController" as Controller <<control>> {
   + joinGroup(inviteCode: String) : void
 }
 class "FamilyDB" as Entity <<entity>> {

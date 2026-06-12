@@ -2,8 +2,8 @@
 title Sequence Diagram - UC031 BookmarkRecipe
 
 actor "User" as Actor
-boundary "BookmarkUI" as UI
-control "RecipeController" as Controller
+boundary "BookmarkRecipeUI" as UI
+control "BookmarkController" as Controller
 entity "RecipeDB" as Entity
 
 Actor -> UI : 1. Nhấn biểu tượng "Yêu thích/Lưu" trên công thức

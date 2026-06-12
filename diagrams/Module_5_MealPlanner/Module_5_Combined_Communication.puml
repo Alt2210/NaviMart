@@ -1,0 +1,35 @@
+@startuml
+title Combined Communication Diagram - Module 5 (MealPlanner)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "MealPlanUI" as UI
+control "MealPlanController" as Controller
+entity "MealPlanDB" as Entity
+
+Actor -right--- UI : " ▶ Các thao tác: \n1. Mở Lịch trình/Tạo phiên ăn\n2. Gán món ăn vào phiên\n3. Xóa món ăn khỏi phiên"
+UI -right---- Controller : " ▶ Xử lý nghiệp vụ (getMealPlan, \ncreateSession, addOrUpdateMeal, removeMeal)"
+Controller -down- Entity : " ▼ Truy vấn/Cập nhật: \n(querySessions, insertSession, \nsaveMeal, deleteMeal)"
+@enduml

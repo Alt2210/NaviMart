@@ -3,7 +3,7 @@ title Sequence Diagram - UC022 UpdateFoodInfo
 
 actor "User" as Actor
 boundary "UpdateFoodUI" as UI
-control "PantryController" as Controller
+control "FoodManagementController" as Controller
 entity "PantryDB" as Entity
 
 Actor -> UI : 1. Chọn thực phẩm & Cập nhật thông tin (Số lượng, HSD...)

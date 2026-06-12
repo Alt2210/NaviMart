@@ -25,8 +25,8 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "ShoppingUI" as UI
-control "ShoppingController" as Controller
+boundary "CreateShoppingListUI" as UI
+control "CreateListController" as Controller
 entity "ShoppingDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Nhập tên danh sách "

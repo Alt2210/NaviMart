@@ -2,8 +2,8 @@
 title Sequence Diagram - UC014 LeaveFamilyGroup
 
 actor "User" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "LeaveGroupUI" as UI
+control "LeaveGroupController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -> UI : 1. Chọn "Rời nhóm"

@@ -3,7 +3,7 @@ title Sequence Diagram - UC028 RemoveMeal
 
 actor "User" as Actor
 boundary "RemoveMealUI" as UI
-control "MealPlanController" as Controller
+control "MealSessionController" as Controller
 entity "MealPlanDB" as Entity
 
 Actor -> UI : 1. Chọn món ăn trong phiên và nhấn "Xóa"

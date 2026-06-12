@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC017 AddItemToList
 
-class "ShoppingUI" as UI <<boundary>> {
+class "AddShoppingItemUI" as UI <<boundary>> {
   + inputItemDetails() : void
   + displayUpdate() : void
 }
-class "ShoppingController" as Controller <<control>> {
+class "ShoppingItemController" as Controller <<control>> {
   + addItem(listId: String, itemName: String, quantity: Number) : void
 }
 class "ShoppingDB" as Entity <<entity>> {

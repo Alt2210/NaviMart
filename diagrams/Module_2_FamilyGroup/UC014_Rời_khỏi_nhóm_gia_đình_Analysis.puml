@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC014 LeaveFamilyGroup
 
-class "FamilyUI" as UI <<boundary>> {
+class "LeaveGroupUI" as UI <<boundary>> {
   + requestLeaveGroup() : void
   + displaySuccess() : void
 }
-class "FamilyController" as Controller <<control>> {
+class "LeaveGroupController" as Controller <<control>> {
   + leaveGroup(groupId: String, userId: String) : void
 }
 class "FamilyDB" as Entity <<entity>> {

@@ -2,8 +2,8 @@
 title Sequence Diagram - UC035 AdminLoginAndViewUsers
 
 actor "Admin" as Actor
-boundary "AdminUI" as UI
-control "AdminController" as Controller
+boundary "UserManagementUI" as UI
+control "UserManagementController" as Controller
 entity "UserDB" as Entity
 
 Actor -> UI : 1. Đăng nhập với quyền Admin

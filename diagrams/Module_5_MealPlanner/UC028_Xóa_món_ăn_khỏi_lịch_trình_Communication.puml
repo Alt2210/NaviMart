@@ -26,7 +26,7 @@ skinparam {
 allow_mixing
 actor "User" as Actor
 boundary "RemoveMealUI" as UI
-control "MealPlanController" as Controller
+control "MealSessionController" as Controller
 entity "MealPlanDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Chọn xóa món ăn "

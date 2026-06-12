@@ -2,8 +2,8 @@
 title Sequence Diagram - UC015 CreateShoppingList
 
 actor "User" as Actor
-boundary "ShoppingUI" as UI
-control "ShoppingController" as Controller
+boundary "CreateShoppingListUI" as UI
+control "CreateListController" as Controller
 entity "ShoppingDB" as Entity
 
 Actor -> UI : 1. Nhập tên danh sách & Nhấn "Tạo"

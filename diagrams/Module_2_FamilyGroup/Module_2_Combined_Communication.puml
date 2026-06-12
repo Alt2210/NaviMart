@@ -1,0 +1,35 @@
+@startuml
+title Combined Communication Diagram - Module 2 (FamilyGroup)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
+
+Actor -right--- UI : " ▶ Các thao tác người dùng: \n1. Tạo/Xem thông tin nhóm\n2. Tạo mã mời/Tham gia nhóm\n3. Quản lý thành viên (Kick, Đổi quyền)\n4. Rời nhóm"
+UI -right---- Controller : " ▶ Xử lý nghiệp vụ (create, join, leave, update...) \n ◀ Trả kết quả thành công/thất bại"
+Controller -down- Entity : " ▼ Truy vấn/Cập nhật dữ liệu: \n(Lưu nhóm, xác thực token, \ncập nhật members)"
+@enduml

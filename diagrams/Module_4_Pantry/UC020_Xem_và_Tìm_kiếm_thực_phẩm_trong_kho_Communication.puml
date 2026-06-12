@@ -26,7 +26,7 @@ skinparam {
 allow_mixing
 actor "User" as Actor
 boundary "ViewPantryUI" as UI
-control "PantryController" as Controller
+control "PantrySearchController" as Controller
 entity "PantryDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Tìm kiếm/Lọc "

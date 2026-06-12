@@ -1,0 +1,114 @@
+@startuml
+title Combined Sequence Diagram - Module 1 (Auth)
+
+actor "User" as Actor
+boundary "AuthUI" as UI
+control "AuthController" as Controller
+entity "AuthDB" as Entity
+
+group UC001 Đăng ký tài khoản
+  Actor -> UI : Nhập thông tin đăng ký
+  activate UI
+  UI -> Controller : registerAccount(data)
+  activate Controller
+  Controller -> Entity : saveNewUser(data)
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Thông báo đăng ký thành công
+  deactivate UI
+end
+
+group UC002 Đăng nhập (Email/SĐT)
+  Actor -> UI : Nhập Email/SĐT và Mật khẩu
+  activate UI
+  UI -> Controller : loginWithEmailPhone(credentials)
+  activate Controller
+  Controller -> Entity : verifyCredentials(credentials)
+  activate Entity
+  Entity --> Controller : userData & token
+  deactivate Entity
+  Controller --> UI : success
+  deactivate Controller
+  UI --> Actor : Chuyển hướng đến trang chủ
+  deactivate UI
+end
+
+group UC003 Đăng nhập mạng xã hội
+  Actor -> UI : Chọn Google/Facebook
+  activate UI
+  UI -> Controller : handleOAuthLogin(provider)
+  activate Controller
+  Controller -> Entity : findOrCreateOAuthUser(provider)
+  activate Entity
+  Entity --> Controller : userData & token
+  deactivate Entity
+  Controller --> UI : success
+  deactivate Controller
+  UI --> Actor : Chuyển hướng đến trang chủ
+  deactivate UI
+end
+
+group UC004 Quên & Đặt lại mật khẩu
+  Actor -> UI : Nhập email quên mật khẩu
+  activate UI
+  UI -> Controller : processPasswordReset(email)
+  activate Controller
+  Controller -> Entity : saveResetToken(email)
+  activate Entity
+  Entity --> Controller : resetLink
+  deactivate Entity
+  Controller --> UI : Gửi email chứa reset link
+  deactivate Controller
+  UI --> Actor : Hiển thị thông báo gửi email
+  deactivate UI
+end
+
+group UC005 Xem và Cập nhật thông tin
+  Actor -> UI : Cập nhật thông tin (tên, avatar...)
+  activate UI
+  UI -> Controller : updateProfile(userId, data)
+  activate Controller
+  Controller -> Entity : updateUserInfo(userId, data)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : success
+  deactivate Controller
+  UI --> Actor : Thông báo cập nhật thành công
+  deactivate UI
+end
+
+group UC006 Đổi mật khẩu
+  Actor -> UI : Nhập mật khẩu cũ và mới
+  activate UI
+  UI -> Controller : updatePassword(userId, oldPw, newPw)
+  activate Controller
+  Controller -> Entity : updatePassword(userId, newPw)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : success
+  deactivate Controller
+  UI --> Actor : Thông báo đổi mật khẩu thành công
+  deactivate UI
+end
+
+group UC007 Đăng xuất
+  Actor -> UI : Chọn đăng xuất
+  activate UI
+  UI -> Controller : logoutUser(userId)
+  activate Controller
+  Controller -> Entity : destroySession(userId)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : success
+  deactivate Controller
+  UI --> Actor : Quay về màn hình đăng nhập
+  deactivate UI
+end
+
+@enduml

@@ -1,0 +1,70 @@
+@startuml
+title Combined Analysis Class Diagram - Module_3_ShoppingList
+
+class "CreateShoppingListUI" as CreateShoppingListUI_Alias <<boundary>> {
+  + inputListName() : void
+  + displayResult() : void
+}
+
+class "CreateListController" as CreateListController_Alias <<control>> {
+  + createList(listName: String, groupId: String) : void
+}
+
+class "ShoppingDB" as ShoppingDB_Alias <<entity>> {
+  + saveNewList(listName: String, groupId: String) : String
+  + executeDbQuery(action: String, listId: String, data: Data) : Boolean
+  + saveItem(listId: String, itemName: String, quantity: Number) : String
+  + executeItemDbAction(action: String, itemId: String, data: Data) : Boolean
+  + updateItemStatus(itemId: String, status: String) : Boolean
+}
+
+class "ManageListUI" as ManageListUI_Alias <<boundary>> {
+  + selectAction() : void
+  + displayUpdate() : void
+}
+
+class "ManageListController" as ManageListController_Alias <<control>> {
+  + handleListAction(action: String, listId: String, data: Data) : void
+}
+
+class "AddShoppingItemUI" as AddShoppingItemUI_Alias <<boundary>> {
+  + inputItemDetails() : void
+  + displayUpdate() : void
+}
+
+class "ShoppingItemController" as ShoppingItemController_Alias <<control>> {
+  + addItem(listId: String, itemName: String, quantity: Number) : void
+  + updateOrRemoveItem(action: String, itemId: String, data: Data) : void
+  + markItemAsBought(itemId: String) : void
+}
+
+class "UpdateItemUI" as UpdateItemUI_Alias <<boundary>> {
+  + selectItemAction() : void
+  + displayUpdate() : void
+}
+
+class "MarkItemBoughtUI" as MarkItemBoughtUI_Alias <<boundary>> {
+  + checkItemAsBought() : void
+  + displayUpdate() : void
+}
+
+class "PantryController" as PantryController_Alias <<control>> {
+  + transferItemToPantry(itemDetails: Data) : void
+}
+
+class "PantryDB" as PantryDB_Alias <<entity>> {
+  + addFood(itemDetails: Data) : Boolean
+}
+
+CreateListController_Alias -- CreateShoppingListUI_Alias
+CreateListController_Alias -- ShoppingDB_Alias
+ManageListController_Alias -- ManageListUI_Alias
+ManageListController_Alias -- ShoppingDB_Alias
+AddShoppingItemUI_Alias -- ShoppingItemController_Alias
+ShoppingDB_Alias -- ShoppingItemController_Alias
+ShoppingItemController_Alias -- UpdateItemUI_Alias
+MarkItemBoughtUI_Alias -- ShoppingItemController_Alias
+PantryController_Alias -- ShoppingItemController_Alias
+PantryController_Alias -- PantryDB_Alias
+
+@enduml

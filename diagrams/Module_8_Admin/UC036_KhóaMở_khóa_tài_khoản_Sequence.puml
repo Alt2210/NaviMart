@@ -2,8 +2,8 @@
 title Sequence Diagram - UC036 BlockUnblockUser
 
 actor "Admin" as Actor
-boundary "AdminUI" as UI
-control "AdminController" as Controller
+boundary "UserStatusUI" as UI
+control "UserManagementController" as Controller
 entity "UserDB" as Entity
 
 Actor -> UI : 1. Chọn User & Nhấn "Khóa / Mở khóa"

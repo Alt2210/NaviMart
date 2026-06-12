@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC035 AdminLoginAndViewUsers
 
-class "AdminUI" as UI <<boundary>> {
+class "UserManagementUI" as UI <<boundary>> {
   + login() : void
   + viewUsers() : void
 }
-class "AdminController" as Controller <<control>> {
+class "UserManagementController" as Controller <<control>> {
   + loginAdmin(credentials: Data) : void
   + getUsersList(filters: Data) : void
 }

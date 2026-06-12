@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC015 CreateShoppingList
 
-class "ShoppingUI" as UI <<boundary>> {
+class "CreateShoppingListUI" as UI <<boundary>> {
   + inputListName() : void
   + displayResult() : void
 }
-class "ShoppingController" as Controller <<control>> {
+class "CreateListController" as Controller <<control>> {
   + createList(listName: String, groupId: String) : void
 }
 class "ShoppingDB" as Entity <<entity>> {

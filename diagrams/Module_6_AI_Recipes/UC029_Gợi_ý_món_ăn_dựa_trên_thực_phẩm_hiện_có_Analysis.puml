@@ -5,7 +5,7 @@ class "SuggestRecipeUI" as UI <<boundary>> {
   + requestSuggestion() : void
   + displayRecipeList() : void
 }
-class "RecipeController" as Controller <<control>> {
+class "AISuggestionController" as Controller <<control>> {
   + getSuggestions() : void
 }
 class "PantryDB" as PantryDB <<entity>> {

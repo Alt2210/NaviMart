@@ -26,7 +26,7 @@ skinparam {
 allow_mixing
 actor "User" as Actor
 boundary "AddFoodUI" as UI
-control "PantryController" as Controller
+control "FoodManagementController" as Controller
 entity "PantryDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Nhập thông tin thực phẩm "

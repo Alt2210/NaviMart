@@ -1,7 +1,7 @@
 @startuml
 title Analysis Class Diagram - UC037 ManageMasterData
 
-class "AdminUI" as UI <<boundary>> {
+class "MasterDataUI" as UI <<boundary>> {
   + manageData() : void
   + displayUpdate() : void
 }

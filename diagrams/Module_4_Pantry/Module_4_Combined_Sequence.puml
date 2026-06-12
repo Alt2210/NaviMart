@@ -1,0 +1,106 @@
+@startuml
+title Combined Sequence Diagram - Module 4 (Pantry)
+
+actor "User" as Actor
+boundary "PantryUI" as UI
+control "PantryController" as Controller
+entity "PantryDB" as Entity
+control "MealController" as MealController
+control "NotificationController" as NotifController
+control "NotificationService" as NotifService
+actor "System (CronJob)" as Cron
+
+group UC020 Xem và Tìm kiếm thực phẩm
+  Actor -> UI : Tìm kiếm/Lọc
+  activate UI
+  UI -> Controller : searchFood()
+  activate Controller
+  Controller -> Entity : queryFoodList()
+  activate Entity
+  Entity --> Controller : data
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Hiển thị danh sách
+  deactivate UI
+end
+
+group UC021 Thêm thực phẩm (thủ công)
+  Actor -> UI : Nhập thông tin thực phẩm
+  activate UI
+  UI -> Controller : addFood(foodDetails)
+  activate Controller
+  Controller -> Entity : saveFood(foodDetails)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Cập nhật danh sách
+  deactivate UI
+end
+
+group UC022 Cập nhật thực phẩm
+  Actor -> UI : Sửa thông tin
+  activate UI
+  UI -> Controller : updateFood(foodId, updatedData)
+  activate Controller
+  Controller -> Entity : updateFoodData()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Cập nhật UI
+  deactivate UI
+end
+
+group UC023 Xóa/Thanh lý
+  Actor -> UI : Chọn xóa thực phẩm
+  activate UI
+  UI -> Controller : removeFood(foodId)
+  activate Controller
+  Controller -> Entity : deleteFoodData()
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : result
+  deactivate Controller
+  UI --> Actor : Cập nhật UI
+  deactivate UI
+end
+
+group UC024 Tự động trừ thực phẩm
+  Actor -> UI : Xác nhận nấu xong
+  activate UI
+  UI -> MealController : confirmMealCooked()
+  activate MealController
+  MealController -> Controller : deductIngredients()
+  activate Controller
+  Controller -> Entity : decreaseFoodQuantity()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> MealController : result
+  deactivate Controller
+  MealController --> UI : result
+  deactivate MealController
+  UI --> Actor : Thông báo trừ thành công
+  deactivate UI
+end
+
+group UC025 Thông báo hết hạn
+  Cron -> NotifController : triggerCheckExpiryDaily()
+  activate NotifController
+  NotifController -> Entity : queryExpiringFoods()
+  activate Entity
+  Entity --> NotifController : data
+  deactivate Entity
+  NotifController -> NotifService : sendExpiryWarning()
+  activate NotifService
+  NotifService --> Actor : Gửi Push Notification
+  deactivate NotifService
+  deactivate NotifController
+end
+
+@enduml

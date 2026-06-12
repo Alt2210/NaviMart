@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC008 CreateFamilyGroup
 
-class "FamilyUI" as UI <<boundary>> {
+class "CreateGroupUI" as UI <<boundary>> {
   + enterGroupName() : void
   + displayResult() : void
 }
-class "FamilyController" as Controller <<control>> {
+class "CreateGroupController" as Controller <<control>> {
   + createGroup(groupName: String) : void
 }
 class "FamilyDB" as Entity <<entity>> {

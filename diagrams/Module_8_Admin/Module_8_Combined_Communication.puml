@@ -1,0 +1,52 @@
+@startuml
+title Combined Communication Diagram - Module 8 (Admin)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "Admin" as Actor
+boundary "AdminUI\n(User, MasterData)" as AdminUI
+boundary "ApproveRecipeUI" as ApproveUI
+boundary "DashboardUI" as DashboardUI
+control "AdminController" as Controller
+control "MasterDataController" as MDController
+entity "UserDB" as UserDB
+entity "MasterDataDB" as MasterDataDB
+entity "RecipeDB" as RecipeDB
+entity "SystemDB" as SystemDB
+
+Actor -right--- AdminUI : " ▶ Quản lý User/Master Data"
+Actor -right--- ApproveUI : " ▶ Duyệt công thức"
+Actor -down--- DashboardUI : " ▶ Xem Dashboard"
+
+AdminUI -right---- Controller : " ▶ login(), getUsers(), toggleLock()"
+AdminUI -down---- MDController : " ▶ executeCRUD()"
+ApproveUI -up---- Controller : " ▶ approveOrRejectRecipe()"
+DashboardUI -right---- Controller : " ▶ getOverviewStats()"
+
+Controller -down- UserDB : " ▼ queryAllUsers(), updateUserStatus()"
+Controller -down- RecipeDB : " ▼ updateRecipeStatus()"
+Controller -right- SystemDB : " ▶ querySystemMetrics()"
+MDController -right- MasterDataDB : " ▶ updateDatabase()"
+
+@enduml

@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC010 GenerateInviteCode
 
-class "FamilyUI" as UI <<boundary>> {
+class "InviteMemberUI" as UI <<boundary>> {
   + requestInviteToken() : void
   + displayInviteToken() : void
 }
-class "FamilyController" as Controller <<control>> {
+class "InviteController" as Controller <<control>> {
   + generateInvite(groupId: String) : void
 }
 class "FamilyDB" as Entity <<entity>> {

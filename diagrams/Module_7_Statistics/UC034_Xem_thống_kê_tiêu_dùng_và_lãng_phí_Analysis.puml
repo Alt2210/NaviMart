@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC034 ViewStatistics
 
-class "StatisticsUI" as UI <<boundary>> {
+class "StatisticsDashboardUI" as UI <<boundary>> {
   + selectDateRange() : void
   + renderChart() : void
 }
-class "StatController" as Controller <<control>> {
+class "StatisticsController" as Controller <<control>> {
   + getStatistics(dateRange: Data) : void
 }
 class "StatDB" as Entity <<entity>> {

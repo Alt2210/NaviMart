@@ -1,7 +1,7 @@
 @startuml
 title Analysis Class Diagram - UC026 ViewMealPlan
 
-class "MealPlanUI" as UI <<boundary>> {
+class "ViewMealPlanUI" as UI <<boundary>> {
   + selectDateRange() : void
   + displayMealPlan() : void
 }

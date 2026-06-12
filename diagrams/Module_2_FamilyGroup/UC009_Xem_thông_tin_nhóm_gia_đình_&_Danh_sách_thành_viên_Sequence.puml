@@ -2,8 +2,8 @@
 title Sequence Diagram - UC009 ViewFamilyMembers
 
 actor "User" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "ViewGroupUI" as UI
+control "ViewGroupController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -> UI : 1. Chọn xem chi tiết nhóm gia đình

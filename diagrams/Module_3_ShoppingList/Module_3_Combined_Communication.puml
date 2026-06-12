@@ -1,0 +1,39 @@
+@startuml
+title Combined Communication Diagram - Module 3 (ShoppingList)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "ShoppingUI" as UI
+control "ShoppingController" as Controller
+entity "ShoppingDB" as Entity
+control "PantryController" as PantryController
+entity "PantryDB" as PantryDB
+
+Actor -right--- UI : " ▶ Các thao tác: \n1. Tạo/Xem/Sửa/Xóa Danh sách\n2. Thêm/Sửa/Xóa Mặt hàng\n3. Đánh dấu đã mua"
+UI -right---- Controller : " ▶ Xử lý nghiệp vụ (create, update, delete, markBought) \n ◀ Trả kết quả thành công/thất bại"
+Controller -down- Entity : " ▼ Truy vấn/Cập nhật dữ liệu: \n(Lưu danh sách, mặt hàng, \ncập nhật trạng thái)"
+Controller -right- PantryController : " ▶ transferItemToPantry() \n(Khi đánh dấu đã mua)"
+PantryController -down- PantryDB : " ▼ addFood()"
+@enduml

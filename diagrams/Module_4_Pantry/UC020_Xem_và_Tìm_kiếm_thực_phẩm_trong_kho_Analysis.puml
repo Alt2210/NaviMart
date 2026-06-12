@@ -5,7 +5,7 @@ class "ViewPantryUI" as UI <<boundary>> {
   + enterSearchKeyword() : void
   + displayFoodList() : void
 }
-class "PantryController" as Controller <<control>> {
+class "PantrySearchController" as Controller <<control>> {
   + searchFood(keyword: String, filters: Data) : void
 }
 class "PantryDB" as Entity <<entity>> {

@@ -2,8 +2,8 @@
 title Sequence Diagram - UC034 ViewStatistics
 
 actor "User" as Actor
-boundary "StatisticsUI" as UI
-control "StatController" as Controller
+boundary "StatisticsDashboardUI" as UI
+control "StatisticsController" as Controller
 entity "StatDB" as Entity
 
 Actor -> UI : 1. Chọn tab Thống kê & Chọn khoảng thời gian

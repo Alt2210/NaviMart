@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC032 AddMissingIngredients
 
-class "RecipeUI" as UI <<boundary>> {
+class "MissingIngredientUI" as UI <<boundary>> {
   + clickAddMissing() : void
   + displaySuccess() : void
 }
-class "RecipeController" as Controller <<control>> {
+class "ShoppingIntegrationController" as Controller <<control>> {
   + findMissingIngredients(recipeIngredients: List) : void
 }
 class "PantryDB" as PantryDB <<entity>> {

@@ -1,0 +1,20 @@
+@startuml
+title Combined Analysis Class Diagram - Module_7_Statistics
+
+class "StatisticsDashboardUI" as StatisticsDashboardUI_Alias <<boundary>> {
+  + selectDateRange() : void
+  + renderChart() : void
+}
+
+class "StatisticsController" as StatisticsController_Alias <<control>> {
+  + getStatistics(dateRange: Data) : void
+}
+
+class "StatDB" as StatDB_Alias <<entity>> {
+  + queryUsageAndWasteData(dateRange: Data) : Data
+}
+
+StatisticsController_Alias -- StatisticsDashboardUI_Alias
+StatDB_Alias -- StatisticsController_Alias
+
+@enduml

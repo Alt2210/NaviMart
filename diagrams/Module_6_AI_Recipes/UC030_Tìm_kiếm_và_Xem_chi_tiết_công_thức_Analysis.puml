@@ -1,12 +1,12 @@
 @startuml
 title Analysis Class Diagram - UC030 ViewRecipeDetail
 
-class "RecipeUI" as UI <<boundary>> {
+class "SearchRecipeUI" as UI <<boundary>> {
   + searchRecipes() : void
   + viewRecipeDetail() : void
   + displayDetails() : void
 }
-class "RecipeController" as Controller <<control>> {
+class "RecipeSearchController" as Controller <<control>> {
   + searchRecipes(keyword: String) : void
   + getRecipeDetail(recipeId: String) : void
 }

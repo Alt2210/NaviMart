@@ -2,8 +2,8 @@
 title Sequence Diagram - UC039 ViewAdminDashboard
 
 actor "Admin" as Actor
-boundary "DashboardUI" as UI
-control "AdminController" as Controller
+boundary "AdminDashboardUI" as UI
+control "AdminDashboardController" as Controller
 entity "SystemDB" as Entity
 
 Actor -> UI : 1. Truy cập trang chủ Dashboard Admin

@@ -1,0 +1,42 @@
+@startuml
+title Combined Analysis Class Diagram - Module_5_MealPlanner
+
+class "ViewMealPlanUI" as ViewMealPlanUI_Alias <<boundary>> {
+  + selectDateRange() : void
+  + displayMealPlan() : void
+}
+
+class "MealPlanController" as MealPlanController_Alias <<control>> {
+  + getMealPlan(dateRange: Data) : void
+  + createSession(date: Date, type: String) : void
+}
+
+class "MealPlanDB" as MealPlanDB_Alias <<entity>> {
+  + querySessions(dateRange: Data) : List
+  + insertSession(date: Date, type: String) : String
+  + saveMealToSession(sessionId: String, recipeId: String) : Boolean
+  + deleteMeal(sessionId: String, mealId: String) : Boolean
+}
+
+class "ManageMealSessionUI" as ManageMealSessionUI_Alias <<boundary>> {
+  + assignMealToSession() : void
+  + displayResult() : void
+}
+
+class "MealSessionController" as MealSessionController_Alias <<control>> {
+  + addOrUpdateMeal(sessionId: String, recipeId: String) : void
+  + removeMeal(sessionId: String, mealId: String) : void
+}
+
+class "RemoveMealUI" as RemoveMealUI_Alias <<boundary>> {
+  + selectMealToRemove() : void
+  + displayResult() : void
+}
+
+MealPlanController_Alias -- ViewMealPlanUI_Alias
+MealPlanController_Alias -- MealPlanDB_Alias
+ManageMealSessionUI_Alias -- MealSessionController_Alias
+MealPlanDB_Alias -- MealSessionController_Alias
+MealSessionController_Alias -- RemoveMealUI_Alias
+
+@enduml

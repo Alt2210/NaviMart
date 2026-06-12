@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC016 ManageShoppingList
 
-class "ShoppingUI" as UI <<boundary>> {
+class "ManageListUI" as UI <<boundary>> {
   + selectAction() : void
   + displayUpdate() : void
 }
-class "ShoppingController" as Controller <<control>> {
+class "ManageListController" as Controller <<control>> {
   + handleListAction(action: String, listId: String, data: Data) : void
 }
 class "ShoppingDB" as Entity <<entity>> {

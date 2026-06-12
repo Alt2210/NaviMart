@@ -1,0 +1,111 @@
+@startuml
+title Combined Sequence Diagram - Module 6 (AIRecipes)
+
+actor "User" as Actor
+boundary "RecipeUI" as UI
+control "RecipeController" as Controller
+entity "RecipeDB" as Entity
+entity "PantryDB" as PantryDB
+control "ShoppingController" as ShoppingController
+entity "ShoppingDB" as ShoppingDB
+control "AIService" as AIService
+
+group UC029 Gợi ý món ăn
+  Actor -> UI : Nhấn "Gợi ý món ăn"
+  activate UI
+  UI -> Controller : getSuggestions()
+  activate Controller
+  Controller -> PantryDB : getAvailableIngredients()
+  activate PantryDB
+  PantryDB --> Controller : ingredientList
+  deactivate PantryDB
+  Controller -> AIService : generateRecipes(ingredientList)
+  activate AIService
+  AIService --> Controller : suggestedRecipes
+  deactivate AIService
+  Controller --> UI : recipeList
+  deactivate Controller
+  UI --> Actor : Hiển thị món ăn gợi ý
+  deactivate UI
+end
+
+group UC030 Tìm kiếm & Xem chi tiết
+  Actor -> UI : Nhập từ khóa
+  activate UI
+  UI -> Controller : searchRecipes(keyword)
+  activate Controller
+  Controller -> Entity : queryRecipes(keyword)
+  activate Entity
+  Entity --> Controller : resultList
+  deactivate Entity
+  Controller --> UI : resultList
+  deactivate Controller
+  UI --> Actor : Hiển thị danh sách
+
+  Actor -> UI : Xem chi tiết
+  UI -> Controller : getRecipeDetail(recipeId)
+  activate Controller
+  Controller -> Entity : queryRecipeById(recipeId)
+  activate Entity
+  Entity --> Controller : recipeDetails
+  deactivate Entity
+  Controller --> UI : recipeDetails
+  deactivate Controller
+  UI --> Actor : Hiển thị chi tiết
+  deactivate UI
+end
+
+group UC031 Lưu/Bỏ lưu
+  Actor -> UI : Nhấn "Yêu thích/Lưu"
+  activate UI
+  UI -> Controller : toggleBookmark(recipeId)
+  activate Controller
+  Controller -> Entity : updateBookmarkStatus()
+  activate Entity
+  Entity --> Controller : status
+  deactivate Entity
+  Controller --> UI : success
+  deactivate Controller
+  UI --> Actor : Cập nhật UI
+  deactivate UI
+end
+
+group UC032 Thêm nguyên liệu còn thiếu
+  Actor -> UI : Chọn "Thêm nguyên liệu còn thiếu"
+  activate UI
+  UI -> Controller : findMissingIngredients(recipeIngredients)
+  activate Controller
+  Controller -> PantryDB : checkAvailable()
+  activate PantryDB
+  PantryDB --> Controller : missingIngredients
+  deactivate PantryDB
+  Controller -> ShoppingController : addItemsToList(missingIngredients)
+  activate ShoppingController
+  ShoppingController -> ShoppingDB : saveItems()
+  activate ShoppingDB
+  ShoppingDB --> ShoppingController : success
+  deactivate ShoppingDB
+  ShoppingController --> Controller : success
+  deactivate ShoppingController
+  Controller --> UI : success
+  deactivate Controller
+  UI --> Actor : Thông báo thành công
+  deactivate UI
+end
+
+group UC033 Chat với AI Chef
+  Actor -> UI : Nhập câu hỏi
+  activate UI
+  UI -> Controller : sendMessage(question)
+  activate Controller
+  Controller -> AIService : callAiAPI(question)
+  activate AIService
+  AIService --> Controller : answerText
+  deactivate AIService
+  Controller --> UI : answerText
+  deactivate Controller
+  UI --> Actor : Hiển thị câu trả lời
+  deactivate UI
+end
+
+@enduml

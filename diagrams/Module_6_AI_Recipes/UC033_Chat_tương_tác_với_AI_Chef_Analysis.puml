@@ -1,7 +1,7 @@
 @startuml
 title Analysis Class Diagram - UC033 ChatWithAIChef
 
-class "ChatUI" as UI <<boundary>> {
+class "AIChatUI" as UI <<boundary>> {
   + enterQuestion() : void
   + displayAnswer() : void
 }

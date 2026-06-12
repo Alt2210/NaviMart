@@ -26,7 +26,7 @@ skinparam {
 allow_mixing
 actor "User" as Actor
 boundary "SuggestRecipeUI" as UI
-control "RecipeController" as Controller
+control "AISuggestionController" as Controller
 entity "PantryDB" as PantryDB
 control "AIService" as AIService
 

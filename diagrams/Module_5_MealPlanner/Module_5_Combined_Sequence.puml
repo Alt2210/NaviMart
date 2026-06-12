@@ -1,0 +1,67 @@
+@startuml
+title Combined Sequence Diagram - Module 5 (MealPlanner)
+
+actor "User" as Actor
+boundary "MealPlanUI" as UI
+control "MealPlanController" as Controller
+entity "MealPlanDB" as Entity
+
+group UC026 Xem lịch trình và Tạo phiên ăn
+  Actor -> UI : Mở Lịch trình ăn uống
+  activate UI
+  UI -> Controller : getMealPlan(dateRange)
+  activate Controller
+  Controller -> Entity : querySessions(dateRange)
+  activate Entity
+  Entity --> Controller : return sessions
+  deactivate Entity
+  Controller --> UI : return mealPlanData
+  deactivate Controller
+  UI --> Actor : Hiển thị Lịch trình tuần/ngày
+  deactivate UI
+
+  Actor -> UI : Chọn "Thêm phiên ăn"
+  activate UI
+  UI -> Controller : createSession(date, sessionType)
+  activate Controller
+  Controller -> Entity : insertSession(date, sessionType)
+  activate Entity
+  Entity --> Controller : return sessionId
+  deactivate Entity
+  Controller --> UI : Cập nhật phiên ăn mới
+  deactivate Controller
+  UI --> Actor : Hiển thị phiên ăn trống
+  deactivate UI
+end
+
+group UC027 Thêm và Sửa món ăn trong lịch trình
+  Actor -> UI : Chọn món ăn và gán vào phiên ăn
+  activate UI
+  UI -> Controller : addOrUpdateMeal(sessionId, recipeId)
+  activate Controller
+  Controller -> Entity : saveMealToSession(sessionId, recipeId)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : Trả về trạng thái thành công
+  deactivate Controller
+  UI --> Actor : Hiển thị món ăn trong phiên ăn
+  deactivate UI
+end
+
+group UC028 Xóa món ăn khỏi lịch trình
+  Actor -> UI : Chọn món ăn trong phiên và nhấn "Xóa"
+  activate UI
+  UI -> Controller : removeMeal(sessionId, mealId)
+  activate Controller
+  Controller -> Entity : deleteMeal(sessionId, mealId)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : Thông báo xóa thành công
+  deactivate Controller
+  UI --> Actor : Xóa món ăn khỏi giao diện lịch trình
+  deactivate UI
+end
+
+@enduml

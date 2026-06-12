@@ -3,7 +3,7 @@ title Sequence Diagram - UC020 ViewPantry
 
 actor "User" as Actor
 boundary "ViewPantryUI" as UI
-control "PantryController" as Controller
+control "PantrySearchController" as Controller
 entity "PantryDB" as Entity
 
 Actor -> UI : 1. Truy cập Tủ lạnh & Nhập từ khóa tìm kiếm/Lọc

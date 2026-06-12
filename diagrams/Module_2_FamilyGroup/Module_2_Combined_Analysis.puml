@@ -1,0 +1,93 @@
+@startuml
+title Combined Analysis Class Diagram - Module_2_FamilyGroup
+
+class "CreateGroupUI" as CreateGroupUI_Alias <<boundary>> {
+  + enterGroupName() : void
+  + displayResult() : void
+}
+
+class "CreateGroupController" as CreateGroupController_Alias <<control>> {
+  + createGroup(groupName: String) : void
+}
+
+class "FamilyDB" as FamilyDB_Alias <<entity>> {
+  + saveNewGroup(groupName: String, ownerId: String) : String
+  + queryGroupInfoAndMembers(groupId: String) : Data
+  + saveInviteToken(groupId: String, token: String, expiry: Date) : Boolean
+  + validateToken(inviteCode: String) : Boolean
+  + addMemberToGroup(userId: String, groupId: String) : Boolean
+  + updateMemberRole(groupId: String, memberId: String, newRole: String) : Boolean
+  + deleteMember(groupId: String, memberId: String) : Boolean
+  + removeMember(groupId: String, userId: String) : Boolean
+}
+
+class "ViewGroupUI" as ViewGroupUI_Alias <<boundary>> {
+  + requestGroupDetails() : void
+  + displayGroupData() : void
+}
+
+class "ViewGroupController" as ViewGroupController_Alias <<control>> {
+  + getGroupDetails(groupId: String) : void
+}
+
+class "InviteMemberUI" as InviteMemberUI_Alias <<boundary>> {
+  + requestInviteToken() : void
+  + displayInviteToken() : void
+}
+
+class "InviteController" as InviteController_Alias <<control>> {
+  + generateInvite(groupId: String) : void
+}
+
+class "JoinGroupUI" as JoinGroupUI_Alias <<boundary>> {
+  + enterInviteCode() : void
+  + displaySuccess() : void
+}
+
+class "JoinGroupController" as JoinGroupController_Alias <<control>> {
+  + joinGroup(inviteCode: String) : void
+}
+
+class "ManageRoleUI" as ManageRoleUI_Alias <<boundary>> {
+  + selectRole() : void
+  + displayUpdate() : void
+}
+
+class "RoleController" as RoleController_Alias <<control>> {
+  + updateRole(groupId: String, memberId: String, newRole: String) : void
+}
+
+class "RemoveMemberUI" as RemoveMemberUI_Alias <<boundary>> {
+  + selectMemberToRemove() : void
+  + displayResult() : void
+}
+
+class "MemberController" as MemberController_Alias <<control>> {
+  + removeMember(groupId: String, memberId: String) : void
+}
+
+class "LeaveGroupUI" as LeaveGroupUI_Alias <<boundary>> {
+  + requestLeaveGroup() : void
+  + displaySuccess() : void
+}
+
+class "LeaveGroupController" as LeaveGroupController_Alias <<control>> {
+  + leaveGroup(groupId: String, userId: String) : void
+}
+
+CreateGroupController_Alias -- CreateGroupUI_Alias
+CreateGroupController_Alias -- FamilyDB_Alias
+ViewGroupController_Alias -- ViewGroupUI_Alias
+FamilyDB_Alias -- ViewGroupController_Alias
+InviteController_Alias -- InviteMemberUI_Alias
+FamilyDB_Alias -- InviteController_Alias
+JoinGroupController_Alias -- JoinGroupUI_Alias
+FamilyDB_Alias -- JoinGroupController_Alias
+ManageRoleUI_Alias -- RoleController_Alias
+FamilyDB_Alias -- RoleController_Alias
+MemberController_Alias -- RemoveMemberUI_Alias
+FamilyDB_Alias -- MemberController_Alias
+LeaveGroupController_Alias -- LeaveGroupUI_Alias
+FamilyDB_Alias -- LeaveGroupController_Alias
+
+@enduml

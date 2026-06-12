@@ -1,0 +1,114 @@
+@startuml
+title Combined Sequence Diagram - Module 2 (FamilyGroup)
+
+actor "User" as Actor
+boundary "FamilyUI" as UI
+control "FamilyController" as Controller
+entity "FamilyDB" as Entity
+
+group UC008 Tạo nhóm gia đình
+  Actor -> UI : Nhập tên nhóm & Chọn "Tạo nhóm"
+  activate UI
+  UI -> Controller : createGroup(groupName)
+  activate Controller
+  Controller -> Entity : saveNewGroup(groupName, ownerId)
+  activate Entity
+  Entity --> Controller : groupId
+  deactivate Entity
+  Controller --> UI : Trả về thông báo thành công
+  deactivate Controller
+  UI --> Actor : Hiển thị thông báo
+  deactivate UI
+end
+
+group UC009 Xem thông tin nhóm
+  Actor -> UI : Chọn xem chi tiết
+  activate UI
+  UI -> Controller : getGroupDetails(groupId)
+  activate Controller
+  Controller -> Entity : queryGroupInfoAndMembers(groupId)
+  activate Entity
+  Entity --> Controller : data
+  deactivate Entity
+  Controller --> UI : data
+  deactivate Controller
+  UI --> Actor : Hiển thị thông tin
+  deactivate UI
+end
+
+group UC010 Tạo mã mời
+  Actor -> UI : Chọn tạo mã mời
+  activate UI
+  UI -> Controller : generateInvite(groupId)
+  activate Controller
+  Controller -> Entity : saveInviteToken(groupId, token, expiry)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : trả mã mời
+  deactivate Controller
+  UI --> Actor : Hiển thị mã mời
+  deactivate UI
+end
+
+group UC011 Tham gia nhóm
+  Actor -> UI : Nhập mã mời
+  activate UI
+  UI -> Controller : joinGroup(inviteCode)
+  activate Controller
+  Controller -> Entity : validateToken() & addMemberToGroup()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : trả kết quả
+  deactivate Controller
+  UI --> Actor : Thông báo thành công
+  deactivate UI
+end
+
+group UC012 Cập nhật phân quyền
+  Actor -> UI : Đổi phân quyền
+  activate UI
+  UI -> Controller : updateRole(groupId, memberId, newRole)
+  activate Controller
+  Controller -> Entity : updateMemberRole()
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : thông báo
+  deactivate Controller
+  UI --> Actor : Cập nhật UI
+  deactivate UI
+end
+
+group UC013 Xóa thành viên
+  Actor -> UI : Chọn xóa thành viên
+  activate UI
+  UI -> Controller : removeMember(groupId, memberId)
+  activate Controller
+  Controller -> Entity : deleteMember(groupId, memberId)
+  activate Entity
+  Entity --> Controller : success
+  deactivate Entity
+  Controller --> UI : trả kết quả
+  deactivate Controller
+  UI --> Actor : Cập nhật UI
+  deactivate UI
+end
+
+group UC014 Rời khỏi nhóm
+  Actor -> UI : Rời nhóm
+  activate UI
+  UI -> Controller : leaveGroup(groupId, userId)
+  activate Controller
+  Controller -> Entity : removeMember(groupId, userId)
+  activate Entity
+  Entity --> Controller : result
+  deactivate Entity
+  Controller --> UI : trả kết quả
+  deactivate Controller
+  UI --> Actor : Chuyển hướng
+  deactivate UI
+end
+
+@enduml

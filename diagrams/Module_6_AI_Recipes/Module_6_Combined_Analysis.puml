@@ -1,0 +1,89 @@
+@startuml
+title Combined Analysis Class Diagram - Module_6_AI_Recipes
+
+class "SuggestRecipeUI" as SuggestRecipeUI_Alias <<boundary>> {
+  + requestSuggestion() : void
+  + displayRecipeList() : void
+}
+
+class "AISuggestionController" as AISuggestionController_Alias <<control>> {
+  + getSuggestions() : void
+}
+
+class "PantryDB" as PantryDB_Alias <<entity>> {
+  + getAvailableIngredients(userId: String) : List
+  + checkAvailable(recipeIngredients: List) : List
+}
+
+class "AIService" as AIService_Alias <<control>> {
+  + generateRecipes(ingredientList: List) : List
+  + callAiAPI(question: String, context: Data) : String
+}
+
+class "SearchRecipeUI" as SearchRecipeUI_Alias <<boundary>> {
+  + searchRecipes() : void
+  + viewRecipeDetail() : void
+  + displayDetails() : void
+}
+
+class "RecipeSearchController" as RecipeSearchController_Alias <<control>> {
+  + searchRecipes(keyword: String) : void
+  + getRecipeDetail(recipeId: String) : void
+}
+
+class "RecipeDB" as RecipeDB_Alias <<entity>> {
+  + queryRecipes(keyword: String) : List
+  + queryRecipeById(recipeId: String) : Data
+  + updateBookmarkStatus(recipeId: String, userId: String) : Boolean
+}
+
+class "BookmarkRecipeUI" as BookmarkRecipeUI_Alias <<boundary>> {
+  + clickBookmark() : void
+  + displayUpdate() : void
+}
+
+class "BookmarkController" as BookmarkController_Alias <<control>> {
+  + toggleBookmark(recipeId: String, userId: String) : void
+}
+
+class "MissingIngredientUI" as MissingIngredientUI_Alias <<boundary>> {
+  + clickAddMissing() : void
+  + displaySuccess() : void
+}
+
+class "ShoppingIntegrationController" as ShoppingIntegrationController_Alias <<control>> {
+  + findMissingIngredients(recipeIngredients: List) : void
+}
+
+class "ShoppingController" as ShoppingController_Alias <<control>> {
+  + addItemsToList(missingIngredients: List) : void
+}
+
+class "ShoppingDB" as ShoppingDB_Alias <<entity>> {
+  + saveItems() : Boolean
+}
+
+class "AIChatUI" as AIChatUI_Alias <<boundary>> {
+  + enterQuestion() : void
+  + displayAnswer() : void
+}
+
+class "ChatController" as ChatController_Alias <<control>> {
+  + sendMessage(question: String, context: Data) : void
+}
+
+AISuggestionController_Alias -- SuggestRecipeUI_Alias
+AISuggestionController_Alias -- PantryDB_Alias
+AIService_Alias -- AISuggestionController_Alias
+RecipeSearchController_Alias -- SearchRecipeUI_Alias
+RecipeDB_Alias -- RecipeSearchController_Alias
+BookmarkController_Alias -- BookmarkRecipeUI_Alias
+BookmarkController_Alias -- RecipeDB_Alias
+MissingIngredientUI_Alias -- ShoppingIntegrationController_Alias
+PantryDB_Alias -- ShoppingIntegrationController_Alias
+ShoppingController_Alias -- ShoppingIntegrationController_Alias
+ShoppingController_Alias -- ShoppingDB_Alias
+AIChatUI_Alias -- ChatController_Alias
+AIService_Alias -- ChatController_Alias
+
+@enduml

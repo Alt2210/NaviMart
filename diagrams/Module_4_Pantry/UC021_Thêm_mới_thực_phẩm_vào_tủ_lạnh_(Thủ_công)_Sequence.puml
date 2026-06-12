@@ -3,7 +3,7 @@ title Sequence Diagram - UC021 AddFoodManually
 
 actor "User" as Actor
 boundary "AddFoodUI" as UI
-control "PantryController" as Controller
+control "FoodManagementController" as Controller
 entity "PantryDB" as Entity
 
 Actor -> UI : 1. Nhập thông tin thực phẩm (Tên, SL, HSD, Thể loại) & Thêm

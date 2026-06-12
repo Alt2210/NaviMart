@@ -1,12 +1,12 @@
 @startuml
 title Analysis Class Diagram - UC038 ApproveRecipe
 
-class "ApproveRecipeUI" as UI <<boundary>> {
+class "RecipeApprovalUI" as UI <<boundary>> {
   + viewPendingRecipes() : void
   + approveOrReject() : void
   + displayResult() : void
 }
-class "AdminController" as Controller <<control>> {
+class "RecipeApprovalController" as Controller <<control>> {
   + getPendingRecipes() : void
   + approveOrRejectRecipe(recipeId: String, status: String) : void
 }

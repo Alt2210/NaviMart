@@ -25,8 +25,8 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "ShoppingUI" as UI
-control "ShoppingController" as Controller
+boundary "ManageListUI" as UI
+control "ManageListController" as Controller
 entity "ShoppingDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Chọn thao tác (xem/sửa/xóa) "

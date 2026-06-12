@@ -1,0 +1,36 @@
+@startuml
+title Combined Communication Diagram - Module 7 (Statistics)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "StatisticsUI" as UI
+control "StatController" as Controller
+entity "StatDB" as Entity
+
+Actor -right--- UI : " ▶ Các thao tác: \n1. Xem thống kê tiêu dùng và lãng phí"
+UI -right---- Controller : " ▶ getStatistics() \n ◀ Trả kết quả hiển thị"
+Controller -down- Entity : " ▼ queryUsageAndWasteData()"
+
+@enduml

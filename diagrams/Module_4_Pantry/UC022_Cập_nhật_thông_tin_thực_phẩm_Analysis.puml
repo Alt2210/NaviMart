@@ -5,7 +5,7 @@ class "UpdateFoodUI" as UI <<boundary>> {
   + selectFoodToUpdate() : void
   + displayUpdate() : void
 }
-class "PantryController" as Controller <<control>> {
+class "FoodManagementController" as Controller <<control>> {
   + updateFood(foodId: String, updatedData: Data) : void
 }
 class "PantryDB" as Entity <<entity>> {

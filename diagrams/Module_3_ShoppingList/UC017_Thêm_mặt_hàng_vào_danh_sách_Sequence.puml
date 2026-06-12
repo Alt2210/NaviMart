@@ -2,8 +2,8 @@
 title Sequence Diagram - UC017 AddItemToList
 
 actor "User" as Actor
-boundary "ShoppingUI" as UI
-control "ShoppingController" as Controller
+boundary "AddShoppingItemUI" as UI
+control "ShoppingItemController" as Controller
 entity "ShoppingDB" as Entity
 
 Actor -> UI : 1. Nhập tên mặt hàng, số lượng & Thêm

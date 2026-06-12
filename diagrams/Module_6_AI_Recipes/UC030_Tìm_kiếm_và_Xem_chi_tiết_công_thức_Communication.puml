@@ -25,8 +25,8 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "RecipeUI" as UI
-control "RecipeController" as Controller
+boundary "SearchRecipeUI" as UI
+control "RecipeSearchController" as Controller
 entity "RecipeDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Tìm kiếm & Xem chi tiết "

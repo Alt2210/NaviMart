@@ -1,0 +1,77 @@
+@startuml
+title Combined Analysis Class Diagram - Module_8_Admin
+
+class "UserManagementUI" as UserManagementUI_Alias <<boundary>> {
+  + login() : void
+  + viewUsers() : void
+}
+
+class "UserManagementController" as UserManagementController_Alias <<control>> {
+  + loginAdmin(credentials: Data) : void
+  + getUsersList(filters: Data) : void
+  + toggleUserLock(userId: String) : void
+}
+
+class "UserDB" as UserDB_Alias <<entity>> {
+  + queryAllUsers(filters: Data) : List
+  + updateUserStatus(userId: String, newStatus: String) : Boolean
+}
+
+class "UserStatusUI" as UserStatusUI_Alias <<boundary>> {
+  + toggleLock() : void
+  + displayStatus() : void
+}
+
+class "MasterDataUI" as MasterDataUI_Alias <<boundary>> {
+  + manageData() : void
+  + displayUpdate() : void
+}
+
+class "MasterDataController" as MasterDataController_Alias <<control>> {
+  + executeCRUD(action: String, data: Data) : void
+}
+
+class "MasterDataDB" as MasterDataDB_Alias <<entity>> {
+  + updateDatabase(action: String, data: Data) : Boolean
+}
+
+class "RecipeApprovalUI" as RecipeApprovalUI_Alias <<boundary>> {
+  + viewPendingRecipes() : void
+  + approveOrReject() : void
+  + displayResult() : void
+}
+
+class "RecipeApprovalController" as RecipeApprovalController_Alias <<control>> {
+  + getPendingRecipes() : void
+  + approveOrRejectRecipe(recipeId: String, status: String) : void
+}
+
+class "RecipeDB" as RecipeDB_Alias <<entity>> {
+  + queryPending() : List
+  + updateRecipeStatus(recipeId: String, status: String) : Boolean
+}
+
+class "AdminDashboardUI" as AdminDashboardUI_Alias <<boundary>> {
+  + requestDashboardData() : void
+  + displayDashboard() : void
+}
+
+class "AdminDashboardController" as AdminDashboardController_Alias <<control>> {
+  + getOverviewStats() : void
+}
+
+class "SystemDB" as SystemDB_Alias <<entity>> {
+  + querySystemMetrics() : Data
+}
+
+UserManagementController_Alias -- UserManagementUI_Alias
+UserDB_Alias -- UserManagementController_Alias
+UserManagementController_Alias -- UserStatusUI_Alias
+MasterDataController_Alias -- MasterDataUI_Alias
+MasterDataController_Alias -- MasterDataDB_Alias
+RecipeApprovalController_Alias -- RecipeApprovalUI_Alias
+RecipeApprovalController_Alias -- RecipeDB_Alias
+AdminDashboardController_Alias -- AdminDashboardUI_Alias
+AdminDashboardController_Alias -- SystemDB_Alias
+
+@enduml

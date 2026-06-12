@@ -25,7 +25,7 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "MealPlanUI" as UI
+boundary "ViewMealPlanUI" as UI
 control "MealPlanController" as Controller
 entity "MealPlanDB" as Entity
 

@@ -2,8 +2,8 @@
 title Sequence Diagram - UC032 AddMissingIngredients
 
 actor "User" as Actor
-boundary "RecipeUI" as UI
-control "RecipeController" as Controller
+boundary "MissingIngredientUI" as UI
+control "ShoppingIntegrationController" as Controller
 entity "PantryDB" as PantryDB
 control "ShoppingController" as ShoppingController
 entity "ShoppingDB" as ShoppingDB

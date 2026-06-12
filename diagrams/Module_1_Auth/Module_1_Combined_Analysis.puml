@@ -1,0 +1,118 @@
+@startuml
+title Combined Analysis Class Diagram - Module_1_Auth
+
+class "RegisterUI" as RegisterUI_Alias <<boundary>> {
+  + Chọn Đăng ký() : void
+  + Điền & Gửi form() : void
+  + Success (Chuyển Đăng nhập) : void
+}
+
+class "OTPVerificationUI" as OTPVerificationUI_Alias <<boundary>> {
+  + Require OTP() : void
+  + Nhập OTP() : void
+}
+
+class "AuthController" as AuthController_Alias <<control>> {
+  + submit(name, email_phone, password) : void
+  + verifyOTP() : void
+  + submitLogin(credentials) : void
+  + Callback with Profile Data (Email, Name) : void
+  + requestReset(email) : void
+  + resetPassword(otp, newPass) : void
+  + changePassword(oldP, newP) : void
+  + verifyOldPassword() : void
+  + logout() : void
+}
+
+class "EmailService" as EmailService_Alias <<control>> {
+  + sendOTP() : void
+}
+
+class "UserAccount" as UserAccount_Alias <<entity>> {
+  + checkExists() : void
+  + savePending() : void
+  + activateAccount() : void
+  + verifyCredentials() : void
+  + checkEmail() & autoCreateIfNeeded() : void
+  + updatePassword() : void
+  + fetchCurrentHash() : void
+  + updateHash() : void
+}
+
+class "LoginUI" as LoginUI_Alias <<boundary>> {
+  + Nhập Email/SĐT & Mật khẩu() : void
+  + Success & Redirect to Home() : void
+}
+
+class "TokenService" as TokenService_Alias <<entity>> {
+  + generateToken() : void
+}
+
+class "OAuthUI" as OAuthUI_Alias <<boundary>> {
+  + Chọn Login with Google/FB() : void
+  + Success & Redirect() : void
+}
+
+class "OAuthProvider (Google/FB)" as OAuthProviderGoogleFB_Alias <<control>> {
+  + Request Auth URL() : void
+  + Đồng ý cấp quyền() : void
+}
+
+class "OAuthProvider" as OAuthProvider_Alias <<control>> {
+}
+
+class "ForgotPassUI" as ForgotPassUI_Alias <<boundary>> {
+  + Submit Email() : void
+  + Success Msg() : void
+}
+
+class "ResetPassUI" as ResetPassUI_Alias <<boundary>> {
+  + Show OTP Input() : void
+  + Submit OTP & New Password() : void
+}
+
+class "ProfileUI" as ProfileUI_Alias <<boundary>> {
+  + Sửa Name/Avatar & Lưu() : void
+  + Cập nhật thành công() : void
+}
+
+class "ProfileController" as ProfileController_Alias <<control>> {
+  + updateProfile(data) : void
+}
+
+class "UserProfile" as UserProfile_Alias <<entity>> {
+  + save(data) : void
+}
+
+class "ChangePassUI" as ChangePassUI_Alias <<boundary>> {
+  + Nhập Pass cũ & Pass mới() : void
+  + Success Msg() : void
+}
+
+class "SettingsUI" as SettingsUI_Alias <<boundary>> {
+  + Bấm Đăng xuất() : void
+  + Redirect to Login() : void
+}
+
+class "SessionManager" as SessionManager_Alias <<entity>> {
+  + invalidateToken() : void
+}
+
+AuthController_Alias -- RegisterUI_Alias
+AuthController_Alias -- UserAccount_Alias
+AuthController_Alias -- EmailService_Alias
+AuthController_Alias -- OTPVerificationUI_Alias
+AuthController_Alias -- LoginUI_Alias
+AuthController_Alias -- TokenService_Alias
+OAuthProviderGoogleFB_Alias -- OAuthUI_Alias
+AuthController_Alias -- OAuthProviderGoogleFB_Alias
+AuthController_Alias -- OAuthUI_Alias
+AuthController_Alias -- ForgotPassUI_Alias
+AuthController_Alias -- ResetPassUI_Alias
+ProfileController_Alias -- ProfileUI_Alias
+ProfileController_Alias -- UserProfile_Alias
+AuthController_Alias -- ChangePassUI_Alias
+AuthController_Alias -- SettingsUI_Alias
+AuthController_Alias -- SessionManager_Alias
+
+@enduml

@@ -2,8 +2,8 @@
 title Sequence Diagram - UC012 UpdateMemberRole
 
 actor "User (Admin)" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "ManageRoleUI" as UI
+control "RoleController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -> UI : 1. Chọn thành viên & Đổi quyền (Role)

@@ -2,8 +2,8 @@
 title Sequence Diagram - UC013 RemoveMember
 
 actor "User (Admin)" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "RemoveMemberUI" as UI
+control "MemberController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -> UI : 1. Chọn thành viên & Nhấn "Xóa khỏi nhóm"

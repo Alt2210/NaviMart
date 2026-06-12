@@ -25,8 +25,8 @@ skinparam {
 
 allow_mixing
 actor "Admin" as Actor
-boundary "DashboardUI" as UI
-control "AdminController" as Controller
+boundary "AdminDashboardUI" as UI
+control "AdminDashboardController" as Controller
 entity "SystemDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Truy cập Dashboard "

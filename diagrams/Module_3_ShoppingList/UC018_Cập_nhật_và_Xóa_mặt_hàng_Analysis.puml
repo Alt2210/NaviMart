@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC018 UpdateOrRemoveItem
 
-class "ShoppingUI" as UI <<boundary>> {
+class "UpdateItemUI" as UI <<boundary>> {
   + selectItemAction() : void
   + displayUpdate() : void
 }
-class "ShoppingController" as Controller <<control>> {
+class "ShoppingItemController" as Controller <<control>> {
   + updateOrRemoveItem(action: String, itemId: String, data: Data) : void
 }
 class "ShoppingDB" as Entity <<entity>> {

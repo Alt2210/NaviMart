@@ -1,0 +1,47 @@
+@startuml
+title Combined Communication Diagram - Module 4 (Pantry)
+
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
+allow_mixing
+actor "User" as Actor
+boundary "PantryUI" as UI
+control "PantryController" as Controller
+entity "PantryDB" as Entity
+control "MealController" as MealController
+control "NotificationController" as NotifController
+control "NotificationService" as NotifService
+actor "System (CronJob)" as Cron
+
+Actor -right--- UI : " ▶ Các thao tác: \n1. Xem/Tìm kiếm\n2. Thêm/Sửa/Xóa thực phẩm\n3. Xác nhận nấu xong"
+UI -right---- Controller : " ▶ Xử lý (search, add, update, remove)"
+UI -up- MealController : " ▶ Xác nhận nấu"
+MealController -right- Controller : " ▶ deductIngredients()"
+Controller -down- Entity : " ▼ Truy vấn/Cập nhật (lưu/xóa/trừ tồn)"
+
+Cron -right- NotifController : " ▶ triggerCheckExpiryDaily()"
+NotifController -down- Entity : " ▼ queryExpiringFoods()"
+NotifController -down- NotifService : " ▼ sendExpiryWarning()"
+NotifService -down- Actor : " ▼ Gửi thông báo hết hạn"
+
+@enduml

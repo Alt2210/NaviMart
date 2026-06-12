@@ -25,8 +25,8 @@ skinparam {
 
 allow_mixing
 actor "User (Admin)" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "InviteMemberUI" as UI
+control "InviteController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -right--- UI : " ▶ 1: Chọn tạo mã mời "

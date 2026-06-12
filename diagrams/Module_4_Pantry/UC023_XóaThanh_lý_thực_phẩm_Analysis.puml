@@ -5,7 +5,7 @@ class "RemoveFoodUI" as UI <<boundary>> {
   + selectFoodToRemove() : void
   + displayResult() : void
 }
-class "PantryController" as Controller <<control>> {
+class "FoodManagementController" as Controller <<control>> {
   + removeFood(foodId: String) : void
 }
 class "PantryDB" as Entity <<entity>> {

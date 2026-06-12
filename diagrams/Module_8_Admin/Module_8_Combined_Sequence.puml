@@ -1,0 +1,90 @@
+@startuml
+title Combined Sequence Diagram - Module 8 (Admin)
+
+actor "Admin" as Actor
+boundary "AdminUI" as AdminUI
+boundary "ApproveRecipeUI" as ApproveUI
+boundary "DashboardUI" as DashboardUI
+control "AdminController" as Controller
+control "MasterDataController" as MDController
+entity "UserDB" as UserDB
+entity "MasterDataDB" as MasterDataDB
+entity "RecipeDB" as RecipeDB
+entity "SystemDB" as SystemDB
+
+group UC035 Đăng nhập & Xem danh sách User
+  Actor -> AdminUI : Đăng nhập & Quản lý User
+  activate AdminUI
+  AdminUI -> Controller : loginAdmin() & getUsersList()
+  activate Controller
+  Controller -> UserDB : queryAllUsers()
+  activate UserDB
+  UserDB --> Controller : userList
+  deactivate UserDB
+  Controller --> AdminUI : userList
+  deactivate Controller
+  AdminUI --> Actor : Hiển thị danh sách
+  deactivate AdminUI
+end
+
+group UC036 Khóa/Mở khóa User
+  Actor -> AdminUI : Chọn User & Khóa/Mở khóa
+  activate AdminUI
+  AdminUI -> Controller : toggleUserLock()
+  activate Controller
+  Controller -> UserDB : updateUserStatus()
+  activate UserDB
+  UserDB --> Controller : success
+  deactivate UserDB
+  Controller --> AdminUI : success
+  deactivate Controller
+  AdminUI --> Actor : Cập nhật trạng thái
+  deactivate AdminUI
+end
+
+group UC037 Quản lý Master Data
+  Actor -> AdminUI : Thêm/Sửa/Xóa Master Data
+  activate AdminUI
+  AdminUI -> MDController : executeCRUD()
+  activate MDController
+  MDController -> MasterDataDB : updateDatabase()
+  activate MasterDataDB
+  MasterDataDB --> MDController : success
+  deactivate MasterDataDB
+  MDController --> AdminUI : success
+  deactivate MDController
+  AdminUI --> Actor : Làm mới danh sách
+  deactivate AdminUI
+end
+
+group UC038 Kiểm duyệt công thức
+  Actor -> ApproveUI : Xem & Duyệt công thức
+  activate ApproveUI
+  ApproveUI -> Controller : approveOrRejectRecipe()
+  activate Controller
+  Controller -> RecipeDB : updateRecipeStatus()
+  activate RecipeDB
+  RecipeDB --> Controller : success
+  deactivate RecipeDB
+  Controller --> ApproveUI : success
+  deactivate Controller
+  ApproveUI --> Actor : Cập nhật danh sách
+  deactivate ApproveUI
+end
+
+group UC039 Xem Dashboard tổng quan
+  Actor -> DashboardUI : Truy cập Dashboard
+  activate DashboardUI
+  DashboardUI -> Controller : getOverviewStats()
+  activate Controller
+  Controller -> SystemDB : querySystemMetrics()
+  activate SystemDB
+  SystemDB --> Controller : metrics
+  deactivate SystemDB
+  Controller --> DashboardUI : metricsData
+  deactivate Controller
+  DashboardUI --> Actor : Hiển thị Dashboard
+  deactivate DashboardUI
+end
+
+@enduml

@@ -1,0 +1,78 @@
+@startuml
+title Combined Analysis Class Diagram - Module_4_Pantry
+
+class "ViewPantryUI" as ViewPantryUI_Alias <<boundary>> {
+  + enterSearchKeyword() : void
+  + displayFoodList() : void
+}
+
+class "PantrySearchController" as PantrySearchController_Alias <<control>> {
+  + searchFood(keyword: String, filters: Data) : void
+}
+
+class "PantryDB" as PantryDB_Alias <<entity>> {
+  + queryFoodList(keyword: String, filters: Data) : List
+  + saveFood(foodDetails: Data) : String
+  + updateFoodData(foodId: String, updatedData: Data) : Boolean
+  + deleteFoodData(foodId: String) : Boolean
+  + decreaseFoodQuantity(ingredients: List) : Boolean
+  + queryExpiringFoods(daysLimit: Number) : List
+}
+
+class "AddFoodUI" as AddFoodUI_Alias <<boundary>> {
+  + inputFoodDetails() : void
+  + displaySuccess() : void
+}
+
+class "FoodManagementController" as FoodManagementController_Alias <<control>> {
+  + addFood(foodDetails: Data) : void
+  + updateFood(foodId: String, updatedData: Data) : void
+  + removeFood(foodId: String) : void
+}
+
+class "UpdateFoodUI" as UpdateFoodUI_Alias <<boundary>> {
+  + selectFoodToUpdate() : void
+  + displayUpdate() : void
+}
+
+class "RemoveFoodUI" as RemoveFoodUI_Alias <<boundary>> {
+  + selectFoodToRemove() : void
+  + displayResult() : void
+}
+
+class "MealPlanUI" as MealPlanUI_Alias <<boundary>> {
+  + confirmMealCooked() : void
+  + displayUpdate() : void
+}
+
+class "MealController" as MealController_Alias <<control>> {
+  + confirmMealCooked(mealId: String) : void
+}
+
+class "PantryController" as PantryController_Alias <<control>> {
+  + deductIngredients(ingredients: List) : void
+}
+
+class "NotificationController" as NotificationController_Alias <<control>> {
+  + triggerCheckExpiryDaily() : void
+}
+
+class "NotificationService" as NotificationService_Alias <<control>> {
+  + sendExpiryWarning(userId: String, foods: List) : void
+}
+
+PantrySearchController_Alias -- ViewPantryUI_Alias
+PantryDB_Alias -- PantrySearchController_Alias
+AddFoodUI_Alias -- FoodManagementController_Alias
+FoodManagementController_Alias -- PantryDB_Alias
+FoodManagementController_Alias -- UpdateFoodUI_Alias
+FoodManagementController_Alias -- RemoveFoodUI_Alias
+MealController_Alias -- MealPlanUI_Alias
+MealController_Alias -- PantryController_Alias
+PantryController_Alias -- PantryDB_Alias
+CronJob_Alias -- NotificationController_Alias
+NotificationController_Alias -- PantryDB_Alias
+NotificationController_Alias -- NotificationService_Alias
+NotificationService_Alias -- User_Alias
+
+@enduml

@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC039 ViewAdminDashboard
 
-class "DashboardUI" as UI <<boundary>> {
+class "AdminDashboardUI" as UI <<boundary>> {
   + requestDashboardData() : void
   + displayDashboard() : void
 }
-class "AdminController" as Controller <<control>> {
+class "AdminDashboardController" as Controller <<control>> {
   + getOverviewStats() : void
 }
 class "SystemDB" as Entity <<entity>> {

@@ -25,7 +25,7 @@ skinparam {
 
 allow_mixing
 actor "User" as Actor
-boundary "ChatUI" as UI
+boundary "AIChatUI" as UI
 control "ChatController" as Controller
 control "AIService" as AIService
 

@@ -1,11 +1,11 @@
 @startuml
 title Analysis Class Diagram - UC013 RemoveMember
 
-class "FamilyUI" as UI <<boundary>> {
+class "RemoveMemberUI" as UI <<boundary>> {
   + selectMemberToRemove() : void
   + displayResult() : void
 }
-class "FamilyController" as Controller <<control>> {
+class "MemberController" as Controller <<control>> {
   + removeMember(groupId: String, memberId: String) : void
 }
 class "FamilyDB" as Entity <<entity>> {

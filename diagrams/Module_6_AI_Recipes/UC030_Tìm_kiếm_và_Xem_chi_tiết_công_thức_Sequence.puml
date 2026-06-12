@@ -2,8 +2,8 @@
 title Sequence Diagram - UC030 ViewRecipeDetail
 
 actor "User" as Actor
-boundary "RecipeUI" as UI
-control "RecipeController" as Controller
+boundary "SearchRecipeUI" as UI
+control "RecipeSearchController" as Controller
 entity "RecipeDB" as Entity
 
 Actor -> UI : 1. Nhập từ khóa & Tìm kiếm công thức

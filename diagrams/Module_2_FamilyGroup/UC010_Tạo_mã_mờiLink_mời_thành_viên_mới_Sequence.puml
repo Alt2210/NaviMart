@@ -2,8 +2,8 @@
 title Sequence Diagram - UC010 GenerateInviteCode
 
 actor "User (Admin)" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "InviteMemberUI" as UI
+control "InviteController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -> UI : 1. Chọn "Tạo mã mời"

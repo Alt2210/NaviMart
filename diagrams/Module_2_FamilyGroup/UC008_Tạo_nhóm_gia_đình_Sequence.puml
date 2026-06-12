@@ -2,8 +2,8 @@
 title Sequence Diagram - UC008 CreateFamilyGroup
 
 actor "User" as Actor
-boundary "FamilyUI" as UI
-control "FamilyController" as Controller
+boundary "CreateGroupUI" as UI
+control "CreateGroupController" as Controller
 entity "FamilyDB" as Entity
 
 Actor -> UI : 1. Nhập tên nhóm & Chọn "Tạo nhóm"
