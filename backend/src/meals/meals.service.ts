@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { Family } from '../families/schemas/family.schema';
+import { resolveActiveFamilyId } from '../families/family-access.util';
 import { Recipe } from '../recipes/schemas/recipe.schema';
 import { CreateMealPlanDto } from './dto/create-meal-plan.dto';
 import { ListMealPlansQueryDto } from './dto/list-meal-plans-query.dto';
@@ -46,7 +47,32 @@ export class MealsService {
       .sort({ date: 1, session: 1 })
       .exec();
 
-    return meals.map((meal) => this.toMealPlanResponse(meal));
+    // One batched lookup so every meal carries its recipe name (saves the
+    // frontend an N+1 round of GET /recipes/:id calls).
+    const recipeIds = [
+      ...new Set(
+        meals
+          .filter((meal) => meal.recipeId)
+          .map((meal) => meal.recipeId!.toString()),
+      ),
+    ];
+    const recipes = recipeIds.length
+      ? await this.recipeModel
+          .find({ _id: { $in: recipeIds } })
+          .select('name')
+          .lean()
+          .exec()
+      : [];
+    const recipeNameById = new Map(
+      recipes.map((recipe) => [recipe._id.toString(), recipe.name]),
+    );
+
+    return meals.map((meal) =>
+      this.toMealPlanResponse(
+        meal,
+        meal.recipeId ? recipeNameById.get(meal.recipeId.toString()) : undefined,
+      ),
+    );
   }
 
   async create(user: AuthenticatedUser, dto: CreateMealPlanDto) {
@@ -66,12 +92,12 @@ export class MealsService {
       createdBy: new Types.ObjectId(user.userId),
     });
 
-    return this.toMealPlanResponse(meal);
+    return this.toMealPlanResponse(meal, recipe?.name);
   }
 
   async findOne(user: AuthenticatedUser, mealId: string) {
     const meal = await this.findMealForUser(user, mealId);
-    return this.toMealPlanResponse(meal);
+    return this.toMealPlanResponse(meal, await this.lookupRecipeName(meal));
   }
 
   async update(user: AuthenticatedUser, mealId: string, dto: UpdateMealPlanDto) {
@@ -95,7 +121,10 @@ export class MealsService {
     if (dto.note !== undefined) meal.note = dto.note;
 
     await meal.save();
-    return this.toMealPlanResponse(meal);
+    return this.toMealPlanResponse(
+      meal,
+      recipe?.name ?? (await this.lookupRecipeName(meal)),
+    );
   }
 
   async remove(user: AuthenticatedUser, mealId: string) {
@@ -166,30 +195,28 @@ export class MealsService {
     return recipe;
   }
 
-  private async getActiveFamilyId(user: AuthenticatedUser) {
-    if (!user.activeFamilyId) {
-      throw new ForbiddenException('User is not attached to a family');
+  private getActiveFamilyId(user: AuthenticatedUser) {
+    return resolveActiveFamilyId(this.familyModel, user);
+  }
+
+  private async lookupRecipeName(meal: MealPlanDocument | MealPlan) {
+    if (!meal.recipeId) {
+      return undefined;
     }
 
-    const family = await this.familyModel
-      .findById(user.activeFamilyId)
-      .select('_id members')
+    const recipe = await this.recipeModel
+      .findById(meal.recipeId)
+      .select('name')
       .lean()
       .exec();
 
-    const member = family?.members.find(
-      (item) =>
-        item.userId.toString() === user.userId && item.status === 'active',
-    );
-
-    if (!member) {
-      throw new ForbiddenException('User is not an active family member');
-    }
-
-    return new Types.ObjectId(user.activeFamilyId);
+    return recipe?.name;
   }
 
-  private toMealPlanResponse(meal: MealPlanDocument | MealPlan) {
+  private toMealPlanResponse(
+    meal: MealPlanDocument | MealPlan,
+    recipeName?: string,
+  ) {
     return {
       id: meal._id.toString(),
       familyId: meal.familyId.toString(),
@@ -197,6 +224,7 @@ export class MealsService {
       session: meal.session,
       customSessionName: meal.customSessionName,
       recipeId: meal.recipeId?.toString(),
+      recipeName,
       customName: meal.customName,
       servings: meal.servings,
       isCompleted: meal.isCompleted,

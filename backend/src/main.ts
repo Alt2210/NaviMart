@@ -8,8 +8,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:5173'],
+    origin: true,
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -48,6 +51,7 @@ async function bootstrap() {
     .addTag('Recipes', 'Recipe search, detail, CRUD, missing ingredients, and generated shopping lists.')
     .addTag('Meals', 'Meal planner CRUD, missing ingredients, and generated shopping lists.')
     .addTag('Reports', 'Dashboard, consumption trend, and waste reports.')
+    .addTag('Uploads', 'Authenticated image uploads backed by Cloudinary.')
     .addBearerAuth(
       {
         type: 'http',

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import SideNav from '../components/SideNav';
-import { recipesApi } from '../api';
+import { recipesApi, uploadsApi } from '../api';
 import type { RecipeEditorInput } from '../api';
 import { useDialog } from '../contexts/DialogContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -29,6 +29,7 @@ export default function RecipeEditor() {
   const [steps, setSteps] = useState<string[]>(['']);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const canCreate = user?.role === 'admin' || user?.role === 'housewife';
 
@@ -69,6 +70,20 @@ export default function RecipeEditor() {
 
   const updateIngredient = (index: number, patch: Partial<IngredientRow>) => {
     setIngredients((rows) => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
+  };
+
+  const handleImageUpload = async (file?: File) => {
+    if (!file || uploadingImage) return;
+    setUploadingImage(true);
+    try {
+      const image = await uploadsApi.image(file);
+      setImageUrl(image.secureUrl);
+      showAlert('Đã tải ảnh lên Cloudinary.');
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không tải được ảnh.');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -180,7 +195,25 @@ export default function RecipeEditor() {
                   </div>
                   <div>
                     <label className="block font-label-md text-on-surface mb-1.5">Ảnh món ăn (URL)</label>
-                    <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} type="url" placeholder="https://..." className={inputClass} />
+                    {imageUrl && (
+                      <div className="mb-3 aspect-video overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low">
+                        <img src={imageUrl} alt={name || 'Recipe'} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <label className="mb-3 w-full px-4 py-3 bg-surface-container-lowest border border-dashed border-outline-variant rounded-xl hover:border-primary transition-colors cursor-pointer flex items-center justify-between gap-3">
+                      <span className="font-body-md text-on-surface-variant truncate">
+                        {uploadingImage ? 'Đang tải lên Cloudinary...' : 'Chọn ảnh từ máy'}
+                      </span>
+                      <span className="material-symbols-outlined text-primary">cloud_upload</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        disabled={uploadingImage}
+                        onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                      />
+                    </label>
+                    <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} type="url" placeholder="https://res.cloudinary.com/..." className={inputClass} />
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div>

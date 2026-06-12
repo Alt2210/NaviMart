@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { compare, hash } from 'bcryptjs';
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomInt } from 'crypto';
 import { Model, Types } from 'mongoose';
 import {
   Family,
@@ -19,6 +19,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { GmailMailService } from './gmail-mail.service';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { AuthenticatedUser, JwtPayload } from './types/authenticated-user.type';
 
@@ -34,6 +35,7 @@ export class AuthService {
     @InjectModel(Family.name) private readonly familyModel: Model<Family>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly gmailMailService: GmailMailService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -170,7 +172,7 @@ export class AuthService {
       return { success: true };
     }
 
-    const token = randomBytes(32).toString('hex');
+    const token = this.generateVerificationCode();
     await this.userModel
       .updateOne(
         { _id: user._id },
@@ -182,6 +184,11 @@ export class AuthService {
         },
       )
       .exec();
+
+    if (this.gmailMailService.isEnabled() && user.email) {
+      await this.gmailMailService.sendPasswordResetCode(user.email, token);
+      return { success: true };
+    }
 
     if (this.isProduction()) {
       return { success: true };
@@ -233,7 +240,7 @@ export class AuthService {
       throw new BadRequestException('User account has no email address');
     }
 
-    const token = randomBytes(32).toString('hex');
+    const token = this.generateVerificationCode();
     await this.userModel
       .updateOne(
         { _id: user._id },
@@ -244,6 +251,11 @@ export class AuthService {
         },
       )
       .exec();
+
+    if (this.gmailMailService.isEnabled()) {
+      await this.gmailMailService.sendEmailVerificationCode(user.email, token);
+      return { success: true };
+    }
 
     if (this.isProduction()) {
       return { success: true };
@@ -358,6 +370,10 @@ export class AuthService {
 
   private sha256(value: string) {
     return createHash('sha256').update(value).digest('hex');
+  }
+
+  private generateVerificationCode() {
+    return randomInt(100000, 1000000).toString();
   }
 
   private isProduction() {

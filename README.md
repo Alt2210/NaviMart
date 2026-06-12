@@ -101,10 +101,11 @@ $env:E2E_MONGODB_URI='mongodb://localhost:27017'
 npm run test:e2e
 ```
 
-E2E phủ 6 luồng chính: đăng ký/refresh/family → shopping list CRUD → complete list nhập kho tủ lạnh → lọc pantry theo hạn dùng → nguyên liệu thiếu của công thức → meal plan + generate shopping list + reports.
+E2E gồm 22 test / 2 suite: `main-flows` (6 luồng chính: đăng ký/family → shopping list → complete nhập kho → pantry expiry → missing ingredients → meal plan + reports) và `extended-flows` (16 test: suggestions, favorites, kiểm duyệt công thức, admin, catalog + barcode, forgot/reset password, websocket realtime, khóa contract response shape).
 
 ```powershell
 cd frontend
+npm test                      # vitest: api client (refresh token...) + components
 npm run build                 # type-check (tsc) + build production
 ```
 

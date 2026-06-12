@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { logoPrimaryUrl } from '../assets/logos';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Splash() {
@@ -20,7 +21,7 @@ export default function Splash() {
   return (
     <div className="bg-background min-h-screen flex items-center justify-center m-0 overflow-hidden">
       <div className="splash-enter flex flex-col items-center justify-center gap-stack-md">
-        <img src="/src/assets/logo-1-primary.png" alt="NaviMart" className="w-48 md:w-56 object-contain drop-shadow-sm" />
+        <img src={logoPrimaryUrl} alt="NaviMart" className="w-48 md:w-56 object-contain drop-shadow-sm" />
       </div>
     </div>
   );

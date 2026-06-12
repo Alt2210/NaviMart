@@ -30,8 +30,8 @@ Toàn bộ yêu cầu nghiệp vụ trong `Topic.pdf` đã chạy được end-t
 
 ## 🧪 Chất lượng & kiểm thử
 
-- [ ] **Q1. Mở rộng test backend**: unit test cho recipes suggestions, admin services, realtime gateway, ai-chef (mock TimelyGPT); e2e cho admin flow, favorites, forgot-password, catalog public.
-- [ ] **Q2. Test frontend**: setup vitest + React Testing Library cho các component lõi (FoodAutocomplete, AuthContext, api client refresh-token).
+- [x] ~~**Q1. Mở rộng test backend**~~ ✅ **Xong 12/06/2026** — `test/extended-flows.e2e-spec.ts`: 16 test mới (tổng e2e 22/22) phủ suggestions, favorites, kiểm duyệt công thức, admin users/catalog/stats + ban/unban, catalog public + barcode, users/me, forgot/reset password, websocket (nhận `shoppingList:updated` thật + từ chối token sai), ai-chef status; **khóa contract** response shape `{shoppingList, missingSummary}` và `{shoppingList, pantryItems}` (regression cho bug 12/06). *Còn thiếu: unit test riêng cho suggestion scoring + mock TimelyGPT cho /ai-chef/chat.*
+- [x] ~~**Q2. Test frontend**~~ ✅ **Xong 12/06/2026** — vitest + jsdom + React Testing Library (`npm test` trong frontend): 9 test cho `api/client.ts` (lưu token, query params, 401→refresh→retry, refresh fail→clear session + event) và `FoodAutocomplete` (debounce, chọn gợi ý, Enter submit). *Mở rộng dần cho các page khi có thời gian.*
 - [ ] **Q3. Rate limiting & bảo mật**: @nestjs/throttler cho auth + ai-chef (chống spam LLM tốn phí), helmet, giới hạn kích thước payload.
 - [ ] **Q4. Sửa item danh sách mua sắm trong UI**: hiện chỉ đổi được số lượng/tick — thêm sửa đơn vị, ghi chú, danh mục.
 - [ ] **Q5. Phân trang/lazy-load** cho danh sách dài (pantry, recipes, notifications) — hiện tải toàn bộ.

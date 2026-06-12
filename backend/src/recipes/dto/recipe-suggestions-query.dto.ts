@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsInt,
@@ -34,7 +34,10 @@ export class RecipeSuggestionsQueryDto {
     description: 'Rank recipes using soon-to-expire pantry items higher.',
   })
   @IsOptional()
-  @Type(() => Boolean)
+  // Type(() => Boolean) would turn the query string 'false' into true.
+  @Transform(({ value }) =>
+    value === undefined ? undefined : value === true || value === 'true' || value === '1',
+  )
   @IsBoolean()
   prioritizeExpiring?: boolean;
 }

@@ -10,6 +10,7 @@ import { AuthenticatedUser } from '../auth/types/authenticated-user.type';
 import { Category } from '../catalog/schemas/category.schema';
 import { Food, FOOD_STORAGE_LOCATIONS } from '../catalog/schemas/food.schema';
 import { Family } from '../families/schemas/family.schema';
+import { resolveActiveFamilyId } from '../families/family-access.util';
 import { InventoryEventsService } from '../inventory-events/inventory-events.service';
 import { PantryItem } from '../pantry/schemas/pantry-item.schema';
 import { RealtimeService } from '../realtime/realtime.service';
@@ -24,6 +25,7 @@ import {
   ShoppingListDocument,
   ShoppingListItem,
 } from './schemas/shopping-list.schema';
+import { toShoppingListResponse } from './shopping-list.mapper';
 
 @Injectable()
 export class ShoppingListsService {
@@ -354,27 +356,8 @@ export class ShoppingListsService {
     return list;
   }
 
-  private async getActiveFamilyId(user: AuthenticatedUser) {
-    if (!user.activeFamilyId) {
-      throw new ForbiddenException('User is not attached to a family');
-    }
-
-    const family = await this.familyModel
-      .findById(user.activeFamilyId)
-      .select('_id members')
-      .lean()
-      .exec();
-
-    const member = family?.members.find(
-      (item) =>
-        item.userId.toString() === user.userId && item.status === 'active',
-    );
-
-    if (!member) {
-      throw new ForbiddenException('User is not an active family member');
-    }
-
-    return new Types.ObjectId(user.activeFamilyId);
+  private getActiveFamilyId(user: AuthenticatedUser) {
+    return resolveActiveFamilyId(this.familyModel, user);
   }
 
   private async getFood(foodId: string) {
@@ -421,31 +404,6 @@ export class ShoppingListsService {
   }
 
   private toShoppingListResponse(list: ShoppingListDocument | ShoppingList) {
-    return {
-      id: list._id.toString(),
-      familyId: list.familyId.toString(),
-      name: list.name,
-      type: list.type,
-      status: list.status,
-      plannedFor: list.plannedFor,
-      completedAt: list.completedAt,
-      createdBy: list.createdBy.toString(),
-      progress: {
-        bought: list.items.filter((item) => item.status === 'bought').length,
-        total: list.items.length,
-      },
-      items: list.items.map((item) => ({
-        id: item._id.toString(),
-        foodId: item.foodId?.toString(),
-        categoryId: item.categoryId?.toString(),
-        name: item.name,
-        quantity: item.quantity,
-        unit: item.unit,
-        checked: item.checked,
-        status: item.status,
-        note: item.note,
-        boughtAt: item.boughtAt,
-      })),
-    };
+    return toShoppingListResponse(list);
   }
 }

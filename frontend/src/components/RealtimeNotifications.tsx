@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { onSocketEvent } from '../api/socket';
+import { logoIconTransparentUrl } from '../assets/logos';
 import { useAuth } from '../contexts/AuthContext';
 
 // Listens for server-pushed notifications and surfaces them as native browser notifications.
@@ -17,7 +18,7 @@ export default function RealtimeNotifications() {
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(notification.title, {
           body: notification.body,
-          icon: '/src/assets/logo-icon-transparent.png',
+          icon: logoIconTransparentUrl,
           tag: notification.id,
         });
       }

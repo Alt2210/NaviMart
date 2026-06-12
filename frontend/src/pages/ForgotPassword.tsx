@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import { authApi } from '../api';
+import { logoPrimaryUrl } from '../assets/logos';
 import { useDialog } from '../contexts/DialogContext';
 
 export default function ForgotPassword() {
@@ -61,7 +62,7 @@ export default function ForgotPassword() {
     <div className="bg-background h-screen overflow-y-auto w-full flex items-center justify-center p-4 md:p-8">
       <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-lg p-8 md:p-10">
         <div className="flex justify-center mb-6">
-          <img src="/src/assets/logo-1-primary.png" alt="NaviMart" className="h-10 object-contain" />
+          <img src={logoPrimaryUrl} alt="NaviMart" className="h-10 object-contain" />
         </div>
         <div className="mb-8 text-center">
           <h2 className="font-headline-md text-headline-md text-on-surface mb-2">Quên mật khẩu</h2>

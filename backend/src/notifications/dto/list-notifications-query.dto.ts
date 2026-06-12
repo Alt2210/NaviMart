@@ -1,11 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
 
 export class ListNotificationsQueryDto {
   @ApiPropertyOptional({ example: false })
   @IsOptional()
-  @Type(() => Boolean)
+  // Type(() => Boolean) would turn the query string 'false' into true.
+  @Transform(({ value }) =>
+    value === undefined ? undefined : value === true || value === 'true' || value === '1',
+  )
   @IsBoolean()
   unreadOnly?: boolean;
 

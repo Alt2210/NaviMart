@@ -83,6 +83,7 @@ export type MealPlan = {
   session: MealSession;
   customSessionName?: string;
   recipeId?: string;
+  recipeName?: string;
   customName?: string;
   servings: number;
   isCompleted: boolean;

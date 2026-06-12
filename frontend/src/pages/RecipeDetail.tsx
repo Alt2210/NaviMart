@@ -77,9 +77,9 @@ export default function RecipeDetail() {
     }
     setWorking(true);
     try {
-      const list = await recipesApi.generateShoppingList(recipeId);
-      showAlert(`Đã tạo danh sách "${list.name}" với ${list.items.length} nguyên liệu còn thiếu!`);
-      navigate(`/list-detail/${list.id}`);
+      const { shoppingList } = await recipesApi.generateShoppingList(recipeId);
+      showAlert(`Đã tạo danh sách "${shoppingList.name}" với ${shoppingList.items.length} nguyên liệu còn thiếu!`);
+      navigate(`/list-detail/${shoppingList.id}`);
     } catch (err) {
       handleError(err, 'Không tạo được danh sách mua sắm.');
     } finally {

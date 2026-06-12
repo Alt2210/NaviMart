@@ -151,6 +151,29 @@ export const usersApi = {
   }) => apiRequest<UserProfile>('/users/me', { method: 'PATCH', body: input }),
 };
 
+// ---------- Uploads ----------
+
+export type UploadedImage = {
+  publicId: string;
+  url: string;
+  secureUrl: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
+};
+
+export const uploadsApi = {
+  image: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiRequest<UploadedImage>('/uploads/image', {
+      method: 'POST',
+      body: formData,
+    });
+  },
+};
+
 // ---------- Shopping lists ----------
 
 export const shoppingListsApi = {
@@ -309,7 +332,7 @@ export const mealsApi = {
     apiRequest<MissingIngredientsReport>(`/meals/${mealId}/missing-ingredients`),
 
   generateShoppingList: (mealId: string, input: { name?: string; plannedFor?: string } = {}) =>
-    apiRequest<ShoppingList>(`/meals/${mealId}/generate-shopping-list`, {
+    apiRequest<GeneratedShoppingListResult>(`/meals/${mealId}/generate-shopping-list`, {
       method: 'POST',
       body: input,
     }),
@@ -351,7 +374,7 @@ export const recipesApi = {
     recipeId: string,
     input: { name?: string; plannedFor?: string; servings?: number } = {},
   ) =>
-    apiRequest<ShoppingList>(`/recipes/${recipeId}/generate-shopping-list`, {
+    apiRequest<GeneratedShoppingListResult>(`/recipes/${recipeId}/generate-shopping-list`, {
       method: 'POST',
       body: input,
     }),
@@ -361,6 +384,12 @@ export const recipesApi = {
 
   update: (recipeId: string, input: Partial<RecipeEditorInput>) =>
     apiRequest<RecipeDetail>(`/recipes/${recipeId}`, { method: 'PATCH', body: input }),
+};
+
+// /recipes/:id/generate-shopping-list and /meals/:id/generate-shopping-list wrap the list in this shape.
+export type GeneratedShoppingListResult = {
+  shoppingList: ShoppingList;
+  missingSummary: MissingIngredientsReport;
 };
 
 export type RecipeEditorInput = {
