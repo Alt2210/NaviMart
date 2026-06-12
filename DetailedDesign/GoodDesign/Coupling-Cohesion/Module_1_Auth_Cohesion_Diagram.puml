@@ -1,0 +1,29 @@
+@startuml
+title Functional Cohesion - Module 1 (Auth)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Auth Module (Functional Cohesion)" {
+    class LoginBoundary <<Boundary>> {
+        + captureLoginInput()
+    }
+    class AuthController <<Control>> {
+        + login()
+    }
+    class AuthService <<Control>> {
+        + verifyPassword()
+        + generateJWT()
+    }
+    class UserEntity <<Entity>> {
+        + findUser()
+    }
+
+    LoginBoundary --> AuthController : "Login Data"
+    AuthController --> AuthService : "Validate"
+    AuthService --> UserEntity : "Query DB"
+}
+@enduml

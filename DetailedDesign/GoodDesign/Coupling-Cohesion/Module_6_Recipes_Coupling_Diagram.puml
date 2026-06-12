@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 6 (Recipes & AI Chef)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Recipes Module" {
+    class AiChefController <<Control>> {
+        + askRecipe(ingredients: List<String>)
+    }
+}
+
+package "External Services" {
+    class OpenAiService <<Boundary>> {
+        + sendPrompt(prompt: String) : String
+    }
+}
+
+AiChefController ..> OpenAiService : "Data Coupling\n(Chỉ truyền đoạn text Prompt đơn giản)"
+
+@enduml

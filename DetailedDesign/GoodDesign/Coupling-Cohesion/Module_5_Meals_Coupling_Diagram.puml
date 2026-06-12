@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 5 (Meals)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Meals Module" {
+    class MealController <<Control>> {
+        + createMeal(recipeId: Integer)
+    }
+}
+
+package "Recipes Module" {
+    class RecipeController <<Control>> {
+        + getRecipeDetails(recipeId: Integer) : RecipeDTO
+    }
+}
+
+MealController ..> RecipeController : "Data Coupling\n(Gọi API và nhận RecipeDTO)"
+
+@enduml

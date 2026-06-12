@@ -1,0 +1,46 @@
+@startuml
+title Functional Cohesion (Tight Cohesion) trong Module Auth
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+note top of "Module Auth"
+  **Functional Cohesion (Mức độ Cohesion tốt nhất)**
+  Tất cả các thành phần trong module đều hướng tới
+  và phục vụ cho một chức năng/trách nhiệm duy nhất:
+  Quản lý Xác thực và Tài khoản Người dùng.
+end note
+
+package "Module Auth" {
+    class RegisterView <<Boundary>> {
+        + showRegisterForm()
+        + captureUserInput()
+    }
+    
+    class AuthController <<Control>> {
+        + processRegistration(data: DTO_User)
+        + processLogin(credentials: DTO_Credentials)
+    }
+    
+    class AuthService <<Control>> {
+        + validateUserData(data: DTO_User)
+        + hashPassword(password: String)
+        + generateJWT(user: User)
+    }
+    
+    class UserEntity <<Entity>> {
+        - userId: Integer
+        - email: String
+        - passwordHash: String
+        + save()
+        + findByEmail()
+    }
+    
+    RegisterView --> AuthController : "Gửi yêu cầu\n(Phục vụ Đăng ký)"
+    AuthController --> AuthService : "Ủy quyền xử lý\n(Phục vụ Logic Xác thực)"
+    AuthService --> UserEntity : "Tương tác DB\n(Phục vụ Lưu trữ User)"
+}
+@enduml

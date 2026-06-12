@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 1 (Auth)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Auth Module" {
+    class AuthController <<Control>> {
+        + processLogin(credentials: DTO_Credentials)
+    }
+}
+
+package "External Services" {
+    class EmailService <<Control>> {
+        + sendOTP(email: String, otp: String)
+    }
+}
+
+AuthController ..> EmailService : "Data Coupling\n(Chỉ truyền string email và otp)"
+
+@enduml

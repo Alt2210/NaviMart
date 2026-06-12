@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 7 (Statistics)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Statistics Module" {
+    class StatsController <<Control>> {
+        + generateWasteReport(dateRange: DateRange)
+    }
+}
+
+package "Pantry Module" {
+    class PantryController <<Control>> {
+        + getExpiredItems(dateRange: DateRange) : List<ItemDTO>
+    }
+}
+
+StatsController ..> PantryController : "Data Coupling\n(Yêu cầu dữ liệu với tham số DateRange)"
+
+@enduml

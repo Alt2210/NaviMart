@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 2 (Family)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Family Module" {
+    class FamilyController <<Control>> {
+        + getFamilyMembers(groupId: Integer) : List<UserDTO>
+    }
+}
+
+package "Pantry Module" {
+    class PantryController <<Control>> {
+        + viewPantry(groupId: Integer)
+    }
+}
+
+PantryController ..> FamilyController : "Data Coupling\n(Sử dụng chung tham số groupId)"
+
+@enduml

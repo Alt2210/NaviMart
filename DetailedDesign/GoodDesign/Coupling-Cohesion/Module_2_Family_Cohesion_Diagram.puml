@@ -1,0 +1,25 @@
+@startuml
+title Functional Cohesion - Module 2 (Family)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Family Module (Functional Cohesion)" {
+    class FamilyBoundary <<Boundary>> {
+        + displayFamilyInfo()
+    }
+    class FamilyController <<Control>> {
+        + addMember()
+        + removeMember()
+    }
+    class FamilyEntity <<Entity>> {
+        + queryMembers()
+    }
+
+    FamilyBoundary --> FamilyController : "Member actions"
+    FamilyController --> FamilyEntity : "DB Operations"
+}
+@enduml

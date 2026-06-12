@@ -1,0 +1,25 @@
+@startuml
+title Functional Cohesion - Module 6 (Recipes & AI Chef)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Recipes Module (Functional Cohesion)" {
+    class RecipeBoundary <<Boundary>> {
+        + searchRecipe()
+    }
+    class RecipeService <<Control>> {
+        + filterByCategory()
+        + callAiSuggestion()
+    }
+    class RecipeEntity <<Entity>> {
+        + findByKeywords()
+    }
+
+    RecipeBoundary --> RecipeService : "Search Query"
+    RecipeService --> RecipeEntity : "Query DB"
+}
+@enduml

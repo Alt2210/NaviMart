@@ -1,0 +1,24 @@
+@startuml
+title Functional Cohesion - Module 3 (Shopping Lists)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Shopping Module (Functional Cohesion)" {
+    class ShoppingBoundary <<Boundary>> {
+        + renderShoppingList()
+    }
+    class ShoppingController <<Control>> {
+        + addItemToList()
+    }
+    class ShoppingEntity <<Entity>> {
+        + saveItem()
+    }
+
+    ShoppingBoundary --> ShoppingController : "Add item action"
+    ShoppingController --> ShoppingEntity : "DB Save"
+}
+@enduml

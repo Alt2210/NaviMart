@@ -1,0 +1,24 @@
+@startuml
+title Functional Cohesion - Module 5 (Meals)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Meals Module (Functional Cohesion)" {
+    class MealPlanBoundary <<Boundary>> {
+        + renderCalendar()
+    }
+    class MealController <<Control>> {
+        + addMealToDay()
+    }
+    class MealEntity <<Entity>> {
+        + saveMealPlan()
+    }
+
+    MealPlanBoundary --> MealController : "Add Meal"
+    MealController --> MealEntity : "Save logic"
+}
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 3 (Shopping Lists)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Shopping Module" {
+    class ShoppingController <<Control>> {
+        + markAsBought(itemId: Integer)
+    }
+}
+
+package "Pantry Module" {
+    class PantryController <<Control>> {
+        + transferToPantry(item: DTO_Item)
+    }
+}
+
+ShoppingController ..> PantryController : "Data Coupling\n(Truyền DTO_Item khi tick đã mua)"
+
+@enduml

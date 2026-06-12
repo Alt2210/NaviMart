@@ -1,0 +1,25 @@
+@startuml
+title Functional Cohesion - Module 4 (Pantry)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Pantry Module (Functional Cohesion)" {
+    class PantryBoundary <<Boundary>> {
+        + showPantryInventory()
+    }
+    class PantryService <<Control>> {
+        + checkExpiry()
+        + updateQuantity()
+    }
+    class FoodEntity <<Entity>> {
+        + findExpiringFoods()
+    }
+
+    PantryBoundary --> PantryService : "Get Inventory"
+    PantryService --> FoodEntity : "Query by Expiry Date"
+}
+@enduml

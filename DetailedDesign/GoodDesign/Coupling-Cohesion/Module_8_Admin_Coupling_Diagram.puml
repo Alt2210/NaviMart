@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 8 (Admin)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Admin Module" {
+    class AdminController <<Control>> {
+        + lockUserAccount(userId: Integer)
+    }
+}
+
+package "Auth Module" {
+    class AuthController <<Control>> {
+        + changeUserStatus(userId: Integer, status: String)
+    }
+}
+
+AdminController ..> AuthController : "Data Coupling\n(Truyền userId và status string)"
+
+@enduml

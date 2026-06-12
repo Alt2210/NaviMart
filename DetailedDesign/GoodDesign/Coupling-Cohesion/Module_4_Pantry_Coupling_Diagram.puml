@@ -1,0 +1,24 @@
+@startuml
+title Data Coupling - Module 4 (Pantry)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Pantry Module" {
+    class PantryController <<Control>> {
+        + deductIngredients(recipeIngredients: List<IngredientDTO>)
+    }
+}
+
+package "Meals Module" {
+    class MealController <<Control>> {
+        + executeMealCooking(recipeId: Integer)
+    }
+}
+
+MealController ..> PantryController : "Data Coupling\n(Truyền mảng IngredientDTO để trừ hao)"
+
+@enduml

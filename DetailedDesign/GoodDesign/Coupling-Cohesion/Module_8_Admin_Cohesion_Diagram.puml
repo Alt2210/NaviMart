@@ -1,0 +1,21 @@
+@startuml
+title Functional Cohesion - Module 8 (Admin)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Admin Module (Functional Cohesion)" {
+    class AdminDashboardBoundary <<Boundary>> {
+        + renderAdminPanel()
+    }
+    class AdminService <<Control>> {
+        + processRecipeApproval()
+        + processUserLock()
+    }
+
+    AdminDashboardBoundary --> AdminService : "Trigger admin actions"
+}
+@enduml

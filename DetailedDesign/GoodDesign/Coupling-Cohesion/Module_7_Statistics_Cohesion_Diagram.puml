@@ -1,0 +1,21 @@
+@startuml
+title Functional Cohesion - Module 7 (Statistics)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "Statistics Module (Functional Cohesion)" {
+    class DashboardBoundary <<Boundary>> {
+        + showCharts()
+    }
+    class ReportService <<Control>> {
+        + calculateWaste()
+        + calculateSpending()
+    }
+
+    DashboardBoundary --> ReportService : "Request stats"
+}
+@enduml

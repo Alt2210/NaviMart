@@ -1,0 +1,43 @@
+@startuml
+title Data Coupling (Loose Coupling) trong Hệ thống NaviMart
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+note top of "Hệ thống NaviMart"
+  **Data Coupling (Mức độ Coupling tốt nhất)**
+  Các module giao tiếp với nhau bằng cách truyền
+  các tham số đơn giản hoặc Data Transfer Objects (DTO),
+  không chia sẻ dữ liệu toàn cục (Global Data).
+end note
+
+package "Hệ thống NaviMart" {
+    package "Module Lên Thực Đơn (Meals)" {
+        class MealController <<Control>> {
+            + createMealSession(date: Date, type: String)
+            + suggestRecipes(availableFoods: List<Food>)
+        }
+    }
+
+    package "Module Quản lý Tủ Lạnh (Pantry)" {
+        class PantryController <<Control>> {
+            + getAvailableFoods(groupId: Integer) : List<Food>
+            + deductIngredients(ingredients: List<Ingredient>)
+        }
+    }
+
+    package "Module Mua Sắm (Shopping)" {
+        class ShoppingController <<Control>> {
+            + markItemAsBought(itemId: Integer)
+            + transferToPantry(itemData: DTO_Item)
+        }
+    }
+
+    ' Relationships demonstrating Data Coupling
+    MealController ..> PantryController : "Data Coupling\n(Truyền tham số List<Food>)"
+    ShoppingController ..> PantryController : "Data Coupling\n(Truyền tham số DTO_Item)"
+}
+@enduml
