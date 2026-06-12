@@ -55,6 +55,9 @@ export class Food {
   @Prop({ type: String, trim: true })
   imageUrl?: string;
 
+  @Prop({ type: String, trim: true, maxlength: 64 })
+  barcode?: string;
+
   @Prop({ type: Boolean, default: true })
   isSystem!: boolean;
 
@@ -69,6 +72,7 @@ export const FoodSchema = SchemaFactory.createForClass(Food);
 
 FoodSchema.index({ normalizedName: 1 }, { unique: true });
 FoodSchema.index({ categoryId: 1, status: 1 });
+FoodSchema.index({ barcode: 1 }, { sparse: true });
 FoodSchema.index({
   name: 'text',
   normalizedName: 'text',

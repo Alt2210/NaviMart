@@ -1,72 +1,70 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import SideNav from '../components/SideNav';
+import { ListRowsSkeleton } from '../components/Skeleton';
 import { useDialog } from '../contexts/DialogContext';
+import { mealsApi, recipesApi } from '../api';
+import type { MealPlan, MealSession as MealSessionType, RecipeSuggestion } from '../api';
 
-// Types
-interface MealSession {
+interface SessionDef {
   id: string;
+  session: MealSessionType;
+  customSessionName?: string;
   title: string;
   icon: string;
   colorClass: string;
   isMain: boolean;
 }
 
-interface Meal {
-  id: number;
-  session: string;
-  name: string;
-  calories: number;
-  image: string;
-  completed: boolean;
-}
-
-// Mock suggestions
-const SUGGESTIONS = [
-  { name: 'Bún Chả Hà Nội', calories: 550, image: 'https://images.unsplash.com/photo-1615486171448-4fd1ab64ce14?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
-  { name: 'Cơm Tấm Sườn Bì', calories: 600, image: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
-  { name: 'Phở Gà', calories: 400, image: 'https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
-  { name: 'Bánh Mì Thịt Nướng', calories: 350, image: 'https://images.unsplash.com/photo-1630431341973-02e1b662ce3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
-  { name: 'Gỏi Cuốn', calories: 200, image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' }
+const MAIN_SESSIONS: SessionDef[] = [
+  { id: 'breakfast', session: 'breakfast', title: 'Bữa sáng', icon: 'wb_twilight', colorClass: 'text-primary', isMain: true },
+  { id: 'lunch', session: 'lunch', title: 'Bữa trưa', icon: 'light_mode', colorClass: 'text-secondary', isMain: true },
+  { id: 'dinner', session: 'dinner', title: 'Bữa tối', icon: 'bedtime', colorClass: 'text-tertiary', isMain: true },
 ];
 
-export default function MealPlanner() {
-  const { showConfirm } = useDialog();
-  const [activeDay, setActiveDay] = useState(2);
-  
-  // Sessions
-  const [sessions, setSessions] = useState<MealSession[]>([
-    { id: 'breakfast', title: 'Bữa sáng', icon: 'wb_twilight', colorClass: 'text-primary', isMain: true },
-    { id: 'lunch', title: 'Bữa trưa', icon: 'light_mode', colorClass: 'text-secondary', isMain: true },
-    { id: 'dinner', title: 'Bữa tối', icon: 'bedtime', colorClass: 'text-tertiary', isMain: true }
-  ]);
+function startOfWeek(date: Date) {
+  const result = new Date(date);
+  const day = (result.getDay() + 6) % 7; // Monday = 0
+  result.setDate(result.getDate() - day);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
 
-  // Meals
-  const [meals, setMeals] = useState<Meal[]>([
-    {
-      id: 1,
-      session: 'breakfast',
-      name: 'Phở Bò Tái Lăn',
-      calories: 450,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxLmjbbPFQHTwvJfV3r_myDF4070EhXZ5S_7TtLdzPOhzGPeuQBOzq8ES1vLJvj_YtvyxEbpZm878HmFbAAfdtBc3_1SADUdTAhB_WmJG-OwHy76VPPffqJPqRCi7X-kfCohlaoVxZ9fMJQtbqyBVtW8iSzPc1_lYGiPO7AfqLV0g-8xG6kwhLr00G8b4Ewm_4Qbuj24BoEyoYGHJYDnt6jsYDASjeYv38NWY6YSVN6Hn8X3DlAFO4GEQBOTXysG5Xj9EV-kLr0N6H',
-      completed: false
-    },
-    {
-      id: 2,
-      session: 'lunch',
-      name: 'Salad Ức Gà Xốt Mè Rang',
-      calories: 250,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCKaNpg41Npm2EialKKJPtfNdQ5C22RhoMHq5huapojrTZ3uSC8kJRNDFmiq3Fgj_zfZr2gJYqJTMSTkoxUAe98M_GUvkff6kFIvg8ikmlsrXXg6kTNTjvUaOPuu4bLRGq3UMZIyIWvY-6MbkKwx8j3tvrbRvFxdamAgECSImHWkl5DOXS8zcEdfXy0Z7EgvMGzk-W5cM1q4HZUXJdEqCEB1MJTPaxV6O1ZX3i5cw5qCXFQ-BA4jamQXTYbir1q0IzM91NWjF00qNDi',
-      completed: false
-    }
-  ]);
+function sameDay(a: Date, b: Date) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+export default function MealPlanner() {
+  const { showConfirm, showAlert } = useDialog();
+  const navigate = useNavigate();
+
+  const weekStart = useMemo(() => startOfWeek(new Date()), []);
+  const weekDays = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(weekStart);
+        date.setDate(weekStart.getDate() + i);
+        return date;
+      }),
+    [weekStart],
+  );
+  const [activeDay, setActiveDay] = useState(() => (new Date().getDay() + 6) % 7);
+
+  const [meals, setMeals] = useState<MealPlan[]>([]);
+  const [recipeNames, setRecipeNames] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [extraSessions, setExtraSessions] = useState<SessionDef[]>([]);
 
   // Modal states for Meals
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
-  const [targetSession, setTargetSession] = useState<string>('breakfast');
-  const [formData, setFormData] = useState({ name: '', calories: '' });
+  const [editingMeal, setEditingMeal] = useState<MealPlan | null>(null);
+  const [targetSession, setTargetSession] = useState<SessionDef>(MAIN_SESSIONS[0]);
+  const [formData, setFormData] = useState({ name: '', servings: '1' });
 
   // Modal states for New Session
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
@@ -74,108 +72,236 @@ export default function MealPlanner() {
 
   // Suggestion Modal states
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
-  const [currentSuggestion, setCurrentSuggestion] = useState(SUGGESTIONS[0]);
+  const [suggestions, setSuggestions] = useState<RecipeSuggestion[]>([]);
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
 
-  const toggleMeal = (id: number) => {
-    setMeals(meals.map(m => m.id === id ? { ...m, completed: !m.completed } : m));
+  const handleError = useCallback(
+    (err: unknown, fallback: string) => {
+      showAlert(err instanceof Error ? err.message : fallback);
+    },
+    [showAlert],
+  );
+
+  const loadMeals = useCallback(async () => {
+    setLoading(true);
+    try {
+      const endOfWeek = new Date(weekStart);
+      endOfWeek.setDate(weekStart.getDate() + 7);
+      const data = await mealsApi.list(weekStart.toISOString(), endOfWeek.toISOString());
+      setMeals(data);
+
+      const missingRecipeIds = Array.from(
+        new Set(
+          data
+            .filter((meal) => meal.recipeId && !meal.customName)
+            .map((meal) => meal.recipeId!),
+        ),
+      );
+      const entries = await Promise.all(
+        missingRecipeIds.map(async (id) => {
+          try {
+            const recipe = await recipesApi.get(id);
+            return [id, recipe.name] as const;
+          } catch {
+            return [id, 'Món theo công thức'] as const;
+          }
+        }),
+      );
+      setRecipeNames(Object.fromEntries(entries));
+    } catch (err) {
+      handleError(err, 'Không tải được lịch trình bữa ăn.');
+    } finally {
+      setLoading(false);
+    }
+  }, [weekStart, handleError]);
+
+  useEffect(() => {
+    loadMeals();
+  }, [loadMeals]);
+
+  const selectedDate = weekDays[activeDay];
+  const dayMeals = meals.filter((meal) => sameDay(new Date(meal.date), selectedDate));
+
+  const customSessionNames = Array.from(
+    new Set(
+      dayMeals
+        .filter((meal) => meal.session === 'custom' && meal.customSessionName)
+        .map((meal) => meal.customSessionName!),
+    ),
+  );
+  const sessions: SessionDef[] = [
+    ...MAIN_SESSIONS,
+    ...customSessionNames.map((name) => ({
+      id: `custom-${name}`,
+      session: 'custom' as MealSessionType,
+      customSessionName: name,
+      title: name,
+      icon: 'restaurant',
+      colorClass: 'text-on-surface',
+      isMain: false,
+    })),
+    ...extraSessions.filter((extra) => !customSessionNames.includes(extra.customSessionName!)),
+  ];
+
+  const mealName = (meal: MealPlan) =>
+    meal.customName ?? (meal.recipeId ? recipeNames[meal.recipeId] ?? '...' : 'Món ăn');
+
+  const mealsOfSession = (session: SessionDef) =>
+    dayMeals.filter((meal) =>
+      session.session === 'custom'
+        ? meal.session === 'custom' && meal.customSessionName === session.customSessionName
+        : meal.session === session.session,
+    );
+
+  const toggleMeal = async (meal: MealPlan) => {
+    try {
+      const updated = await mealsApi.update(meal.id, { isCompleted: !meal.isCompleted });
+      setMeals((items) => items.map((m) => (m.id === meal.id ? updated : m)));
+    } catch (err) {
+      handleError(err, 'Không cập nhật được món ăn.');
+    }
   };
 
-  const deleteMeal = (id: number) => {
-    showConfirm("Bạn có chắc chắn muốn xóa món ăn này khỏi lịch trình?", () => {
-      setMeals(meals.filter(m => m.id !== id));
+  const deleteMeal = (meal: MealPlan) => {
+    showConfirm('Bạn có chắc chắn muốn xóa món ăn này khỏi lịch trình?', async () => {
+      try {
+        await mealsApi.remove(meal.id);
+        setMeals((items) => items.filter((m) => m.id !== meal.id));
+      } catch (err) {
+        handleError(err, 'Không xóa được món ăn.');
+      }
     });
   };
 
-  const openAddModal = (sessionId: string) => {
+  const openAddModal = (session: SessionDef) => {
     setEditingMeal(null);
-    setTargetSession(sessionId);
-    setFormData({ name: '', calories: '' });
+    setTargetSession(session);
+    setFormData({ name: '', servings: '1' });
     setIsModalOpen(true);
   };
 
-  const openEditModal = (meal: Meal) => {
+  const openEditModal = (meal: MealPlan, session: SessionDef) => {
     setEditingMeal(meal);
-    setTargetSession(meal.session);
-    setFormData({ name: meal.name, calories: meal.calories.toString() });
+    setTargetSession(session);
+    setFormData({ name: mealName(meal), servings: String(meal.servings) });
     setIsModalOpen(true);
   };
 
-  const handleSaveMeal = (e: React.FormEvent) => {
+  const handleSaveMeal = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.calories) return;
-
-    if (editingMeal) {
-      setMeals(meals.map(m => m.id === editingMeal.id ? { 
-        ...m, 
-        name: formData.name, 
-        calories: parseInt(formData.calories) || 0 
-      } : m));
-    } else {
-      const newMeal: Meal = {
-        id: Date.now(),
-        session: targetSession,
-        name: formData.name,
-        calories: parseInt(formData.calories) || 0,
-        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        completed: false
-      };
-      setMeals([...meals, newMeal]);
+    if (!formData.name.trim()) return;
+    const servings = Math.max(1, parseInt(formData.servings) || 1);
+    try {
+      if (editingMeal) {
+        const updated = await mealsApi.update(editingMeal.id, {
+          customName: formData.name.trim(),
+          servings,
+        });
+        setMeals((items) => items.map((m) => (m.id === editingMeal.id ? updated : m)));
+      } else {
+        const created = await mealsApi.create({
+          date: selectedDate.toISOString(),
+          session: targetSession.session,
+          customSessionName: targetSession.customSessionName,
+          customName: formData.name.trim(),
+          servings,
+        });
+        setMeals((items) => [...items, created]);
+      }
+      setIsModalOpen(false);
+    } catch (err) {
+      handleError(err, 'Không lưu được món ăn.');
     }
-    
-    setIsModalOpen(false);
   };
 
-  // Add Session logic
+  // Add Session logic — the section appears immediately; it persists once a meal is added to it.
   const handleSaveSession = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newSessionName.trim()) {
-      const newSession: MealSession = {
-        id: `custom-${Date.now()}`,
-        title: newSessionName,
+    const name = newSessionName.trim();
+    if (!name) return;
+    setExtraSessions((sessionsList) => [
+      ...sessionsList,
+      {
+        id: `custom-${name}`,
+        session: 'custom',
+        customSessionName: name,
+        title: name,
         icon: 'restaurant',
         colorClass: 'text-on-surface',
-        isMain: false
-      };
-      setSessions([...sessions, newSession]);
-      setNewSessionName('');
-      setIsSessionModalOpen(false);
-    }
+        isMain: false,
+      },
+    ]);
+    setNewSessionName('');
+    setIsSessionModalOpen(false);
   };
 
-  const handleDeleteSession = (sessionId: string) => {
-    showConfirm("Xóa bữa ăn này sẽ xóa toàn bộ món ăn bên trong. Bạn chắc chắn chứ?", () => {
-      setSessions(sessions.filter(s => s.id !== sessionId));
-      setMeals(meals.filter(m => m.session !== sessionId));
+  const handleDeleteSession = (session: SessionDef) => {
+    showConfirm('Xóa bữa ăn này sẽ xóa toàn bộ món ăn bên trong. Bạn chắc chắn chứ?', async () => {
+      try {
+        await Promise.all(mealsOfSession(session).map((meal) => mealsApi.remove(meal.id)));
+        setMeals((items) =>
+          items.filter(
+            (meal) =>
+              !(
+                meal.session === 'custom' &&
+                meal.customSessionName === session.customSessionName &&
+                sameDay(new Date(meal.date), selectedDate)
+              ),
+          ),
+        );
+        setExtraSessions((sessionsList) =>
+          sessionsList.filter((extra) => extra.id !== session.id),
+        );
+      } catch (err) {
+        handleError(err, 'Không xóa được bữa ăn.');
+      }
     });
   };
 
-  // Suggestion logic
-  const openSuggestModal = (sessionId: string) => {
-    setTargetSession(sessionId);
-    pickRandomSuggestion();
-    setIsSuggestModalOpen(true);
+  // Suggestion logic — recipes ranked by how many ingredients are already in the pantry.
+  const openSuggestModal = async (session: SessionDef) => {
+    setTargetSession(session);
+    try {
+      const data = await recipesApi.suggestions({ limit: 10, prioritizeExpiring: true });
+      if (data.length === 0) {
+        showAlert('Chưa có gợi ý phù hợp. Hãy thêm thực phẩm vào tủ lạnh hoặc thêm công thức.');
+        return;
+      }
+      setSuggestions(data);
+      setSuggestionIndex(0);
+      setIsSuggestModalOpen(true);
+    } catch (err) {
+      handleError(err, 'Không tải được gợi ý món ăn.');
+    }
   };
 
-  const pickRandomSuggestion = () => {
-    const randomIdx = Math.floor(Math.random() * SUGGESTIONS.length);
-    setCurrentSuggestion(SUGGESTIONS[randomIdx]);
+  const pickNextSuggestion = () => {
+    setSuggestionIndex((index) => (index + 1) % suggestions.length);
   };
 
-  const acceptSuggestion = () => {
-    const newMeal: Meal = {
-      id: Date.now(),
-      session: targetSession,
-      name: currentSuggestion.name,
-      calories: currentSuggestion.calories,
-      image: currentSuggestion.image,
-      completed: false
-    };
-    setMeals([...meals, newMeal]);
-    setIsSuggestModalOpen(false);
+  const acceptSuggestion = async () => {
+    const suggestion = suggestions[suggestionIndex];
+    if (!suggestion) return;
+    try {
+      const created = await mealsApi.create({
+        date: selectedDate.toISOString(),
+        session: targetSession.session,
+        customSessionName: targetSession.customSessionName,
+        recipeId: suggestion.recipe.id,
+        customName: suggestion.recipe.name,
+        servings: suggestion.recipe.servings,
+      });
+      setMeals((items) => [...items, created]);
+      setIsSuggestModalOpen(false);
+    } catch (err) {
+      handleError(err, 'Không thêm được món ăn.');
+    }
   };
 
-  const renderMealSection = (session: MealSession) => {
-    const sectionMeals = meals.filter(m => m.session === session.id);
+  const currentSuggestion = suggestions[suggestionIndex];
+
+  const renderMealSection = (session: SessionDef) => {
+    const sectionMeals = mealsOfSession(session);
 
     return (
       <section key={session.id} className="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden flex flex-col group transition-shadow mb-6">
@@ -186,16 +312,16 @@ export default function MealPlanner() {
           </div>
           <div className="flex items-center gap-1">
             {!session.isMain && (
-              <button 
-                onClick={() => handleDeleteSession(session.id)}
+              <button
+                onClick={() => handleDeleteSession(session)}
                 className="text-error hover:bg-error-container p-1.5 rounded-full transition-colors"
                 title="Xóa bữa ăn này"
               >
                 <span className="material-symbols-outlined text-[20px]">delete</span>
               </button>
             )}
-            <button 
-              onClick={() => openAddModal(session.id)} 
+            <button
+              onClick={() => openAddModal(session)}
               className="text-primary hover:bg-primary-container hover:text-on-primary-container p-1.5 rounded-full transition-colors"
               title="Thêm món ăn"
             >
@@ -203,35 +329,43 @@ export default function MealPlanner() {
             </button>
           </div>
         </div>
-        
+
         {sectionMeals.length > 0 ? (
           sectionMeals.map((meal, index) => (
             <div key={meal.id} className={`p-4 flex items-center gap-3 md:gap-4 ${index !== sectionMeals.length - 1 ? 'border-b border-outline-variant/50' : ''}`}>
-              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-surface-container-high">
-                <img className="w-full h-full object-cover" src={meal.image} alt={meal.name}/>
+              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-surface-container-high flex items-center justify-center">
+                <span className="material-symbols-outlined text-3xl text-outline">restaurant</span>
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-body-lg text-body-lg text-on-surface font-semibold truncate">{meal.name}</h4>
+                <h4 className="font-body-lg text-body-lg text-on-surface font-semibold truncate">{mealName(meal)}</h4>
                 <p className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 mt-1">
-                  <span className="material-symbols-outlined text-[14px]">local_fire_department</span> {meal.calories} kcal
+                  <span className="material-symbols-outlined text-[14px]">group</span> {meal.servings} khẩu phần
+                  {meal.recipeId && (
+                    <button
+                      onClick={() => navigate(`/recipe-detail/${meal.recipeId}`)}
+                      className="ml-2 text-primary hover:underline"
+                    >
+                      Xem công thức
+                    </button>
+                  )}
                 </p>
               </div>
-              
+
               <div className="flex items-center gap-1 shrink-0">
-                <button 
-                  onClick={() => toggleMeal(meal.id)} 
-                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${meal.completed ? 'bg-primary border-primary text-on-primary' : 'border-outline text-primary hover:border-primary hover:bg-primary/5'}`}
+                <button
+                  onClick={() => toggleMeal(meal)}
+                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors ${meal.isCompleted ? 'bg-primary border-primary text-on-primary' : 'border-outline text-primary hover:border-primary hover:bg-primary/5'}`}
                 >
-                  <span className={`material-symbols-outlined text-[18px] transition-all ${meal.completed ? 'scale-100 opacity-100' : 'scale-50 opacity-0 group-hover:scale-100 group-hover:opacity-100'}`}>check</span>
+                  <span className={`material-symbols-outlined text-[18px] transition-all ${meal.isCompleted ? 'scale-100 opacity-100' : 'scale-50 opacity-0 group-hover:scale-100 group-hover:opacity-100'}`}>check</span>
                 </button>
-                <button 
-                  onClick={() => openEditModal(meal)} 
+                <button
+                  onClick={() => openEditModal(meal, session)}
                   className="text-on-surface-variant hover:text-primary hover:bg-surface-container-high p-2 rounded-full transition-colors flex"
                 >
                   <span className="material-symbols-outlined text-[20px]">edit</span>
                 </button>
-                <button 
-                  onClick={() => deleteMeal(meal.id)} 
+                <button
+                  onClick={() => deleteMeal(meal)}
                   className="text-on-surface-variant hover:text-error hover:bg-error-container p-2 -mr-2 rounded-full transition-colors flex"
                 >
                   <span className="material-symbols-outlined text-[20px]">delete</span>
@@ -243,23 +377,21 @@ export default function MealPlanner() {
           <div className="p-6 flex flex-col items-center justify-center text-on-surface-variant">
             <span className="material-symbols-outlined text-4xl mb-2 opacity-50">restaurant_menu</span>
             <p className="font-body-md text-center">Chưa có món ăn nào.</p>
-            <button 
-              onClick={() => openAddModal(session.id)}
+            <button
+              onClick={() => openAddModal(session)}
               className="mt-2 text-primary font-label-md hover:underline"
             >
               Thêm món ăn
             </button>
           </div>
         )}
-        
-        {sectionMeals.length > 0 && (
-          <button 
-            onClick={() => openSuggestModal(session.id)} 
-            className="w-[calc(100%-2rem)] p-3 flex items-center justify-center border-2 border-dashed border-outline-variant mx-4 mb-4 mt-2 rounded-xl hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary"
-          >
-            <div className="flex items-center gap-2 font-label-md font-medium"><span className="material-symbols-outlined text-[18px]">auto_awesome</span> Gợi ý món ăn</div>
-          </button>
-        )}
+
+        <button
+          onClick={() => openSuggestModal(session)}
+          className="w-[calc(100%-2rem)] p-3 flex items-center justify-center border-2 border-dashed border-outline-variant mx-4 mb-4 mt-2 rounded-xl hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary"
+        >
+          <div className="flex items-center gap-2 font-label-md font-medium"><span className="material-symbols-outlined text-[18px]">auto_awesome</span> Gợi ý món ăn từ tủ lạnh</div>
+        </button>
       </section>
     );
   };
@@ -293,24 +425,26 @@ export default function MealPlanner() {
           <div className="flex justify-between items-center w-full">
             <div className="flex flex-col">
               <h1 className="font-headline-md text-headline-md text-primary mb-2">Lịch trình bữa ăn</h1>
-              <p className="font-body-md text-body-md text-on-surface-variant">Tháng 10, 2024</p>
+              <p className="font-body-md text-body-md text-on-surface-variant">
+                {selectedDate.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}
+              </p>
             </div>
             <div className="flex gap-2">
-              <button aria-label="Tìm kiếm món ăn" className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors">
+              <Link to="/recipe-suggestion" aria-label="Tìm kiếm món ăn" className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors">
                 <span className="material-symbols-outlined">search</span>
-              </button>
+              </Link>
             </div>
           </div>
 
           <div className="flex overflow-x-auto gap-3 pb-2 snap-x snap-mandatory hide-scrollbar -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
             {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map((day, idx) => (
-              <button 
-                key={idx} 
+              <button
+                key={idx}
                 onClick={() => setActiveDay(idx)}
                 className={`snap-center shrink-0 w-14 h-20 rounded-full flex flex-col items-center justify-center gap-1 transition-all ${activeDay === idx ? 'bg-primary text-on-primary shadow-md' : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container'}`}
               >
                 <span className={`font-label-sm text-label-sm ${activeDay === idx ? 'opacity-80' : ''}`}>{day}</span>
-                <span className="font-headline-sm text-headline-sm font-bold">{14 + idx}</span>
+                <span className="font-headline-sm text-headline-sm font-bold">{weekDays[idx].getDate()}</span>
               </button>
             ))}
           </div>
@@ -318,21 +452,25 @@ export default function MealPlanner() {
 
         <main className="flex-1 overflow-y-auto w-full">
           <div className="px-margin-mobile md:px-8 py-stack-md flex flex-col max-w-5xl mx-auto pb-[100px] md:pb-8">
-            
-            {sessions.map(session => renderMealSection(session))}
-            
-            {/* Thêm bữa ăn mới */}
-            <button 
-              onClick={() => setIsSessionModalOpen(true)}
-              className="mt-2 w-full py-4 border-2 border-dashed border-primary/40 rounded-2xl text-primary font-headline-sm hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined">add_box</span>
-              Thêm bữa ăn
-            </button>
-            
+            {loading ? (
+              <ListRowsSkeleton count={6} />
+            ) : (
+              <>
+                {sessions.map(session => renderMealSection(session))}
+
+                {/* Thêm bữa ăn mới */}
+                <button
+                  onClick={() => setIsSessionModalOpen(true)}
+                  className="mt-2 w-full py-4 border-2 border-dashed border-primary/40 rounded-2xl text-primary font-headline-sm hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined">add_box</span>
+                  Thêm bữa ăn
+                </button>
+              </>
+            )}
           </div>
         </main>
-        
+
         {/* Add/Edit Meal Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -345,13 +483,13 @@ export default function MealPlanner() {
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
-              
+
               <form onSubmit={handleSaveMeal}>
                 <div className="space-y-4 mb-6">
                   <div>
                     <label className="block font-label-md text-on-surface mb-1">Tên món ăn</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       required
                       value={formData.name}
                       onChange={e => setFormData({...formData, name: e.target.value})}
@@ -360,28 +498,28 @@ export default function MealPlanner() {
                     />
                   </div>
                   <div>
-                    <label className="block font-label-md text-on-surface mb-1">Lượng Calo (kcal)</label>
-                    <input 
-                      type="number" 
+                    <label className="block font-label-md text-on-surface mb-1">Khẩu phần (người ăn)</label>
+                    <input
+                      type="number"
                       required
-                      min="0"
-                      value={formData.calories}
-                      onChange={e => setFormData({...formData, calories: e.target.value})}
-                      placeholder="Ví dụ: 300"
+                      min="1"
+                      value={formData.servings}
+                      onChange={e => setFormData({...formData, servings: e.target.value})}
+                      placeholder="Ví dụ: 2"
                       className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end gap-3">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setIsModalOpen(false)}
                     className="px-5 py-2.5 rounded-lg font-label-md font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors"
                   >
                     Hủy
                   </button>
-                  <button 
+                  <button
                     type="submit"
                     className="px-5 py-2.5 rounded-lg font-label-md font-bold bg-primary text-on-primary hover:opacity-90 transition-opacity shadow-sm"
                   >
@@ -403,12 +541,12 @@ export default function MealPlanner() {
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
-              
+
               <form onSubmit={handleSaveSession}>
                 <div className="mb-6">
                   <label className="block font-label-md text-on-surface mb-1">Tên bữa ăn</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     value={newSessionName}
                     onChange={e => setNewSessionName(e.target.value)}
@@ -416,16 +554,16 @@ export default function MealPlanner() {
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                   />
                 </div>
-                
+
                 <div className="flex justify-end gap-3">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setIsSessionModalOpen(false)}
                     className="px-5 py-2.5 rounded-lg font-label-md font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors"
                   >
                     Hủy
                   </button>
-                  <button 
+                  <button
                     type="submit"
                     className="px-5 py-2.5 rounded-lg font-label-md font-bold bg-primary text-on-primary hover:opacity-90 transition-opacity shadow-sm"
                   >
@@ -438,42 +576,53 @@ export default function MealPlanner() {
         )}
 
         {/* Suggestion Modal */}
-        {isSuggestModalOpen && (
+        {isSuggestModalOpen && currentSuggestion && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-surface rounded-3xl p-6 w-full max-w-sm shadow-xl border border-outline-variant/30 text-center relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-32 bg-primary/10 -z-10"></div>
-              
+
               <div className="flex justify-end mb-2">
                 <button onClick={() => setIsSuggestModalOpen(false)} className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors -mr-2 -mt-2">
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
-              
+
               <div className="mb-2">
                 <span className="material-symbols-outlined text-5xl text-primary mb-2">auto_awesome</span>
                 <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Hôm nay ăn gì?</h2>
               </div>
-              
+
               <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm my-6">
-                <div className="h-40 w-full bg-surface-variant">
-                  <img src={currentSuggestion.image} alt={currentSuggestion.name} className="w-full h-full object-cover" />
+                <div className="h-40 w-full bg-surface-variant flex items-center justify-center">
+                  {currentSuggestion.recipe.imageUrl ? (
+                    <img src={currentSuggestion.recipe.imageUrl} alt={currentSuggestion.recipe.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="material-symbols-outlined text-6xl text-outline">restaurant</span>
+                  )}
                 </div>
                 <div className="p-4">
-                  <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1 font-bold">{currentSuggestion.name}</h3>
+                  <h3 className="font-headline-sm text-headline-sm text-on-surface mb-1 font-bold">{currentSuggestion.recipe.name}</h3>
                   <p className="font-body-md flex items-center justify-center gap-1 text-on-surface-variant">
-                    <span className="material-symbols-outlined text-[18px]">local_fire_department</span> {currentSuggestion.calories} kcal
+                    <span className="material-symbols-outlined text-[18px]">kitchen</span>
+                    Có sẵn {currentSuggestion.availableCount}/{currentSuggestion.totalCount} nguyên liệu
                   </p>
+                  {currentSuggestion.missingIngredients.length > 0 && (
+                    <p className="font-label-sm text-label-sm text-secondary mt-1">
+                      Thiếu: {currentSuggestion.missingIngredients.slice(0, 4).join(', ')}
+                      {currentSuggestion.missingIngredients.length > 4 ? '...' : ''}
+                    </p>
+                  )}
                 </div>
               </div>
-              
+
               <div className="flex gap-3 mt-4">
-                <button 
-                  onClick={pickRandomSuggestion}
+                <button
+                  onClick={pickNextSuggestion}
                   className="flex-1 py-3 rounded-xl font-label-md font-bold text-on-surface border border-outline-variant hover:bg-surface-container-low transition-colors"
                 >
                   Bỏ qua
                 </button>
-                <button 
+                <button
                   onClick={acceptSuggestion}
                   className="flex-1 py-3 rounded-xl font-label-md font-bold bg-primary text-on-primary hover:opacity-90 transition-opacity shadow-sm"
                 >

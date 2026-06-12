@@ -1,12 +1,34 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/home');
+    if (!identifier.trim() || !password) {
+      setError('Vui lòng nhập đầy đủ thông tin đăng nhập.');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      const user = await login(identifier.trim(), password, rememberMe);
+      navigate(user.role === 'admin' ? '/admin' : '/home');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Đăng nhập thất bại. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,12 +67,14 @@ export default function Login() {
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <span className="material-symbols-outlined text-outline">person</span>
               </span>
-              <input 
-                className="w-full pl-10 pr-4 py-3 bg-transparent border border-[#C1C1C1] rounded-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline-variant transition-colors" 
-                id="identifier" 
-                name="identifier" 
-                placeholder="Nhập số điện thoại hoặc email" 
+              <input
+                className="w-full pl-10 pr-4 py-3 bg-transparent border border-[#C1C1C1] rounded-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline-variant transition-colors"
+                id="identifier"
+                name="identifier"
+                placeholder="Nhập số điện thoại hoặc email"
                 type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
               />
             </div>
           </div>
@@ -59,35 +83,54 @@ export default function Login() {
           <div>
             <div className="flex justify-between mb-2">
               <label className="block font-body-md text-body-md text-on-surface" htmlFor="password">Mật khẩu</label>
-              <Link to="#" className="font-body-md text-body-md text-primary hover:text-primary-container transition-colors">Quên mật khẩu?</Link>
+              <Link to="/forgot-password" className="font-body-md text-body-md text-primary hover:text-primary-container transition-colors">Quên mật khẩu?</Link>
             </div>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <span className="material-symbols-outlined text-outline">lock</span>
               </span>
-              <input 
-                className="w-full pl-10 pr-10 py-3 bg-transparent border border-[#C1C1C1] rounded-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline-variant transition-colors" 
-                id="password" 
-                name="password" 
-                placeholder="Nhập mật khẩu" 
-                type="password"
+              <input
+                className="w-full pl-10 pr-10 py-3 bg-transparent border border-[#C1C1C1] rounded-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline-variant transition-colors"
+                id="password"
+                name="password"
+                placeholder="Nhập mật khẩu"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
-              <button className="absolute inset-y-0 right-0 flex items-center pr-3 text-outline hover:text-on-surface transition-colors" type="button">
-                <span className="material-symbols-outlined">visibility_off</span>
+              <button
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-outline hover:text-on-surface transition-colors"
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+              >
+                <span className="material-symbols-outlined">{showPassword ? 'visibility' : 'visibility_off'}</span>
               </button>
             </div>
           </div>
 
           {/* Remember Me */}
           <div className="flex items-center">
-            <input className="h-4 w-4 text-primary focus:ring-primary border-outline rounded" id="remember-me" name="remember-me" type="checkbox"/>
+            <input
+              className="h-4 w-4 text-primary focus:ring-primary border-outline rounded"
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
             <label className="ml-2 block font-body-md text-body-md text-on-surface" htmlFor="remember-me">
               Ghi nhớ đăng nhập
             </label>
           </div>
 
+          {error && (
+            <p className="font-body-md text-body-md text-error bg-error-container/30 border border-error/30 rounded-lg px-4 py-3">
+              {error}
+            </p>
+          )}
+
           <Button type="submit" fullWidth icon="arrow_forward">
-            Đăng nhập
+            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </Button>
         </form>
 

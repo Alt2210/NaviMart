@@ -10,6 +10,10 @@ import {
   ShoppingList,
   ShoppingListSchema,
 } from '../shopping-lists/schemas/shopping-list.schema';
+import {
+  RecipeFavorite,
+  RecipeFavoriteSchema,
+} from './schemas/recipe-favorite.schema';
 import { Recipe, RecipeSchema } from './schemas/recipe.schema';
 import { RecipesController } from './recipes.controller';
 import { RecipesService } from './recipes.service';
@@ -18,6 +22,7 @@ import { RecipesService } from './recipes.service';
   imports: [
     MongooseModule.forFeature([
       { name: Recipe.name, schema: RecipeSchema },
+      { name: RecipeFavorite.name, schema: RecipeFavoriteSchema },
       { name: Food.name, schema: FoodSchema },
       { name: Category.name, schema: CategorySchema },
       { name: Family.name, schema: FamilySchema },

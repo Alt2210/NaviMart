@@ -1,17 +1,95 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation as useRouterLocation, useNavigate } from 'react-router-dom';
 import { useDialog } from '../contexts/DialogContext';
+import { pantryApi } from '../api';
+import type { CatalogFood, StorageLocation } from '../api';
+import FoodAutocomplete from '../components/FoodAutocomplete';
+
+const LOCATION_VALUES: Record<string, StorageLocation> = {
+  'Tủ đông': 'freezer',
+  'Tủ mát': 'fridge',
+  'Kệ đồ khô': 'pantry',
+};
+
+const LOCATION_LABELS: Record<StorageLocation, string> = {
+  freezer: 'Tủ đông',
+  fridge: 'Tủ mát',
+  pantry: 'Kệ đồ khô',
+  other: 'Tủ mát',
+};
+
+function dateAfterDays(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
 
 export default function AddItem() {
   const navigate = useNavigate();
+  const routerLocation = useRouterLocation();
   const { showAlert } = useDialog();
-  const [location, setLocation] = useState('Tủ đông');
+  const [location, setLocation] = useState('Tủ mát');
   const [itemName, setItemName] = useState('');
+  const [quantity, setQuantity] = useState('1');
+  const [unit, setUnit] = useState('cái');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [selectedFood, setSelectedFood] = useState<CatalogFood | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Catalog defaults: unit, storage location, shelf life and storage tips.
+  const applyFood = (food: CatalogFood) => {
+    setSelectedFood(food);
+    setItemName(food.name);
+    setUnit(food.defaultUnit);
+    setLocation(LOCATION_LABELS[food.defaultStorageLocation] ?? 'Tủ mát');
+    if (food.defaultShelfLifeDays) {
+      setExpiryDate(dateAfterDays(food.defaultShelfLifeDays));
+    }
+  };
+
+  // Prefilled food from the barcode Scanner page.
+  useEffect(() => {
+    const state = routerLocation.state as { food?: CatalogFood } | null;
+    if (state?.food) applyFood(state.food);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routerLocation.state]);
+
+  const handleNameChange = (value: string) => {
+    setItemName(value);
+    if (selectedFood && value !== selectedFood.name) {
+      setSelectedFood(null);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    showAlert('Đã thêm thực phẩm thành công!');
-    navigate('/pantry');
+    if (!itemName.trim() || saving) return;
+    if (!expiryDate) {
+      showAlert('Vui lòng chọn hạn sử dụng.');
+      return;
+    }
+    const parsedQuantity = Number(quantity);
+    if (Number.isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      showAlert('Số lượng phải lớn hơn 0.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await pantryApi.create({
+        foodId: selectedFood?.id,
+        name: selectedFood ? undefined : itemName.trim(),
+        quantity: parsedQuantity,
+        unit,
+        expiryDate: new Date(expiryDate).toISOString(),
+        location: LOCATION_VALUES[location] ?? 'fridge',
+      });
+      showAlert('Đã thêm thực phẩm thành công!');
+      navigate('/pantry');
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không thêm được thực phẩm.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -35,31 +113,73 @@ export default function AddItem() {
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-1">
             <label className="font-body-md text-body-md font-bold text-on-surface" htmlFor="itemName">Tên thực phẩm *</label>
-            <input 
+            <FoodAutocomplete
               value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="itemName" placeholder="VD: Sữa tươi TH True Milk, Thịt bò..." type="text"
+              onChange={handleNameChange}
+              onSelectFood={applyFood}
+              placeholder="VD: Sữa tươi, Thịt bò... (gõ để tìm trong danh mục)"
+              className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
             />
+            {selectedFood && (
+              <p className="font-label-sm text-label-sm text-primary flex items-center gap-1 mt-1">
+                <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                Đã liên kết với danh mục hệ thống
+              </p>
+            )}
           </div>
+
+          {selectedFood?.storageTips && (
+            <div className="flex items-start gap-2 bg-tertiary-container/25 border border-tertiary/20 rounded-lg px-4 py-3">
+              <span className="material-symbols-outlined text-tertiary mt-0.5">lightbulb</span>
+              <div>
+                <p className="font-label-sm text-label-sm font-bold text-tertiary mb-0.5">Mẹo bảo quản tối ưu</p>
+                <p className="font-body-md text-body-md text-on-surface">{selectedFood.storageTips}</p>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="font-body-md text-body-md font-bold text-on-surface" htmlFor="quantity">Số lượng</label>
               <div className="flex bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
-                <input className="w-full px-4 py-3 bg-transparent outline-none" id="quantity" placeholder="0" type="number"/>
-                <select className="bg-surface-container border-none outline-none px-2 font-body-md text-body-md cursor-pointer border-l border-outline-variant">
-                  <option value="item">Cái/Hộp</option>
+                <input
+                  className="w-full px-4 py-3 bg-transparent outline-none"
+                  id="quantity"
+                  placeholder="0"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
+                <select
+                  className="bg-surface-container border-none outline-none px-2 font-body-md text-body-md cursor-pointer border-l border-outline-variant"
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                >
+                  {!['cái', 'kg', 'g', 'lít', 'ml', 'bó', 'quả'].includes(unit) && (
+                    <option value={unit}>{unit}</option>
+                  )}
+                  <option value="cái">Cái/Hộp</option>
                   <option value="kg">Kg</option>
                   <option value="g">Gram</option>
-                  <option value="l">Lít</option>
+                  <option value="lít">Lít</option>
                   <option value="ml">ml</option>
+                  <option value="bó">Bó</option>
+                  <option value="quả">Quả</option>
                 </select>
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-1">
               <label className="font-body-md text-body-md font-bold text-on-surface" htmlFor="expiryDate">Hạn sử dụng</label>
-              <input className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="expiryDate" type="date"/>
+              <input
+                className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                id="expiryDate"
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+              />
             </div>
           </div>
 
@@ -91,7 +211,7 @@ export default function AddItem() {
             className={`w-full h-14 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 transition-all shadow-sm ${itemName.trim() ? 'bg-primary text-white hover:opacity-90 active:scale-[0.98]' : 'bg-surface-container-high text-on-surface-variant opacity-50 cursor-not-allowed'}`}
           >
             <span className="material-symbols-outlined">save</span>
-            Lưu thực phẩm
+            {saving ? 'Đang lưu...' : 'Lưu thực phẩm'}
           </button>
         </div>
       </div>

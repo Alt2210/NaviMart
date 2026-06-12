@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -7,14 +8,18 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { compare, hash } from 'bcryptjs';
+import { createHash, randomBytes } from 'crypto';
 import { Model, Types } from 'mongoose';
 import {
   Family,
   FAMILY_PERMISSIONS,
 } from '../families/schemas/family.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { AuthenticatedUser, JwtPayload } from './types/authenticated-user.type';
 
 type AuthTokens = {
@@ -153,6 +158,122 @@ export class AuthService {
     return { success: true };
   }
 
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const identifier = dto.identifier.trim().toLowerCase();
+    const user = await this.userModel
+      .findOne({
+        $or: [{ email: identifier }, { phone: dto.identifier.trim() }],
+      })
+      .exec();
+
+    if (!user) {
+      return { success: true };
+    }
+
+    const token = randomBytes(32).toString('hex');
+    await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            resetPasswordTokenHash: this.sha256(token),
+            resetPasswordExpiresAt: new Date(Date.now() + 60 * 60 * 1000),
+          },
+        },
+      )
+      .exec();
+
+    if (this.isProduction()) {
+      return { success: true };
+    }
+
+    return { success: true, devResetToken: token };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const user = await this.userModel
+      .findOne({
+        resetPasswordTokenHash: this.sha256(dto.token),
+        resetPasswordExpiresAt: { $gt: new Date() },
+      })
+      .exec();
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    const passwordHash = await hash(dto.newPassword, 12);
+    await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: { passwordHash },
+          $unset: {
+            resetPasswordTokenHash: 1,
+            resetPasswordExpiresAt: 1,
+            refreshTokenHash: 1,
+          },
+        },
+      )
+      .exec();
+
+    return { success: true };
+  }
+
+  async sendVerification(authenticatedUser: AuthenticatedUser) {
+    const user = await this.userModel
+      .findById(authenticatedUser.userId)
+      .exec();
+
+    if (!user || user.status !== 'active') {
+      throw new UnauthorizedException('Invalid access token');
+    }
+
+    if (!user.email) {
+      throw new BadRequestException('User account has no email address');
+    }
+
+    const token = randomBytes(32).toString('hex');
+    await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            emailVerificationTokenHash: this.sha256(token),
+          },
+        },
+      )
+      .exec();
+
+    if (this.isProduction()) {
+      return { success: true };
+    }
+
+    return { success: true, devVerificationToken: token };
+  }
+
+  async verifyEmail(dto: VerifyEmailDto) {
+    const user = await this.userModel
+      .findOne({ emailVerificationTokenHash: this.sha256(dto.token) })
+      .exec();
+
+    if (!user) {
+      throw new BadRequestException('Invalid verification token');
+    }
+
+    await this.userModel
+      .updateOne(
+        { _id: user._id },
+        {
+          $set: { emailVerifiedAt: new Date() },
+          $unset: { emailVerificationTokenHash: 1 },
+        },
+      )
+      .exec();
+
+    return { success: true };
+  }
+
   async validateJwtPayload(payload: JwtPayload): Promise<AuthenticatedUser> {
     const user = await this.userModel.findById(payload.sub).exec();
 
@@ -231,7 +352,16 @@ export class AuthService {
       role: user.role,
       status: user.status,
       activeFamilyId: user.activeFamilyId?.toString(),
+      emailVerifiedAt: user.emailVerifiedAt,
     };
+  }
+
+  private sha256(value: string) {
+    return createHash('sha256').update(value).digest('hex');
+  }
+
+  private isProduction() {
+    return this.configService.get<string>('NODE_ENV') === 'production';
   }
 
   private isDuplicateKeyError(error: unknown): error is { code: number } {

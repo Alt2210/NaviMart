@@ -5,6 +5,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: "class",
+  // PantryDashboard builds status colors dynamically (`text-${color}`), which JIT can't detect.
+  safelist: [
+    "text-tertiary", "text-secondary", "text-error",
+    "bg-tertiary", "bg-secondary", "bg-error",
+    "border-tertiary/20", "border-secondary/20", "border-error/20",
+  ],
   theme: {
     extend: {
       colors: {

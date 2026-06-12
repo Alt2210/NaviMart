@@ -1,0 +1,25 @@
+# Local MongoDB data directory (started from mongodb-memory-server binary)
+.mongodb-data/
+
+# Dependencies & build output (also covered by per-package .gitignore — defense in depth)
+node_modules/
+dist/
+build/
+
+# Environment files — never commit secrets (TIMELY_API_KEY, JWT secrets...)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

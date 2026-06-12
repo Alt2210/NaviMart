@@ -6,7 +6,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Connection, Model } from 'mongoose';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from '../src/app.module';
 import { Category } from '../src/catalog/schemas/category.schema';
 import { Food } from '../src/catalog/schemas/food.schema';
 import { Recipe } from '../src/recipes/schemas/recipe.schema';
@@ -42,7 +41,14 @@ describe('Main user flows (e2e)', () => {
     process.env.JWT_REFRESH_SECRET = 'test-refresh-secret';
     process.env.JWT_ACCESS_EXPIRES_IN = '15m';
     process.env.JWT_REFRESH_EXPIRES_IN = '7d';
-    process.env.EXPIRY_NOTIFICATION_CRON = '0 0 31 2 *';
+    // Once a year at midnight Jan 1 — effectively disables the job during tests.
+    process.env.EXPIRY_NOTIFICATION_CRON = '0 0 1 1 *';
+
+    // AppModule must be imported AFTER the env vars above are set:
+    // ConfigModule.forRoot({ validate }) snapshots process.env at import time.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { AppModule } =
+      require('../src/app.module') as typeof import('../src/app.module');
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],

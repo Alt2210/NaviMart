@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { hash } from 'bcryptjs';
 import mongoose, { Model } from 'mongoose';
 import {
   Category,
@@ -7,6 +8,7 @@ import {
 import { Food, FoodSchema } from '../catalog/schemas/food.schema';
 import { Unit, UnitSchema } from '../catalog/schemas/unit.schema';
 import { Recipe, RecipeSchema } from '../recipes/schemas/recipe.schema';
+import { User, UserSchema } from '../users/schemas/user.schema';
 
 type SeedCategory = {
   name: string;
@@ -29,6 +31,7 @@ type SeedFood = {
   defaultStorageLocation: 'freezer' | 'fridge' | 'pantry' | 'other';
   defaultShelfLifeDays: number;
   storageTips: string;
+  barcode?: string;
 };
 
 type SeedRecipeIngredient = {
@@ -116,6 +119,7 @@ const foods: SeedFood[] = [
     defaultStorageLocation: 'fridge',
     defaultShelfLifeDays: 3,
     storageTips: 'Bao quan ngan mat, dung som trong 1-3 ngay.',
+    barcode: '8934673009012',
   },
   {
     name: 'Thit ga',
@@ -143,6 +147,7 @@ const foods: SeedFood[] = [
     defaultStorageLocation: 'fridge',
     defaultShelfLifeDays: 21,
     storageTips: 'De trong vi tri on dinh nhiet do, khong rua truoc khi cat.',
+    barcode: '8934673005678',
   },
   {
     name: 'Sua tuoi',
@@ -152,6 +157,7 @@ const foods: SeedFood[] = [
     defaultStorageLocation: 'fridge',
     defaultShelfLifeDays: 5,
     storageTips: 'Dong nap kin sau khi mo va dung trong vai ngay.',
+    barcode: '8934673001234',
   },
   {
     name: 'Ca rot',
@@ -206,6 +212,7 @@ const foods: SeedFood[] = [
     defaultStorageLocation: 'pantry',
     defaultShelfLifeDays: 120,
     storageTips: 'De noi kho mat.',
+    barcode: '8934673003456',
   },
   {
     name: 'Dau an',
@@ -420,6 +427,7 @@ async function upsertFoods(
             defaultStorageLocation: food.defaultStorageLocation,
             defaultShelfLifeDays: food.defaultShelfLifeDays,
             storageTips: food.storageTips,
+            ...(food.barcode ? { barcode: food.barcode } : {}),
             isSystem: true,
             status: 'active',
           },
@@ -479,6 +487,34 @@ async function upsertRecipes(
   }
 }
 
+async function upsertAdminUser(userModel: Model<User>) {
+  const email = process.env.SEED_ADMIN_EMAIL ?? 'admin@navimart.local';
+  const password = process.env.SEED_ADMIN_PASSWORD ?? 'Admin@12345';
+  const passwordHash = await hash(password, 12);
+
+  await userModel
+    .findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          email,
+          firstName: 'NaviMart',
+          lastName: 'Admin',
+          displayName: 'NaviMart Admin',
+          role: 'admin',
+          status: 'active',
+        },
+        $setOnInsert: {
+          passwordHash,
+        },
+      },
+      { new: true, upsert: true },
+    )
+    .exec();
+
+  return email;
+}
+
 async function bootstrap() {
   const mongoUri = process.env.MONGODB_URI ?? 'mongodb://localhost:27017/navimart';
   const dbName = process.env.MONGODB_DB_NAME;
@@ -489,14 +525,16 @@ async function bootstrap() {
   const unitModel = mongoose.model(Unit.name, UnitSchema);
   const foodModel = mongoose.model(Food.name, FoodSchema);
   const recipeModel = mongoose.model(Recipe.name, RecipeSchema);
+  const userModel = mongoose.model(User.name, UserSchema);
 
   const categoryBySlug = await upsertCategories(categoryModel);
   await upsertUnits(unitModel);
   const foodByName = await upsertFoods(foodModel, categoryBySlug);
   await upsertRecipes(recipeModel, foodByName);
+  const adminEmail = await upsertAdminUser(userModel);
 
   console.log(
-    `Seed completed: ${categories.length} categories, ${units.length} units, ${foods.length} foods, ${recipes.length} recipes.`,
+    `Seed completed: ${categories.length} categories, ${units.length} units, ${foods.length} foods, ${recipes.length} recipes, admin account ${adminEmail} (password: ${process.env.SEED_ADMIN_PASSWORD ?? 'Admin@12345'}).`,
   );
 
   await mongoose.disconnect();

@@ -1,10 +1,80 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import SideNav from '../components/SideNav';
+import { CardGridSkeleton } from '../components/Skeleton';
+import { recipesApi } from '../api';
+import type { RecipeSuggestion as Suggestion, RecipeSummary } from '../api';
+import { useDialog } from '../contexts/DialogContext';
+
+const DIFFICULTY_LABELS: Record<string, string> = {
+  easy: 'Dễ',
+  medium: 'Trung bình',
+  hard: 'Khó',
+};
+
+function RecipeImage({ recipe, className }: { recipe: RecipeSummary; className: string }) {
+  return recipe.imageUrl ? (
+    <img
+      className={`${className} object-cover group-hover:scale-105 transition-transform duration-500`}
+      src={recipe.imageUrl}
+      alt={recipe.name}
+    />
+  ) : (
+    <div className={`${className} flex items-center justify-center bg-surface-container`}>
+      <span className="material-symbols-outlined text-6xl text-outline">restaurant</span>
+    </div>
+  );
+}
 
 export default function RecipeSuggestion() {
-  const [activeFilter, setActiveFilter] = useState('Tất cả');
+  const { showAlert } = useDialog();
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [searchResults, setSearchResults] = useState<RecipeSummary[] | null>(null);
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const handleError = useCallback(
+    (err: unknown, fallback: string) => {
+      showAlert(err instanceof Error ? err.message : fallback);
+    },
+    [showAlert],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    recipesApi
+      .suggestions({ limit: 12, prioritizeExpiring: true })
+      .then((data) => {
+        if (!cancelled) setSuggestions(data);
+      })
+      .catch((err) => handleError(err, 'Không tải được gợi ý món ăn.'))
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [handleError]);
+
+  useEffect(() => {
+    const term = search.trim();
+    if (!term) {
+      setSearchResults(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      recipesApi
+        .list({ q: term, limit: 20 })
+        .then(setSearchResults)
+        .catch((err) => handleError(err, 'Không tìm kiếm được món ăn.'));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search, handleError]);
+
+  const featured = suggestions[0];
+  const secondFeatured = suggestions[1];
+  const others = suggestions.slice(2);
 
   return (
     <div className="bg-surface text-on-surface h-screen overflow-hidden flex flex-col md:flex-row">
@@ -16,142 +86,191 @@ export default function RecipeSuggestion() {
           <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <h1 className="font-headline-md text-headline-md text-primary mb-2">Gợi ý món ăn thông minh</h1>
-              <p className="font-body-md text-body-md text-on-surface-variant mb-6">Dựa trên nguyên liệu sắp hết hạn của bạn.</p>
+              <p className="font-body-md text-body-md text-on-surface-variant mb-2">Dựa trên nguyên liệu sẵn có trong tủ lạnh của bạn.</p>
+              <Link to="/recipe-editor" className="inline-flex items-center gap-1.5 text-primary font-label-md font-bold hover:underline mb-4">
+                <span className="material-symbols-outlined text-[20px]">add_circle</span>
+                Tạo công thức mới
+              </Link>
             </div>
             <div className="w-full md:w-[400px]">
               <label className="font-body-md text-body-md text-on-surface mb-stack-sm block font-medium">Tìm kiếm món ăn</label>
               <div className="relative group">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
-                <input className="w-full pl-12 pr-4 py-3 border border-[#C1C1C1] rounded-none bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow placeholder:text-outline" placeholder="Nhập tên món hoặc nguyên liệu..." type="text"/>
-                <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-surface-container-high rounded-full p-1 hover:bg-surface-container-highest transition-colors flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[20px] text-on-surface-variant">tune</span>
-                </button>
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border border-[#C1C1C1] rounded-none bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow placeholder:text-outline"
+                  placeholder="Nhập tên món hoặc nguyên liệu..."
+                  type="text"
+                />
               </div>
             </div>
           </header>
 
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-error-container flex items-center justify-center text-error">
-                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
-              </div>
-              <h3 className="font-headline-sm text-headline-sm text-on-surface">Giải cứu nguyên liệu sắp hết hạn</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Link to="/recipe-detail" className="lg:col-span-2 bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col sm:flex-row group cursor-pointer hover:shadow-md transition-all">
-                <div className="relative sm:w-1/2 h-56 sm:h-auto overflow-hidden">
-                  <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKaNpg41Npm2EialKKJPtfNdQ5C22RhoMHq5huapojrTZ3uSC8kJRNDFmiq3Fgj_zfZr2gJYqJTMSTkoxUAe98M_GUvkff6kFIvg8ikmlsrXXg6kTNTjvUaOPuu4bLRGq3UMZIyIWvY-6MbkKwx8j3tvrbRvFxdamAgECSImHWkl5DOXS8zcEdfXy0Z7EgvMGzk-W5cM1q4HZUXJdEqCEB1MJTPaxV6O1ZX3i5cw5qCXFQ-BA4jamQXTYbir1q0IzM91NWjF00qNDi" alt="Salad"/>
-                  <div className="absolute top-4 left-4 flex gap-2">
-                    <span className="bg-error text-on-error font-label-sm text-label-sm px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm font-medium">
-                      <span className="material-symbols-outlined text-[16px]">priority_high</span> Ưu tiên
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6 flex flex-col justify-between flex-1">
-                  <div>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full">Salad</span>
-                      <span className="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full">Tốt cho sức khỏe</span>
-                    </div>
-                    <h4 className="font-headline-sm text-headline-sm text-on-surface mb-2 group-hover:text-primary transition-colors">Salad Ức Gà Xốt Mè Rang</h4>
-                    <p className="font-body-md text-body-md text-on-surface-variant mb-4 line-clamp-2">Sử dụng ngay xà lách và cà chua bi sắp héo để tạo ra một bữa ăn thanh mát, giàu protein.</p>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 text-on-surface-variant font-body-md text-body-md">
-                      <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[20px]">schedule</span> 15 phút</span>
-                      <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[20px]">local_fire_department</span> 250 kcal</span>
-                    </div>
-                    <div className="bg-surface-container-low p-3 rounded border border-surface-container-highest">
-                      <div className="flex justify-between items-end mb-2">
-                        <span className="font-label-sm text-label-sm text-on-surface-variant">Nguyên liệu sẵn có trong tủ</span>
-                        <span className="font-body-md text-body-md font-bold text-primary">90%</span>
-                      </div>
-                      <div className="w-full bg-surface-container-highest rounded-full h-2">
-                        <div className="bg-primary h-2 rounded-full" style={{ width: '90%' }}></div>
-                      </div>
-                      <p className="font-label-sm text-label-sm text-secondary mt-2 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[16px]">info</span> Cần mua thêm: Sốt mè rang
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              
-              <Link to="/recipe-detail" className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col group cursor-pointer hover:shadow-md transition-all">
-                <div className="relative h-48 overflow-hidden">
-                  <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAwd0xcItKWw1eVUEjjMBH82uh9JNum_Y2oTWHEVkU8DrEtmbhw9-uITP7l--YSSNS0SKs5ewXKAXcCRX-OX8XAXJnoh3pYK-FK2ZFTYmW1JUx2HeLPJ_x6RrmABKyzd4o3z8uKKwXY_7vWFo7MWgr32OxjCgGgdZwauR0InMm3gqihO6c-sauinFXHBy9n4H3x5eiAhaFJShmm2byOhQU8Bt8vIXlHjUaV9-54nw6IsOC7UWet4_EZWc-fnAtUx87fgiRTTREdsp_" alt="Mì Xào"/>
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm font-medium">
-                      <span className="material-symbols-outlined text-[16px]">event_busy</span> Sắp hết hạn
-                    </span>
-                  </div>
-                </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <h4 className="font-headline-sm text-headline-sm text-on-surface mb-2">Mì Xào Bò Rau Cải</h4>
-                  <div className="flex items-center gap-4 text-on-surface-variant font-body-md text-body-md mb-4">
-                    <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[18px]">schedule</span> 20 phút</span>
-                  </div>
-                  <div className="mt-auto">
-                    <div className="flex justify-between items-end mb-1">
-                      <span className="font-label-sm text-label-sm text-on-surface-variant">Tận dụng</span>
-                      <span className="font-body-md text-body-md font-bold text-primary">85%</span>
-                    </div>
-                    <div className="w-full bg-surface-container-highest rounded-full h-1.5">
-                      <div className="bg-primary h-1.5 rounded-full" style={{ width: '85%' }}></div>
-                    </div>
-                    <p className="font-label-sm text-label-sm text-on-surface-variant mt-2">Thịt bò (hôm nay), Cải ngọt (mai)</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </section>
-
-          <hr className="border-t border-outline-variant opacity-50"/>
-
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-headline-sm text-headline-sm text-on-surface">Đề xuất khác cho bạn</h3>
-              <div className="hidden md:flex gap-2">
-                {['Tất cả', 'Bữa chính', 'Đồ ăn vặt'].map(filter => (
-                  <button 
-                    key={filter}
-                    onClick={() => setActiveFilter(filter)}
-                    className={`font-label-sm text-label-sm px-4 py-2 rounded-full border transition-colors ${activeFilter === filter ? 'bg-primary text-on-primary border-primary' : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest border-transparent'}`}
-                  >
-                    {filter}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
+          {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              <Link to="/recipe-detail" className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col group cursor-pointer hover:shadow-md transition-all">
-                <div className="relative h-40 overflow-hidden">
-                  <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxLmjbbPFQHTwvJfV3r_myDF4070EhXZ5S_7TtLdzPOhzGPeuQBOzq8ES1vLJvj_YtvyxEbpZm878HmFbAAfdtBc3_1SADUdTAhB_WmJG-OwHy76VPPffqJPqRCi7X-kfCohlaoVxZ9fMJQtbqyBVtW8iSzPc1_lYGiPO7AfqLV0g-8xG6kwhLr00G8b4Ewm_4Qbuj24BoEyoYGHJYDnt6jsYDASjeYv38NWY6YSVN6Hn8X3DlAFO4GEQBOTXysG5Xj9EV-kLr0N6H" alt="Phở"/>
-                </div>
-                <div className="p-4 flex flex-col flex-1">
-                  <h4 className="font-headline-sm text-headline-sm text-on-surface mb-1">Phở Bò Tái Lăn</h4>
-                  <div className="flex items-center gap-3 text-on-surface-variant font-body-md text-body-md mb-4">
-                    <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">schedule</span> 45 phút</span>
-                    <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">signal_cellular_alt</span> Khó</span>
-                  </div>
-                  <div className="mt-auto bg-surface-container-low p-2 rounded border border-outline-variant/50">
-                    <div className="flex justify-between items-end mb-1">
-                      <span className="font-label-sm text-label-sm text-on-surface-variant">Nguyên liệu có sẵn</span>
-                      <span className="font-body-md text-body-md font-bold text-primary">70%</span>
-                    </div>
-                    <div className="w-full bg-surface-container-highest rounded-full h-1.5">
-                      <div className="bg-primary h-1.5 rounded-full" style={{ width: '70%' }}></div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <CardGridSkeleton count={8} />
             </div>
-          </section>
+          ) : searchResults !== null ? (
+            <section>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-6">Kết quả tìm kiếm ({searchResults.length})</h3>
+              {searchResults.length === 0 ? (
+                <p className="font-body-md text-on-surface-variant">Không tìm thấy món ăn phù hợp.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {searchResults.map((recipe) => (
+                    <Link key={recipe.id} to={`/recipe-detail/${recipe.id}`} className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col group cursor-pointer hover:shadow-md transition-all">
+                      <div className="relative h-40 overflow-hidden">
+                        <RecipeImage recipe={recipe} className="w-full h-full" />
+                      </div>
+                      <div className="p-4 flex flex-col flex-1">
+                        <h4 className="font-headline-sm text-headline-sm text-on-surface mb-1">{recipe.name}</h4>
+                        <div className="flex items-center gap-3 text-on-surface-variant font-body-md text-body-md">
+                          <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">schedule</span> {recipe.cookTimeMinutes} phút</span>
+                          <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">signal_cellular_alt</span> {DIFFICULTY_LABELS[recipe.difficulty]}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
+          ) : suggestions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-on-surface-variant text-center">
+              <span className="material-symbols-outlined text-6xl mb-4 text-outline">skillet</span>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-2">Chưa có gợi ý nào</h3>
+              <p className="font-body-md text-body-md">Hãy thêm thực phẩm vào tủ lạnh để nhận gợi ý món ăn phù hợp.</p>
+            </div>
+          ) : (
+            <>
+              <section>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 rounded-full bg-error-container flex items-center justify-center text-error">
+                    <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+                  </div>
+                  <h3 className="font-headline-sm text-headline-sm text-on-surface">Giải cứu nguyên liệu sắp hết hạn</h3>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {featured && (
+                    <Link to={`/recipe-detail/${featured.recipe.id}`} className="lg:col-span-2 bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col sm:flex-row group cursor-pointer hover:shadow-md transition-all">
+                      <div className="relative sm:w-1/2 h-56 sm:h-auto overflow-hidden">
+                        <RecipeImage recipe={featured.recipe} className="w-full h-full" />
+                        <div className="absolute top-4 left-4 flex gap-2">
+                          <span className="bg-error text-on-error font-label-sm text-label-sm px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm font-medium">
+                            <span className="material-symbols-outlined text-[16px]">priority_high</span> Ưu tiên
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6 flex flex-col justify-between flex-1">
+                        <div>
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {featured.recipe.tags.slice(0, 3).map((tag) => (
+                              <span key={tag} className="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-3 py-1 rounded-full">{tag}</span>
+                            ))}
+                          </div>
+                          <h4 className="font-headline-sm text-headline-sm text-on-surface mb-2 group-hover:text-primary transition-colors">{featured.recipe.name}</h4>
+                          <p className="font-body-md text-body-md text-on-surface-variant mb-4 line-clamp-2">{featured.recipe.description}</p>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4 text-on-surface-variant font-body-md text-body-md">
+                            <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[20px]">schedule</span> {featured.recipe.cookTimeMinutes} phút</span>
+                            <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[20px]">signal_cellular_alt</span> {DIFFICULTY_LABELS[featured.recipe.difficulty]}</span>
+                          </div>
+                          <div className="bg-surface-container-low p-3 rounded border border-surface-container-highest">
+                            <div className="flex justify-between items-end mb-2">
+                              <span className="font-label-sm text-label-sm text-on-surface-variant">Nguyên liệu sẵn có trong tủ</span>
+                              <span className="font-body-md text-body-md font-bold text-primary">{Math.round(featured.matchRatio * 100)}%</span>
+                            </div>
+                            <div className="w-full bg-surface-container-highest rounded-full h-2">
+                              <div className="bg-primary h-2 rounded-full" style={{ width: `${Math.round(featured.matchRatio * 100)}%` }}></div>
+                            </div>
+                            {featured.missingIngredients.length > 0 && (
+                              <p className="font-label-sm text-label-sm text-secondary mt-2 flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[16px]">info</span> Cần mua thêm: {featured.missingIngredients.slice(0, 3).join(', ')}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  )}
+
+                  {secondFeatured && (
+                    <Link to={`/recipe-detail/${secondFeatured.recipe.id}`} className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col group cursor-pointer hover:shadow-md transition-all">
+                      <div className="relative h-48 overflow-hidden">
+                        <RecipeImage recipe={secondFeatured.recipe} className="w-full h-full" />
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm font-medium">
+                            <span className="material-symbols-outlined text-[16px]">event_busy</span> Tận dụng tủ lạnh
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-5 flex flex-col flex-1">
+                        <h4 className="font-headline-sm text-headline-sm text-on-surface mb-2">{secondFeatured.recipe.name}</h4>
+                        <div className="flex items-center gap-4 text-on-surface-variant font-body-md text-body-md mb-4">
+                          <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[18px]">schedule</span> {secondFeatured.recipe.cookTimeMinutes} phút</span>
+                        </div>
+                        <div className="mt-auto">
+                          <div className="flex justify-between items-end mb-1">
+                            <span className="font-label-sm text-label-sm text-on-surface-variant">Tận dụng</span>
+                            <span className="font-body-md text-body-md font-bold text-primary">{Math.round(secondFeatured.matchRatio * 100)}%</span>
+                          </div>
+                          <div className="w-full bg-surface-container-highest rounded-full h-1.5">
+                            <div className="bg-primary h-1.5 rounded-full" style={{ width: `${Math.round(secondFeatured.matchRatio * 100)}%` }}></div>
+                          </div>
+                          {secondFeatured.missingIngredients.length > 0 && (
+                            <p className="font-label-sm text-label-sm text-on-surface-variant mt-2">Thiếu: {secondFeatured.missingIngredients.slice(0, 3).join(', ')}</p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  )}
+                </div>
+              </section>
+
+              {others.length > 0 && (
+                <>
+                  <hr className="border-t border-outline-variant opacity-50"/>
+
+                  <section>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="font-headline-sm text-headline-sm text-on-surface">Đề xuất khác cho bạn</h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {others.map((suggestion) => (
+                        <Link key={suggestion.recipe.id} to={`/recipe-detail/${suggestion.recipe.id}`} className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col group cursor-pointer hover:shadow-md transition-all">
+                          <div className="relative h-40 overflow-hidden">
+                            <RecipeImage recipe={suggestion.recipe} className="w-full h-full" />
+                          </div>
+                          <div className="p-4 flex flex-col flex-1">
+                            <h4 className="font-headline-sm text-headline-sm text-on-surface mb-1">{suggestion.recipe.name}</h4>
+                            <div className="flex items-center gap-3 text-on-surface-variant font-body-md text-body-md mb-4">
+                              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">schedule</span> {suggestion.recipe.cookTimeMinutes} phút</span>
+                              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">signal_cellular_alt</span> {DIFFICULTY_LABELS[suggestion.recipe.difficulty]}</span>
+                            </div>
+                            <div className="mt-auto bg-surface-container-low p-2 rounded border border-outline-variant/50">
+                              <div className="flex justify-between items-end mb-1">
+                                <span className="font-label-sm text-label-sm text-on-surface-variant">Nguyên liệu có sẵn</span>
+                                <span className="font-body-md text-body-md font-bold text-primary">{Math.round(suggestion.matchRatio * 100)}%</span>
+                              </div>
+                              <div className="w-full bg-surface-container-highest rounded-full h-1.5">
+                                <div className="bg-primary h-1.5 rounded-full" style={{ width: `${Math.round(suggestion.matchRatio * 100)}%` }}></div>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+            </>
+          )}
         </div>
       </main>
-      
+
       <BottomNav />
     </div>
   );

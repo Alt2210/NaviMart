@@ -93,11 +93,18 @@ export class Recipe {
 
   @Prop({ type: String, enum: RECIPE_STATUSES, default: 'pending' })
   status!: (typeof RECIPE_STATUSES)[number];
+
+  @Prop({ type: String, trim: true, maxlength: 300 })
+  moderationNote?: string;
+
+  @Prop({ type: Number, default: 0, min: 0 })
+  favoritesCount!: number;
 }
 
 export const RecipeSchema = SchemaFactory.createForClass(Recipe);
 
 RecipeSchema.index({ status: 1, difficulty: 1, cookTimeMinutes: 1 });
+RecipeSchema.index({ status: 1, favoritesCount: -1 });
 RecipeSchema.index({ 'ingredients.foodId': 1 });
 RecipeSchema.index({ 'ingredients.categoryId': 1 });
 RecipeSchema.index({ authorId: 1, createdAt: -1 });

@@ -12,6 +12,7 @@ import { Food, FOOD_STORAGE_LOCATIONS } from '../catalog/schemas/food.schema';
 import { Family } from '../families/schemas/family.schema';
 import { InventoryEventsService } from '../inventory-events/inventory-events.service';
 import { PantryItem } from '../pantry/schemas/pantry-item.schema';
+import { RealtimeService } from '../realtime/realtime.service';
 import { CompleteShoppingListDto } from './dto/complete-shopping-list.dto';
 import { CreateShoppingListItemDto } from './dto/create-shopping-list-item.dto';
 import { CreateShoppingListDto } from './dto/create-shopping-list.dto';
@@ -35,6 +36,7 @@ export class ShoppingListsService {
     @InjectModel(PantryItem.name)
     private readonly pantryItemModel: Model<PantryItem>,
     private readonly inventoryEventsService: InventoryEventsService,
+    private readonly realtimeService: RealtimeService,
   ) {}
 
   async findAll(
@@ -67,7 +69,7 @@ export class ShoppingListsService {
       createdBy: new Types.ObjectId(user.userId),
     });
 
-    return this.toShoppingListResponse(list);
+    return this.emitListUpdated(this.toShoppingListResponse(list));
   }
 
   async findOne(user: AuthenticatedUser, listId: string) {
@@ -97,13 +99,19 @@ export class ShoppingListsService {
     }
 
     await list.save();
-    return this.toShoppingListResponse(list);
+    return this.emitListUpdated(this.toShoppingListResponse(list));
   }
 
   async remove(user: AuthenticatedUser, listId: string) {
     const list = await this.findListForUser(user, listId);
     list.status = 'archived';
     await list.save();
+
+    this.realtimeService.emitToFamily(
+      list.familyId.toString(),
+      'shoppingList:removed',
+      { id: list._id.toString() },
+    );
 
     return { success: true };
   }
@@ -119,7 +127,7 @@ export class ShoppingListsService {
     list.items.push(item as ShoppingListItem);
     await list.save();
 
-    return this.toShoppingListResponse(list);
+    return this.emitListUpdated(this.toShoppingListResponse(list));
   }
 
   async updateItem(
@@ -167,7 +175,7 @@ export class ShoppingListsService {
     }
 
     await list.save();
-    return this.toShoppingListResponse(list);
+    return this.emitListUpdated(this.toShoppingListResponse(list));
   }
 
   async removeItem(user: AuthenticatedUser, listId: string, itemId: string) {
@@ -178,7 +186,7 @@ export class ShoppingListsService {
     );
     await list.save();
 
-    return this.toShoppingListResponse(list);
+    return this.emitListUpdated(this.toShoppingListResponse(list));
   }
 
   async complete(
@@ -277,7 +285,7 @@ export class ShoppingListsService {
     await list.save();
 
     return {
-      shoppingList: this.toShoppingListResponse(list),
+      shoppingList: this.emitListUpdated(this.toShoppingListResponse(list)),
       pantryItems: createdPantryItems.map((item) => ({
         id: item._id.toString(),
         foodId: item.foodId?.toString(),
@@ -291,6 +299,18 @@ export class ShoppingListsService {
         source: item.source,
       })),
     };
+  }
+
+  private emitListUpdated(
+    response: ReturnType<ShoppingListsService['toShoppingListResponse']>,
+  ) {
+    this.realtimeService.emitToFamily(
+      response.familyId,
+      'shoppingList:updated',
+      response,
+    );
+
+    return response;
   }
 
   private async buildShoppingListItem(dto: CreateShoppingListItemDto) {

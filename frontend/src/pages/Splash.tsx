@@ -1,16 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Splash() {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    // Navigate to onboarding after 2.5 seconds
     const timer = setTimeout(() => {
-      navigate('/onboarding');
+      if (isAuthenticated) {
+        navigate(user?.role === 'admin' ? '/admin' : '/home');
+      } else {
+        navigate('/onboarding');
+      }
     }, 2500);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, isAuthenticated, user]);
 
   return (
     <div className="bg-background min-h-screen flex items-center justify-center m-0 overflow-hidden">

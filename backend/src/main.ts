@@ -35,7 +35,12 @@ async function bootstrap() {
     .setVersion('1.0')
     .addServer('http://localhost:3000', 'Local development')
     .addTag('Health', 'Service health checks.')
-    .addTag('Auth', 'Register, login, refresh token rotation, and logout.')
+    .addTag('Admin', 'Admin-only user, catalog, recipe moderation, and stats management.')
+    .addTag(
+      'Auth',
+      'Register, login, refresh token rotation, logout, password reset, and email verification.',
+    )
+    .addTag('Catalog', 'Public read access to food catalog, categories, and units.')
     .addTag('Family', 'Family creation, invite sharing, member management, and permissions.')
     .addTag('Shopping Lists', 'Shopping list CRUD, item CRUD, and completion into pantry.')
     .addTag('Pantry', 'Pantry inventory CRUD, consume, waste, and expiry status filtering.')
