@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC016 ManageShoppingList
+
+allow_mixing
+actor "User" as Actor
+boundary "ManageShoppingListUI" as UI
+control "ManageShoppingListController" as Controller
+entity "ManageShoppingListDB" as Entity
+
+Actor -right-> UI : 1: Interact
+UI -right-> Controller : 2: process()
+Controller -down-> Entity : 3: dbAction()
+Controller -up-> UI : 4: returnData
+@enduml

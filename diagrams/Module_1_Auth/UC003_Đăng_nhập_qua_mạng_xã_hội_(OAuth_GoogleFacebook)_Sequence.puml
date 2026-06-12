@@ -1,0 +1,45 @@
+@startuml
+title Sequence Diagram - UC003 Đăng nhập mạng xã hội
+
+actor "Guest" as Actor
+boundary "LoginUI" as UI
+control "OAuthProvider" as Provider
+control "AuthController" as Controller
+entity "UserAccount" as UserDB
+
+Actor -> UI : 1. Click "Login Google/FB"
+activate UI
+UI -> Provider : 2. redirect to OAuth URL
+deactivate UI
+activate Provider
+
+Provider --> Actor : 3. Xin quyền truy cập profile
+Actor -> Provider : 4. Allow
+Provider -> Controller : 5. callback(authCode)
+deactivate Provider
+activate Controller
+
+Controller -> Provider : 6. exchangeToken & getProfile()
+activate Provider
+Provider --> Controller : profile(email, name)
+deactivate Provider
+
+Controller -> UserDB : 7. findByEmail(email)
+activate UserDB
+UserDB --> Controller : userRecord (null if not exist)
+deactivate UserDB
+
+alt user == null
+    Controller -> UserDB : 8. createAccount(email, name)
+    activate UserDB
+    UserDB --> Controller : success
+    deactivate UserDB
+end
+
+Controller -> Controller : 9. generateAppToken()
+Controller --> UI : 10. redirect to Home
+activate UI
+UI --> Actor : 11. Đăng nhập thành công
+deactivate UI
+deactivate Controller
+@enduml

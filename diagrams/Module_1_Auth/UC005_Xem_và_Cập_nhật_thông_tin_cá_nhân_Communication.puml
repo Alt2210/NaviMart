@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC005 Cập nhật thông tin cá nhân
+
+allow_mixing
+actor "User" as Actor
+boundary "ProfileUI" as UI
+control "ProfileController" as Controller
+entity "UserProfile" as ProfileDB
+
+Actor -right-> UI : 1: Sửa & Lưu
+UI -right-> Controller : 2: updateProfile()
+Controller -down-> ProfileDB : 3: update(data)
+Controller -up-> UI : 4: Return status
+@enduml

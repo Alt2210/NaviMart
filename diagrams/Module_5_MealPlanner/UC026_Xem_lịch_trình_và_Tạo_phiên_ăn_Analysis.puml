@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC026 ViewMealPlan
+
+class "ViewMealPlanUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "ViewMealPlanController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "ViewMealPlanDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

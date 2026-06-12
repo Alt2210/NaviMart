@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC018 UpdateOrRemoveItem
+
+allow_mixing
+actor "User" as Actor
+boundary "UpdateOrRemoveItemUI" as UI
+control "UpdateOrRemoveItemController" as Controller
+entity "UpdateOrRemoveItemDB" as Entity
+
+Actor -right-> UI : 1: Interact
+UI -right-> Controller : 2: process()
+Controller -down-> Entity : 3: dbAction()
+Controller -up-> UI : 4: returnData
+@enduml

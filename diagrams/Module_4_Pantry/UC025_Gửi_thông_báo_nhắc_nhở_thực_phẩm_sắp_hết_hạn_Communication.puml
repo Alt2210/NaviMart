@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC025 ExpiryNotification
+
+allow_mixing
+actor "User" as Actor
+boundary "ExpiryNotificationUI" as UI
+control "ExpiryNotificationController" as Controller
+entity "ExpiryNotificationDB" as Entity
+
+Actor -right-> UI : 1: Interact
+UI -right-> Controller : 2: process()
+Controller -down-> Entity : 3: dbAction()
+Controller -up-> UI : 4: returnData
+@enduml

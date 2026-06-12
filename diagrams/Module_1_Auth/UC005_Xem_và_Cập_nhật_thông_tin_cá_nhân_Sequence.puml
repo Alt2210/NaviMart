@@ -1,0 +1,32 @@
+@startuml
+title Sequence Diagram - UC005 Cập nhật thông tin cá nhân
+
+actor "User" as Actor
+boundary "ProfileUI" as UI
+control "ProfileController" as Controller
+entity "UserProfile" as ProfileDB
+
+Actor -> UI : 1. Mở Profile
+activate UI
+UI -> Controller : 2. getProfile(userId)
+activate Controller
+Controller -> ProfileDB : 3. query()
+activate ProfileDB
+ProfileDB --> Controller : data
+deactivate ProfileDB
+Controller --> UI : 4. return data
+deactivate Controller
+UI --> Actor : 5. Hiển thị thông tin
+
+Actor -> UI : 6. Chỉnh sửa & Bấm Lưu
+UI -> Controller : 7. updateProfile(userId, newData)
+activate Controller
+Controller -> ProfileDB : 8. update(newData)
+activate ProfileDB
+ProfileDB --> Controller : success
+deactivate ProfileDB
+Controller --> UI : 9. success msg
+deactivate Controller
+UI --> Actor : 10. Hiển thị thông báo "Cập nhật thành công"
+deactivate UI
+@enduml

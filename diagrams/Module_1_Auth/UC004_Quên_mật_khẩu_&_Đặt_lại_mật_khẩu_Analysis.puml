@@ -1,0 +1,28 @@
+@startuml
+title Analysis Class Diagram - UC004 Quên mật khẩu
+
+class "ForgotPassUI" as UI <<boundary>> {
+  + Submit Email() : void
+  + Success Msg() : void
+}
+class "ResetPassUI" as ResetUI <<boundary>> {
+  + Show OTP Input() : void
+  + Submit OTP & New Password() : void
+}
+class "AuthController" as Controller <<control>> {
+  + requestReset(email) : void
+  + resetPassword(otp, newPass) : void
+}
+class "EmailService" as EmailService <<control>> {
+  + sendOTP() : void
+}
+class "UserAccount" as UserDB <<entity>> {
+  + checkExists() : void
+  + updatePassword() : void
+}
+
+Controller -- UI
+Controller -- UserDB
+Controller -- EmailService
+Controller -- ResetUI
+@enduml

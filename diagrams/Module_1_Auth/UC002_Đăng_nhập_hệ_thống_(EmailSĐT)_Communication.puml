@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC002 Đăng nhập hệ thống
+
+allow_mixing
+actor "User" as Actor
+boundary "LoginUI" as UI
+control "AuthController" as Controller
+entity "UserAccount" as UserDB
+
+Actor -right-> UI : 1: Submit Credentials
+UI -right-> Controller : 2: login(email, pass)
+Controller -down-> UserDB : 3: fetchUserRecord()
+Controller -up-> UI : 4: Return Error / Success (Token)
+@enduml

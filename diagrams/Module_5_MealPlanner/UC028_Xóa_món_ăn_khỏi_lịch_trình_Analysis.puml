@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC028 RemoveMeal
+
+class "RemoveMealUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "RemoveMealController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "RemoveMealDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

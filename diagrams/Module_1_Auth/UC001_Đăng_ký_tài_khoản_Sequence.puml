@@ -1,0 +1,53 @@
+@startuml
+title Sequence Diagram - UC001 Đăng ký tài khoản
+
+actor "Guest" as Actor
+boundary "RegisterUI" as UI
+control "AuthController" as Controller
+control "EmailService" as EmailService
+entity "UserAccount" as UserDB
+
+Actor -> UI : 1. Chọn "Đăng ký"
+activate UI
+UI --> Actor : 2. Hiển thị biểu mẫu Đăng ký (Họ tên, Email/SĐT, Mật khẩu)
+deactivate UI
+
+Actor -> UI : 3. Điền thông tin & Nhấn "Đăng ký"
+activate UI
+UI -> Controller : 4. register(name, email_phone, password)
+activate Controller
+
+Controller -> UserDB : 4.1. checkExists(email_phone)
+activate UserDB
+UserDB --> Controller : 4.2. return false (Chưa tồn tại)
+deactivate UserDB
+
+Controller -> UserDB : 5. savePendingAccount()
+activate UserDB
+UserDB --> Controller : success
+deactivate UserDB
+
+Controller -> EmailService : 5.1. sendOTP(email_phone)
+activate EmailService
+EmailService --> Controller : OTP sent
+deactivate EmailService
+
+Controller --> UI : 5.2. Chuyển sang màn hình nhập OTP
+deactivate Controller
+UI --> Actor : Yêu cầu nhập mã OTP
+deactivate UI
+
+Actor -> UI : 6. Nhập mã OTP
+activate UI
+UI -> Controller : 6.1. verifyOTP(code)
+activate Controller
+Controller -> UserDB : 6.2. activateAccount()
+activate UserDB
+UserDB --> Controller : success
+deactivate UserDB
+
+Controller --> UI : 7. Trả kết quả thành công
+deactivate Controller
+UI --> Actor : 7.1. Thông báo Đăng ký thành công & Chuyển hướng Đăng nhập
+deactivate UI
+@enduml

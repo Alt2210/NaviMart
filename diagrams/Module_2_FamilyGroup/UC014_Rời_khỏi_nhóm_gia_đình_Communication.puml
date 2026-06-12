@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC014 LeaveFamilyGroup
+
+allow_mixing
+actor "User" as Actor
+boundary "LeaveFamilyGroupUI" as UI
+control "LeaveFamilyGroupController" as Controller
+entity "LeaveFamilyGroupDB" as Entity
+
+Actor -right-> UI : 1: Interact
+UI -right-> Controller : 2: process()
+Controller -down-> Entity : 3: dbAction()
+Controller -up-> UI : 4: returnData
+@enduml

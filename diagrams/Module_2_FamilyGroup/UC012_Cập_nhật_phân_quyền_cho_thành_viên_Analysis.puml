@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC012 UpdateMemberRole
+
+class "UpdateMemberRoleUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "UpdateMemberRoleController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "UpdateMemberRoleDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

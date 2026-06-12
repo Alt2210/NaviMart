@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC006 Đổi mật khẩu
+
+allow_mixing
+actor "User" as Actor
+boundary "ChangePassUI" as UI
+control "AuthController" as Controller
+entity "UserAccount" as UserDB
+
+Actor -right-> UI : 1: Submit Passwords
+UI -right-> Controller : 2: changePass()
+Controller -down-> UserDB : 3: getHash() & updateHash()
+Controller -up-> UI : 4: Return Result
+@enduml

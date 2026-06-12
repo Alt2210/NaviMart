@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC035 AdminLoginAndViewUsers
+
+class "AdminLoginAndViewUsersUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "AdminLoginAndViewUsersController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "AdminLoginAndViewUsersDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

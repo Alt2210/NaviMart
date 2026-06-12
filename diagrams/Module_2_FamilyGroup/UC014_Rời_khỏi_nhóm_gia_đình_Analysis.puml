@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC014 LeaveFamilyGroup
+
+class "LeaveFamilyGroupUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "LeaveFamilyGroupController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "LeaveFamilyGroupDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

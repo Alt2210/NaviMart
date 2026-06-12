@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC012 UpdateMemberRole
+
+allow_mixing
+actor "User" as Actor
+boundary "UpdateMemberRoleUI" as UI
+control "UpdateMemberRoleController" as Controller
+entity "UpdateMemberRoleDB" as Entity
+
+Actor -right-> UI : 1: Interact
+UI -right-> Controller : 2: process()
+Controller -down-> Entity : 3: dbAction()
+Controller -up-> UI : 4: returnData
+@enduml

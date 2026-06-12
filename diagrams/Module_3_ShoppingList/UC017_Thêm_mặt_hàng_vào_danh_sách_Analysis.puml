@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC017 AddItemToList
+
+class "AddItemToListUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "AddItemToListController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "AddItemToListDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

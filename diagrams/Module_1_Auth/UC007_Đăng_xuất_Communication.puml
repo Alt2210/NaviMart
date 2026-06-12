@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC007 Đăng xuất
+
+allow_mixing
+actor "User" as Actor
+boundary "SettingsUI" as UI
+control "AuthController" as Controller
+entity "SessionManager" as SessionDB
+
+Actor -right-> UI : 1: Bấm Đăng xuất
+UI -right-> Controller : 2: logout(token)
+Controller -down-> SessionDB : 3: revokeToken()
+Controller -up-> UI : 4: Redirect
+@enduml

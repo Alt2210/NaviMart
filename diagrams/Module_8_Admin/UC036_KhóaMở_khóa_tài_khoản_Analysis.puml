@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC036 BlockUnblockUser
+
+class "BlockUnblockUserUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "BlockUnblockUserController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "BlockUnblockUserDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

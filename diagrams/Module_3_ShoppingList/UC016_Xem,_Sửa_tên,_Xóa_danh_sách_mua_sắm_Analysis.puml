@@ -1,0 +1,17 @@
+@startuml
+title Analysis Class Diagram - UC016 ManageShoppingList
+
+class "ManageShoppingListUI" as UI <<boundary>> {
+  + Interact() : void
+  + Return Data() : void
+}
+class "ManageShoppingListController" as Controller <<control>> {
+  + Process Request() : void
+}
+class "ManageShoppingListDB" as Entity <<entity>> {
+  + Query/Update DB() : void
+}
+
+Controller -- UI
+Controller -- Entity
+@enduml

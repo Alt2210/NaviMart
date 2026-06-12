@@ -1,0 +1,23 @@
+@startuml
+title Sequence Diagram - UC007 Đăng xuất
+
+actor "User" as Actor
+boundary "SettingsUI" as UI
+control "AuthController" as Controller
+entity "SessionManager" as SessionDB
+
+Actor -> UI : 1. Chọn Đăng xuất
+activate UI
+UI --> Actor : 2. Popup xác nhận
+Actor -> UI : 3. Đồng ý
+UI -> Controller : 4. logout(token)
+activate Controller
+Controller -> SessionDB : 5. revokeToken(token)
+activate SessionDB
+SessionDB --> Controller : success
+deactivate SessionDB
+Controller --> UI : 6. clearLocalData() & redirect
+deactivate Controller
+UI --> Actor : 7. Hiển thị trang Đăng nhập
+deactivate UI
+@enduml

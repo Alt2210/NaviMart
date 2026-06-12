@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC032 AddMissingIngredients
+
+allow_mixing
+actor "User" as Actor
+boundary "AddMissingIngredientsUI" as UI
+control "AddMissingIngredientsController" as Controller
+entity "AddMissingIngredientsDB" as Entity
+
+Actor -right-> UI : 1: Interact
+UI -right-> Controller : 2: process()
+Controller -down-> Entity : 3: dbAction()
+Controller -up-> UI : 4: returnData
+@enduml

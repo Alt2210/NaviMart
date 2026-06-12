@@ -1,0 +1,21 @@
+@startuml
+title Sequence Diagram - UC031 BookmarkRecipe
+
+actor "User" as Actor
+boundary "BookmarkRecipeUI" as UI
+control "BookmarkRecipeController" as Controller
+entity "BookmarkRecipeDB" as Entity
+
+Actor -> UI : 1. Interact
+activate UI
+UI -> Controller : 2. handleRequest()
+activate Controller
+Controller -> Entity : 3. executeDbAction()
+activate Entity
+Entity --> Controller : 4. resultData
+deactivate Entity
+Controller --> UI : 5. status/data
+deactivate Controller
+UI --> Actor : 6. showResult()
+deactivate UI
+@enduml

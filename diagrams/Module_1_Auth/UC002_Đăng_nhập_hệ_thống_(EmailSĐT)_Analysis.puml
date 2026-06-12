@@ -1,0 +1,21 @@
+@startuml
+title Analysis Class Diagram - UC002 Đăng nhập hệ thống
+
+class "LoginUI" as UI <<boundary>> {
+  + Nhập Email/SĐT & Mật khẩu() : void
+  + Success & Redirect to Home() : void
+}
+class "AuthController" as Controller <<control>> {
+  + submitLogin(credentials) : void
+}
+class "UserAccount" as UserDB <<entity>> {
+  + verifyCredentials() : void
+}
+class "TokenService" as TokenManager <<entity>> {
+  + generateToken() : void
+}
+
+Controller -- UI
+Controller -- UserDB
+Controller -- TokenManager
+@enduml

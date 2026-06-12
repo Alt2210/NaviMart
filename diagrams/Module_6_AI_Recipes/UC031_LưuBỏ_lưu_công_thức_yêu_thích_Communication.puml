@@ -1,0 +1,14 @@
+@startuml
+title Communication Diagram - UC031 BookmarkRecipe
+
+allow_mixing
+actor "User" as Actor
+boundary "BookmarkRecipeUI" as UI
+control "BookmarkRecipeController" as Controller
+entity "BookmarkRecipeDB" as Entity
+
+Actor -right-> UI : 1: Interact
+UI -right-> Controller : 2: process()
+Controller -down-> Entity : 3: dbAction()
+Controller -up-> UI : 4: returnData
+@enduml

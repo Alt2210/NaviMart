@@ -1,0 +1,20 @@
+@startuml
+title Communication Diagram - UC001 Đăng ký tài khoản
+
+allow_mixing
+actor "Guest" as Actor
+boundary "RegisterUI" as RegisterUI
+boundary "OTPVerificationUI" as OTPUI
+control "AuthController" as AuthController
+control "EmailService" as EmailService
+entity "UserAccount" as UserDB
+
+Actor -down-> RegisterUI : 1: Nhập thông tin & Submit
+RegisterUI -right-> AuthController : 2: register(name, email, pass)
+AuthController -down-> UserDB : 3: checkExists()\n4: savePending()\n8: activateAccount()
+AuthController -left-> EmailService : 5: sendOTP()
+AuthController -up-> OTPUI : 6: Show OTP screen
+Actor -right-> OTPUI : 7: Nhập OTP
+OTPUI -right-> AuthController : 7.1: verifyOTP()
+AuthController -up-> RegisterUI : 9: Success & Redirect
+@enduml

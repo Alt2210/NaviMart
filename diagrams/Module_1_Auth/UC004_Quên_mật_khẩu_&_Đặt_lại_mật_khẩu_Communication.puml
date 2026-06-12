@@ -1,0 +1,18 @@
+@startuml
+title Communication Diagram - UC004 Quên mật khẩu
+
+allow_mixing
+actor "User" as Actor
+boundary "ForgotPassUI" as UI
+control "AuthController" as Controller
+control "EmailService" as EmailService
+entity "UserAccount" as UserDB
+
+Actor -right-> UI : 1: Submit Email
+5: Submit OTP & Pass
+UI -right-> Controller : 2: reqReset()
+6: resetPass()
+Controller -down-> UserDB : 3: checkEmail()
+7: updatePassword()
+Controller -left-> EmailService : 4: sendOTP()
+@enduml
