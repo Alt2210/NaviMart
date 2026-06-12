@@ -4,6 +4,7 @@ import BottomNav from '../components/BottomNav';
 import SideNav from '../components/SideNav';
 import { pantryApi, recipesApi, shoppingListsApi } from '../api';
 import type { PantryItem, RecipeSuggestion, ShoppingList } from '../api';
+import { logoPrimaryUrl } from '../assets/logos';
 import { useAuth } from '../contexts/AuthContext';
 import { daysLeft } from '../utils/expiry';
 
@@ -213,7 +214,7 @@ export default function Home() {
           {/* Footer */}
           <footer className="hidden md:block bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant w-full mt-8">
             <div className="flex flex-col md:flex-row justify-between items-center w-full py-8 px-margin-mobile max-w-7xl mx-auto gap-stack-md">
-              <img src="/src/assets/logo-1-primary.png" alt="NaviMart" className="h-6 object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all" />
+              <img src={logoPrimaryUrl} alt="NaviMart" className="h-6 object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all" />
               <nav className="flex gap-6">
                 <Link to="#" className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">Về chúng tôi</Link>
                 <Link to="#" className="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">Chính sách</Link>

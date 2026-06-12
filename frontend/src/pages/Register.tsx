@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
+import { logoPrimaryUrl } from '../assets/logos';
 import { useDialog } from '../contexts/DialogContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -66,7 +67,7 @@ export default function Register() {
       {/* Form Section */}
       <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
         <div className="md:hidden flex justify-center mb-8">
-          <img src="/src/assets/logo-1-primary.png" alt="NaviMart" className="h-10 object-contain" />
+          <img src={logoPrimaryUrl} alt="NaviMart" className="h-10 object-contain" />
         </div>
         <div className="mb-8">
           <h2 className="font-headline-md text-headline-md text-on-surface mb-2">Tạo tài khoản mới</h2>

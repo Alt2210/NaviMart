@@ -7,8 +7,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
+  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:5173'],
+    origin: (origin, callback) => {
+      if (!origin || isAllowedCorsOrigin(origin, allowedOrigins)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS origin not allowed: ${origin}`));
+    },
     credentials: true,
   });
   app.useGlobalPipes(
@@ -76,3 +88,14 @@ async function bootstrap() {
   await app.listen(port);
 }
 bootstrap();
+
+function isAllowedCorsOrigin(origin: string, allowedOrigins: string[]) {
+  return allowedOrigins.some((allowedOrigin) => {
+    if (allowedOrigin === '*') return true;
+    if (allowedOrigin === origin) return true;
+    if (allowedOrigin === 'https://*.vercel.app') {
+      return /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+    }
+    return false;
+  });
+}

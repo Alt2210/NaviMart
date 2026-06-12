@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
+import { logoIconTransparentUrl, logoPrimaryUrl } from '../assets/logos';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
@@ -42,7 +43,7 @@ export default function Login() {
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNXF9rAZ1RpIOT8QxBBZzVC_3HY3_BRPyayG4UE_Z8rHSZ6_EGta4e5q1f47IU6rjx79EJygS5h2s5HbvjM5Jk2Loif2nkeYASRs5v-JNCrGeyc23nS1_HpM-OPXckGnI7YtrX0UZ9UFO5jQyjwysjvK4267Ewq0PkvdCNj_rCxCoH6qU0vGG7SvpVSkjEAx-pd9A6x2wgiRWZHf8n0Mh4WuXZCihdAjRcgJn0oIs_u3e337_7czFLIZ0JWEiVGLyvRl1Z3zQKKqZ8"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-12">
-          <img src="/src/assets/logo-icon-transparent.png" alt="NaviMart" className="w-16 h-16 object-contain mb-4 drop-shadow-md" />
+          <img src={logoIconTransparentUrl} alt="NaviMart" className="w-16 h-16 object-contain mb-4 drop-shadow-md" />
           <p className="font-body-lg text-body-lg text-white/90">
             Mang chợ tươi sạch đến tận gian bếp của bạn. Nấu ăn ngon mỗi ngày cùng nguyên liệu chất lượng.
           </p>
@@ -52,7 +53,7 @@ export default function Login() {
       {/* Form Section */}
       <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
         <div className="md:hidden flex justify-center mb-8">
-          <img src="/src/assets/logo-1-primary.png" alt="NaviMart" className="h-10 object-contain" />
+          <img src={logoPrimaryUrl} alt="NaviMart" className="h-10 object-contain" />
         </div>
         <div className="mb-8">
           <h2 className="font-headline-md text-headline-md text-on-surface mb-2">Chào mừng trở lại</h2>
