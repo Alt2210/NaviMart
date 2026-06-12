@@ -9,13 +9,13 @@ Dưới đây là đánh giá toàn diện về hệ thống NaviMart theo từn
 
 **Giải thích chi tiết:**
 - **Functional Cohesion** xảy ra khi tất cả các thành phần bên trong một module cùng làm việc để thực hiện một nhiệm vụ/trách nhiệm duy nhất.
-- Trong kiến trúc của NaviMart, nhờ áp dụng triệt để mô hình BCE và phân tách 8 phân hệ (Auth, Family, Pantry, Shopping, Meals, Recipes, Statistics, Admin):
+- Trong kiến trúc của NaviMart, nhờ áp dụng triệt để mô hình BCE và phân tách 9 phân hệ (Auth, Family, Pantry, Shopping, Meals, Recipes, Reports, Admin, Shared):
   - **Tầng Boundary**: Chỉ chịu trách nhiệm duy nhất là tiếp nhận request từ người dùng và hiển thị dữ liệu (View/API Client). Không chứa logic nghiệp vụ.
   - **Tầng Control**: Mỗi Controller/Service chỉ xử lý logic nghiệp vụ cho một chức năng cụ thể (Ví dụ: `AuthController` chỉ lo luồng đăng nhập/đăng ký, không dính dáng đến logic quản lý tủ lạnh).
   - **Tầng Entity**: Chỉ làm nhiệm vụ đóng gói cấu trúc dữ liệu và tương tác với Database (CRUD).
 
 > **Minh họa bằng Biểu đồ Cohesion:**
-> Mời bạn xem file `Cohesion_Diagram.puml` để thấy cách các lớp trong module Auth tương tác cực kỳ tập trung cho một mục đích duy nhất.
+> Mời bạn xem biểu đồ Cohesion bên dưới để thấy cách các lớp trong module Auth tương tác cực kỳ tập trung cho một mục đích duy nhất.
 
 ---
 
@@ -31,7 +31,7 @@ Dưới đây là đánh giá toàn diện về hệ thống NaviMart theo từn
   - Tầng Boundary truyền dữ liệu xuống Control thông qua tham số (VD: `credentials`), và Control gọi Entity bằng cách truyền các cấu trúc dữ liệu nguyên thủy (Primitive types) hoặc DTO.
 
 > **Minh họa bằng Biểu đồ Coupling:**
-> Mời bạn xem file `Coupling_Diagram.puml` để thấy các module độc lập tương tác với nhau lỏng lẻo thông qua tham số truyền vào hàm.
+> Mời bạn xem biểu đồ Coupling bên dưới để thấy các module độc lập tương tác với nhau lỏng lẻo thông qua tham số truyền vào hàm.
 
 ## Kết luận
 Hệ thống NaviMart tuân thủ nghiêm ngặt thiết kế **Loose Coupling** và **Tight Cohesion**, giúp cho:

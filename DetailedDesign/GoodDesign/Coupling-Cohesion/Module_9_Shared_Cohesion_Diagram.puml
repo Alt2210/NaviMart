@@ -1,0 +1,33 @@
+@startuml
+title Functional Cohesion - Module 9 (Shared)
+
+skinparam class {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  ArrowColor #475569
+}
+
+package "Shared Module (Functional Cohesion)" {
+    class SharedBoundary <<Boundary>> {
+        +showDialog()
+        +displayNotification()
+    }
+    class SharedService <<Control>> {
+        +normalizeError()
+        +formatSharedResponse()
+    }
+    class SharedUtility <<Entity>> {
+        +formatDate()
+        +mapApiError()
+    }
+}
+
+SharedBoundary --> SharedService : delegates shared UI flow
+SharedService --> SharedUtility : uses common helpers
+
+note right of SharedService
+All classes support reusable
+cross-module infrastructure.
+end note
+
+@enduml

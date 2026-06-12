@@ -1,0 +1,30 @@
+@startuml
+title Data Coupling - Module 9 (Shared)
+
+skinparam class {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  ArrowColor #475569
+}
+
+package "Business Modules" {
+    class AuthController <<Control>>
+    class PantryController <<Control>>
+    class AdminController <<Control>>
+}
+
+package "Shared Module" {
+    class SharedApiClient <<Boundary>>
+    class DialogContext <<Boundary>>
+}
+
+AuthController ..> SharedApiClient : "Data Coupling\n(Truyền request DTO)"
+PantryController ..> SharedApiClient : "Data Coupling\n(Truyền pantry payload)"
+AdminController ..> DialogContext : "Data Coupling\n(Truyền message/status)"
+
+note right of SharedApiClient
+Shared exposes common contracts
+without reading module internals.
+end note
+
+@enduml

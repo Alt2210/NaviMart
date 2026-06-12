@@ -1,6 +1,6 @@
 # Đánh giá Nguyên lý SOLID - Hệ thống NaviMart
 
-SOLID là 5 nguyên lý thiết kế cơ bản trong Lập trình Hướng đối tượng (OOP) giúp phần mềm trở nên dễ hiểu, linh hoạt và dễ bảo trì. Dưới đây là đánh giá chi tiết việc áp dụng 5 nguyên lý này vào 8 phân hệ của ứng dụng NaviMart.
+SOLID là 5 nguyên lý thiết kế cơ bản trong Lập trình Hướng đối tượng (OOP) giúp phần mềm trở nên dễ hiểu, linh hoạt và dễ bảo trì. Dưới đây là đánh giá chi tiết việc áp dụng 5 nguyên lý này vào 9 phân hệ của ứng dụng NaviMart.
 
 ---
 

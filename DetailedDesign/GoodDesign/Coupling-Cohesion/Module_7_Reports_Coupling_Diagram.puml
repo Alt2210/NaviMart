@@ -1,5 +1,5 @@
 @startuml
-title Data Coupling - Module 7 (Statistics)
+title Data Coupling - Module 7 (Reports)
 
 skinparam class {
     BackgroundColor White
@@ -7,7 +7,7 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-package "Statistics Module" {
+package "Reports Module" {
     class StatsController <<Control>> {
         + generateWasteReport(dateRange: DateRange)
     }

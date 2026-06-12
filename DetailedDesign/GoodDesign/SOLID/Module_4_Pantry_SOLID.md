@@ -1,7 +1,7 @@
 # Đánh giá nguyên lý SOLID - Module 4 (Pantry)
 
 ## 1. Single Responsibility Principle (SRP)
-- Lớp `PantryService` chỉ xử lý logic quản lý số lượng tồn kho. Việc phát cảnh báo (Notification) hết hạn sẽ được 위 thác sang `NotificationService` để không vi phạm SRP.
+- Lớp `PantryService` chỉ xử lý logic quản lý số lượng tồn kho. Việc phát cảnh báo (Notification) hết hạn sẽ được ủy thác sang `NotificationService` để không vi phạm SRP.
 
 ## 2. Open-Closed Principle (OCP)
 - Mở rộng chức năng quét Barcode/AI nhận diện hóa đơn mà không làm ảnh hưởng đến luồng lưu dữ liệu truyền thống. Ta có thể thêm `BarcodePantryInput` implement interface `IPantryInput` mà không sửa đổi `ManualPantryInput`.

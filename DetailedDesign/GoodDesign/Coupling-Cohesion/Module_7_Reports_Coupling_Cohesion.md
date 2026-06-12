@@ -1,4 +1,4 @@
-# Đánh giá Coupling & Cohesion - Module 7 (Statistics)
+# Đánh giá Coupling & Cohesion - Module 7 (Reports)
 
 ## 1. Mức độ Cohesion (Gắn kết)
 **Đánh giá:** Functional Cohesion
@@ -8,4 +8,4 @@
 ## 2. Mức độ Coupling (Phụ thuộc)
 **Đánh giá:** Data Coupling
 **Giải thích:**
-- Module Statistics chỉ đóng vai trò "Read-only" đối với các module khác. Nó truyền các Data Transfer Objects hoặc ID (ví dụ `userId`, `dateRange`) tới Controller của Pantry hoặc Shopping để lấy số liệu về. Không can thiệp chỉnh sửa dữ liệu gốc.
+- Module Reports chỉ đóng vai trò "Read-only" đối với các module khác. Nó truyền các Data Transfer Objects hoặc ID (ví dụ `userId`, `dateRange`) tới Controller của Pantry hoặc Shopping để lấy số liệu về. Không can thiệp chỉnh sửa dữ liệu gốc.
