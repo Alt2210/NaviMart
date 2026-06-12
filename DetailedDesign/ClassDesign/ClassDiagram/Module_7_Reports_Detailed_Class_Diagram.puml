@@ -1,0 +1,48 @@
+@startuml
+title Module 7 - Reports (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class StatsDashboard <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "API Client" {
+    class ReportsApiClient <<API Client>> {
+        - baseUrl: String
+        + getDashboard(data: any): Promise<any>
+        + getConsumptionTrends(data: any): Promise<any>
+        + getWasteReport(data: any): Promise<any>
+    }
+}
+
+package "Controller" {
+    class ReportsController <<Controller>> {
+        + getDashboard(@Body dto: any): Response
+        + getConsumptionTrends(@Body dto: any): Response
+        + getWasteReport(@Body dto: any): Response
+    }
+}
+
+package "Service" {
+    class ReportsService <<Service>> {
+        + getDashboard(data: any): any
+        + getConsumptionTrends(data: any): any
+        + getWasteReport(data: any): any
+    }
+}
+
+' --- Relationships ---
+StatsDashboard --> ReportsApiClient : "calls"
+ReportsApiClient ..> ReportsController : "HTTP REST"
+ReportsController --> ReportsService : "injects"
+
+@enduml

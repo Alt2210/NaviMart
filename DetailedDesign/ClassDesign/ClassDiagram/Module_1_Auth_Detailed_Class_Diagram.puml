@@ -1,0 +1,117 @@
+@startuml
+title Module 1 - Auth (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class ForgotPassword <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Login <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Onboarding <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Register <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Splash <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "Context" {
+    class AuthContext <<Context>> {
+        - state: any
+        + Provider(props: any): JSX.Element
+    }
+}
+
+package "API Client" {
+    class AuthApiClient <<API Client>> {
+        - baseUrl: String
+        + register(data: any): Promise<any>
+        + login(data: any): Promise<any>
+        + refresh(data: any): Promise<any>
+        + logout(data: any): Promise<any>
+        + forgotPassword(data: any): Promise<any>
+        + resetPassword(data: any): Promise<any>
+        + sendVerification(data: any): Promise<any>
+        + verifyEmail(data: any): Promise<any>
+    }
+}
+
+package "Controller" {
+    class AuthController <<Controller>> {
+        + register(@Body dto: any): Response
+        + login(@Body dto: any): Response
+        + refresh(@Body dto: any): Response
+        + logout(@Body dto: any): Response
+        + forgotPassword(@Body dto: any): Response
+        + resetPassword(@Body dto: any): Response
+        + sendVerification(@Body dto: any): Response
+        + verifyEmail(@Body dto: any): Response
+    }
+}
+
+package "Service" {
+    class AuthService <<Service>> {
+        + register(data: any): any
+        + login(data: any): any
+        + refresh(data: any): any
+        + logout(data: any): any
+        + forgotPassword(data: any): any
+        + resetPassword(data: any): any
+        + sendVerification(data: any): any
+        + verifyEmail(data: any): any
+    }
+}
+
+package "Entity / DTO" {
+    abstract class BaseEntity {
+        - created_at: Date
+        - updated_at: Date
+    }
+    class UsersEntity <<Entity>> {
+        - user_id: INT
+        - email: VARCHAR
+        - phone: VARCHAR
+        - password_hash: VARCHAR
+        - first_name: VARCHAR
+        - last_name: VARCHAR
+        - dob: DATE
+        - gender: VARCHAR
+        - role: VARCHAR
+        - group_id: INT
+        - status: VARCHAR
+    }
+    BaseEntity <|-- UsersEntity
+}
+
+' --- Relationships ---
+ForgotPassword --> AuthContext : "uses"
+Login --> AuthContext : "uses"
+Onboarding --> AuthContext : "uses"
+Register --> AuthContext : "uses"
+Splash --> AuthContext : "uses"
+AuthContext --> AuthApiClient : "calls"
+AuthApiClient ..> AuthController : "HTTP REST"
+AuthController --> AuthService : "injects"
+AuthService ..> UsersEntity : "CRUD"
+
+@enduml

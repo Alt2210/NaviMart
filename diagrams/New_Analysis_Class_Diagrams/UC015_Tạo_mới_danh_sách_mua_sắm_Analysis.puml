@@ -1,0 +1,47 @@
+@startuml
+title UC015 Tạo mới danh sách mua sắm (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + inputListName() : void
+          + displayResult() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + createList(listName: String, groupId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + createList(listName: String, groupId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + createList(listName: String, groupId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + saveNewList(listName: String, groupId: String) : String
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

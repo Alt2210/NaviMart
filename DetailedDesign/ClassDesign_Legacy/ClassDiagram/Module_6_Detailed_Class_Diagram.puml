@@ -1,0 +1,149 @@
+@startuml
+title Detailed Class Diagram - Module_6_AI_Recipes
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "SuggestRecipeUI" as SuggestRecipeUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + requestSuggestion(): void
+    + displayRecipeList(): void
+  }
+  class "SearchRecipeUI" as SearchRecipeUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + searchRecipes(): void
+    + viewRecipeDetail(): void
+    + displayDetails(): void
+  }
+  class "BookmarkRecipeUI" as BookmarkRecipeUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + clickBookmark(): void
+    + displayUpdate(): void
+  }
+  class "MissingIngredientUI" as MissingIngredientUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + clickAddMissing(): void
+    + displaySuccess(): void
+  }
+  class "AIChatUI" as AIChatUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + enterQuestion(): void
+    + displayAnswer(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "AISuggestionController" as AISuggestionController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + getSuggestions(): void
+  }
+  class "AIService" as AIService_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + generateRecipes(ingredientList: List): List
+    + callAiAPI(question: String, context: Data): String
+  }
+  class "RecipeSearchController" as RecipeSearchController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + searchRecipes(keyword: String): void
+    + getRecipeDetail(recipeId: String): void
+  }
+  class "BookmarkController" as BookmarkController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + toggleBookmark(recipeId: String, userId: String): void
+  }
+  class "ShoppingIntegrationController" as ShoppingIntegrationController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + findMissingIngredients(recipeIngredients: List): void
+  }
+  class "ShoppingController" as ShoppingController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + addItemsToList(missingIngredients: List): void
+  }
+  class "ChatController" as ChatController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + sendMessage(question: String, context: Data): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "PantryDB" as PantryDB_Alias <<entity>> {
+    - itemName: String
+    - quantity: Float
+    - expiryDate: DateTime
+    ==
+    + getAvailableIngredients(userId: String): List
+    + checkAvailable(recipeIngredients: List): List
+  }
+  class "RecipeDB" as RecipeDB_Alias <<entity>> {
+    - title: String
+    - ingredients: List<String>
+    ==
+    + queryRecipes(keyword: String): List
+    + queryRecipeById(recipeId: String): Data
+    + updateBookmarkStatus(recipeId: String, userId: String): Boolean
+  }
+  class "ShoppingDB" as ShoppingDB_Alias <<entity>> {
+    - listName: String
+    - status: String
+    ==
+    + saveItems(): Boolean
+  }
+}
+
+SuggestRecipeUI_Alias "1" ..> "1" AISuggestionController_Alias : <<invoke>>
+AISuggestionController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+AIService_Alias "1" --> "1" AISuggestionController_Alias : <<associate>>
+SearchRecipeUI_Alias "1" ..> "1" RecipeSearchController_Alias : <<invoke>>
+RecipeSearchController_Alias "1" --> "0..*" RecipeDB_Alias : <<manipulate>>
+BookmarkRecipeUI_Alias "1" ..> "1" BookmarkController_Alias : <<invoke>>
+BookmarkController_Alias "1" --> "0..*" RecipeDB_Alias : <<manipulate>>
+MissingIngredientUI_Alias "1" ..> "1" ShoppingIntegrationController_Alias : <<invoke>>
+ShoppingIntegrationController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+ShoppingController_Alias "1" --> "1" ShoppingIntegrationController_Alias : <<associate>>
+ShoppingController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+AIChatUI_Alias "1" ..> "1" ChatController_Alias : <<invoke>>
+AIService_Alias "1" --> "1" ChatController_Alias : <<associate>>
+BaseUI <|-- SuggestRecipeUI_Alias : <<extends>>
+IController <|.. AISuggestionController_Alias : <<implements>>
+BaseEntity <|-- PantryDB_Alias : <<extends>>
+IController <|.. AIService_Alias : <<implements>>
+BaseUI <|-- SearchRecipeUI_Alias : <<extends>>
+IController <|.. RecipeSearchController_Alias : <<implements>>
+BaseEntity <|-- RecipeDB_Alias : <<extends>>
+BaseUI <|-- BookmarkRecipeUI_Alias : <<extends>>
+IController <|.. BookmarkController_Alias : <<implements>>
+BaseUI <|-- MissingIngredientUI_Alias : <<extends>>
+IController <|.. ShoppingIntegrationController_Alias : <<implements>>
+IController <|.. ShoppingController_Alias : <<implements>>
+BaseEntity <|-- ShoppingDB_Alias : <<extends>>
+BaseUI <|-- AIChatUI_Alias : <<extends>>
+IController <|.. ChatController_Alias : <<implements>>
+
+@enduml

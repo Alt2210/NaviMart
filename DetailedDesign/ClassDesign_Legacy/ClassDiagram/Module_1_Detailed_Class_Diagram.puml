@@ -1,0 +1,179 @@
+@startuml
+title Detailed Class Diagram - Module_1_Auth
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "RegisterUI" as RegisterUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Chọn Đăng ký(): void
+    + Điền & Gửi form(): void
+    + Success(): void
+  }
+  class "OTPVerificationUI" as OTPVerificationUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Require OTP(): void
+    + Nhập OTP(): void
+  }
+  class "LoginUI" as LoginUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Nhập Email/SĐT & Mật khẩu(): void
+    + Success & Redirect to Home(): void
+  }
+  class "OAuthUI" as OAuthUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Chọn Login with Google/FB(): void
+    + Success & Redirect(): void
+  }
+  class "ForgotPassUI" as ForgotPassUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Submit Email(): void
+    + Success Msg(): void
+  }
+  class "ResetPassUI" as ResetPassUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Show OTP Input(): void
+    + Submit OTP & New Password(): void
+  }
+  class "ProfileUI" as ProfileUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Sửa Name/Avatar & Lưu(): void
+    + Cập nhật thành công(): void
+  }
+  class "ChangePassUI" as ChangePassUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Nhập Pass cũ & Pass mới(): void
+    + Success Msg(): void
+  }
+  class "SettingsUI" as SettingsUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + Bấm Đăng xuất(): void
+    + Redirect to Login(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "AuthController" as AuthController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + submit(name: String, email_phone: String, password: String): void
+    + verifyOTP(): void
+    + submitLogin(credentials: String): void
+    + Callback with Profile Data(): void
+    + requestReset(email: String): void
+    + resetPassword(otp: String, newPass: String): void
+    + changePassword(oldP: String, newP: String): void
+    + verifyOldPassword(): void
+    + logout(): void
+  }
+  class "EmailService" as EmailService_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + sendOTP(): void
+  }
+  class "OAuthProvider (Google/FB)" as OAuthProviderGoogleFB_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + Request Auth URL(): void
+    + Đồng ý cấp quyền(): void
+  }
+  class "OAuthProvider" as OAuthProvider_Alias <<control>> {
+    - isActive: Boolean
+  }
+  class "ProfileController" as ProfileController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + updateProfile(data: String): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "UserAccount" as UserAccount_Alias <<entity>> {
+    - email: String
+    - passwordHash: String
+    - fullName: String
+    ==
+    + checkExists(): void
+    + savePending(): void
+    + activateAccount(): void
+    + verifyCredentials(): void
+    + checkEmail(): void
+    + updatePassword(): void
+    + fetchCurrentHash(): void
+    + updateHash(): void
+  }
+  class "TokenService" as TokenService_Alias <<entity>> {
+    + generateToken(): void
+  }
+  class "UserProfile" as UserProfile_Alias <<entity>> {
+    - email: String
+    - passwordHash: String
+    - fullName: String
+    ==
+    + save(data: String): void
+  }
+  class "SessionManager" as SessionManager_Alias <<entity>> {
+    + invalidateToken(): void
+  }
+}
+
+RegisterUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+AuthController_Alias "1" --> "0..*" UserAccount_Alias : <<manipulate>>
+AuthController_Alias "1" --> "1" EmailService_Alias : <<associate>>
+OTPVerificationUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+LoginUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+AuthController_Alias "1" --> "0..*" TokenService_Alias : <<manipulate>>
+OAuthUI_Alias "1" ..> "1" OAuthProviderGoogleFB_Alias : <<invoke>>
+AuthController_Alias "1" --> "1" OAuthProviderGoogleFB_Alias : <<associate>>
+OAuthUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+ForgotPassUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+ResetPassUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+ProfileUI_Alias "1" ..> "1" ProfileController_Alias : <<invoke>>
+ProfileController_Alias "1" --> "0..*" UserProfile_Alias : <<manipulate>>
+ChangePassUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+SettingsUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+AuthController_Alias "1" --> "0..*" SessionManager_Alias : <<manipulate>>
+BaseUI <|-- RegisterUI_Alias : <<extends>>
+BaseUI <|-- OTPVerificationUI_Alias : <<extends>>
+IController <|.. AuthController_Alias : <<implements>>
+IController <|.. EmailService_Alias : <<implements>>
+BaseEntity <|-- UserAccount_Alias : <<extends>>
+BaseUI <|-- LoginUI_Alias : <<extends>>
+BaseEntity <|-- TokenService_Alias : <<extends>>
+BaseUI <|-- OAuthUI_Alias : <<extends>>
+IController <|.. OAuthProviderGoogleFB_Alias : <<implements>>
+IController <|.. OAuthProvider_Alias : <<implements>>
+BaseUI <|-- ForgotPassUI_Alias : <<extends>>
+BaseUI <|-- ResetPassUI_Alias : <<extends>>
+BaseUI <|-- ProfileUI_Alias : <<extends>>
+IController <|.. ProfileController_Alias : <<implements>>
+BaseEntity <|-- UserProfile_Alias : <<extends>>
+BaseUI <|-- ChangePassUI_Alias : <<extends>>
+BaseUI <|-- SettingsUI_Alias : <<extends>>
+BaseEntity <|-- SessionManager_Alias : <<extends>>
+
+@enduml

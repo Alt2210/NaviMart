@@ -1,0 +1,47 @@
+@startuml
+title UC022 Cập nhật thông tin thực phẩm (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectFoodToUpdate() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + updateFood(foodId: String, updatedData: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + updateFood(foodId: String, updatedData: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + updateFood(foodId: String, updatedData: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + updateFoodData(foodId: String, updatedData: Data) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

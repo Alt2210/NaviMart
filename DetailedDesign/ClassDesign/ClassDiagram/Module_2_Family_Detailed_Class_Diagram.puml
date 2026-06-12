@@ -1,0 +1,105 @@
+@startuml
+title Module 2 - Family (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class FamilySharing <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Profile <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class EditProfile <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Settings <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "API Client" {
+    class FamilyApiClient <<API Client>> {
+        - baseUrl: String
+        + getCurrentFamily(data: any): Promise<any>
+        + create(data: any): Promise<any>
+        + createInvite(data: any): Promise<any>
+        + join(data: any): Promise<any>
+        + updateMemberPermissions(data: any): Promise<any>
+        + removeMember(data: any): Promise<any>
+    }
+}
+
+package "Controller" {
+    class FamilyController <<Controller>> {
+        + getCurrentFamily(@Body dto: any): Response
+        + create(@Body dto: any): Response
+        + createInvite(@Body dto: any): Response
+        + join(@Body dto: any): Response
+        + updateMemberPermissions(@Body dto: any): Response
+        + removeMember(@Body dto: any): Response
+    }
+}
+
+package "Service" {
+    class FamilyService <<Service>> {
+        + getCurrentFamily(data: any): any
+        + create(data: any): any
+        + createInvite(data: any): any
+        + join(data: any): any
+        + updateMemberPermissions(data: any): any
+        + removeMember(data: any): any
+    }
+}
+
+package "Entity / DTO" {
+    abstract class BaseEntity {
+        - created_at: Date
+        - updated_at: Date
+    }
+    class FamilyGroupsEntity <<Entity>> {
+        - group_id: INT
+        - group_name: VARCHAR
+        - owner_id: INT
+        - invite_code: VARCHAR
+    }
+    BaseEntity <|-- FamilyGroupsEntity
+    class UsersEntity <<Entity>> {
+        - user_id: INT
+        - email: VARCHAR
+        - phone: VARCHAR
+        - password_hash: VARCHAR
+        - first_name: VARCHAR
+        - last_name: VARCHAR
+        - dob: DATE
+        - gender: VARCHAR
+        - role: VARCHAR
+        - group_id: INT
+        - status: VARCHAR
+    }
+    BaseEntity <|-- UsersEntity
+}
+
+' --- Relationships ---
+FamilySharing --> FamilyApiClient : "calls"
+Profile --> FamilyApiClient : "calls"
+EditProfile --> FamilyApiClient : "calls"
+Settings --> FamilyApiClient : "calls"
+FamilyApiClient ..> FamilyController : "HTTP REST"
+FamilyController --> FamilyService : "injects"
+FamilyService ..> FamilyGroupsEntity : "CRUD"
+FamilyService ..> UsersEntity : "CRUD"
+
+@enduml

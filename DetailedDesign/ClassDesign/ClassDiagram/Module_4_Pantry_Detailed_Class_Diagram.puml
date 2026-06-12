@@ -1,0 +1,83 @@
+@startuml
+title Module 4 - Pantry (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class PantryDashboard <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Scanner <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "API Client" {
+    class PantryApiClient <<API Client>> {
+        - baseUrl: String
+        + findAll(data: any): Promise<any>
+        + create(data: any): Promise<any>
+        + findOne(data: any): Promise<any>
+        + update(data: any): Promise<any>
+        + remove(data: any): Promise<any>
+        + consume(data: any): Promise<any>
+        + markWasted(data: any): Promise<any>
+    }
+}
+
+package "Controller" {
+    class PantryController <<Controller>> {
+        + findAll(@Body dto: any): Response
+        + create(@Body dto: any): Response
+        + findOne(@Body dto: any): Response
+        + update(@Body dto: any): Response
+        + remove(@Body dto: any): Response
+        + consume(@Body dto: any): Response
+        + markWasted(@Body dto: any): Response
+    }
+}
+
+package "Service" {
+    class PantryService <<Service>> {
+        + findAll(data: any): any
+        + create(data: any): any
+        + findOne(data: any): any
+        + update(data: any): any
+        + remove(data: any): any
+        + consume(data: any): any
+        + markWasted(data: any): any
+    }
+}
+
+package "Entity / DTO" {
+    abstract class BaseEntity {
+        - created_at: Date
+        - updated_at: Date
+    }
+    class InventoryEntity <<Entity>> {
+        - inventory_id: INT
+        - group_id: INT
+        - food_id: INT
+        - quantity: DECIMAL
+        - expiry_date: DATE
+        - location: VARCHAR
+    }
+    BaseEntity <|-- InventoryEntity
+}
+
+' --- Relationships ---
+PantryDashboard --> PantryApiClient : "calls"
+Scanner --> PantryApiClient : "calls"
+PantryApiClient ..> PantryController : "HTTP REST"
+PantryController --> PantryService : "injects"
+PantryService ..> InventoryEntity : "CRUD"
+
+@enduml

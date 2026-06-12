@@ -1,0 +1,52 @@
+@startuml
+title UC038 Kiểm duyệt công thức nấu ăn (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + viewPendingRecipes() : void
+          + approveOrReject() : void
+          + displayResult() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + getPendingRecipes() : void
+          + approveOrRejectRecipe(recipeId: String, status: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + getPendingRecipes() : void
+          + approveOrRejectRecipe(recipeId: String, status: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + getPendingRecipes() : void
+          + approveOrRejectRecipe(recipeId: String, status: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + queryPending() : List
+          + updateRecipeStatus(recipeId: String, status: String) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

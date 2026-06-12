@@ -1,0 +1,150 @@
+@startuml
+title Detailed Class Diagram - Module_2_FamilyGroup
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "CreateGroupUI" as CreateGroupUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + enterGroupName(): void
+    + displayResult(): void
+  }
+  class "ViewGroupUI" as ViewGroupUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + requestGroupDetails(): void
+    + displayGroupData(): void
+  }
+  class "InviteMemberUI" as InviteMemberUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + requestInviteToken(): void
+    + displayInviteToken(): void
+  }
+  class "JoinGroupUI" as JoinGroupUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + enterInviteCode(): void
+    + displaySuccess(): void
+  }
+  class "ManageRoleUI" as ManageRoleUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectRole(): void
+    + displayUpdate(): void
+  }
+  class "RemoveMemberUI" as RemoveMemberUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectMemberToRemove(): void
+    + displayResult(): void
+  }
+  class "LeaveGroupUI" as LeaveGroupUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + requestLeaveGroup(): void
+    + displaySuccess(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "CreateGroupController" as CreateGroupController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + createGroup(groupName: String): void
+  }
+  class "ViewGroupController" as ViewGroupController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + getGroupDetails(groupId: String): void
+  }
+  class "InviteController" as InviteController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + generateInvite(groupId: String): void
+  }
+  class "JoinGroupController" as JoinGroupController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + joinGroup(inviteCode: String): void
+  }
+  class "RoleController" as RoleController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + updateRole(groupId: String, memberId: String, newRole: String): void
+  }
+  class "MemberController" as MemberController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + removeMember(groupId: String, memberId: String): void
+  }
+  class "LeaveGroupController" as LeaveGroupController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + leaveGroup(groupId: String, userId: String): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "FamilyDB" as FamilyDB_Alias <<entity>> {
+    - groupName: String
+    - memberCount: Int
+    ==
+    + saveNewGroup(groupName: String, ownerId: String): String
+    + queryGroupInfoAndMembers(groupId: String): Data
+    + saveInviteToken(groupId: String, token: String, expiry: Date): Boolean
+    + validateToken(inviteCode: String): Boolean
+    + addMemberToGroup(userId: String, groupId: String): Boolean
+    + updateMemberRole(groupId: String, memberId: String, newRole: String): Boolean
+    + deleteMember(groupId: String, memberId: String): Boolean
+    + removeMember(groupId: String, userId: String): Boolean
+  }
+}
+
+CreateGroupUI_Alias "1" ..> "1" CreateGroupController_Alias : <<invoke>>
+CreateGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+ViewGroupUI_Alias "1" ..> "1" ViewGroupController_Alias : <<invoke>>
+ViewGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+InviteMemberUI_Alias "1" ..> "1" InviteController_Alias : <<invoke>>
+InviteController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+JoinGroupUI_Alias "1" ..> "1" JoinGroupController_Alias : <<invoke>>
+JoinGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+ManageRoleUI_Alias "1" ..> "1" RoleController_Alias : <<invoke>>
+RoleController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+RemoveMemberUI_Alias "1" ..> "1" MemberController_Alias : <<invoke>>
+MemberController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+LeaveGroupUI_Alias "1" ..> "1" LeaveGroupController_Alias : <<invoke>>
+LeaveGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+BaseUI <|-- CreateGroupUI_Alias : <<extends>>
+IController <|.. CreateGroupController_Alias : <<implements>>
+BaseEntity <|-- FamilyDB_Alias : <<extends>>
+BaseUI <|-- ViewGroupUI_Alias : <<extends>>
+IController <|.. ViewGroupController_Alias : <<implements>>
+BaseUI <|-- InviteMemberUI_Alias : <<extends>>
+IController <|.. InviteController_Alias : <<implements>>
+BaseUI <|-- JoinGroupUI_Alias : <<extends>>
+IController <|.. JoinGroupController_Alias : <<implements>>
+BaseUI <|-- ManageRoleUI_Alias : <<extends>>
+IController <|.. RoleController_Alias : <<implements>>
+BaseUI <|-- RemoveMemberUI_Alias : <<extends>>
+IController <|.. MemberController_Alias : <<implements>>
+BaseUI <|-- LeaveGroupUI_Alias : <<extends>>
+IController <|.. LeaveGroupController_Alias : <<implements>>
+
+@enduml

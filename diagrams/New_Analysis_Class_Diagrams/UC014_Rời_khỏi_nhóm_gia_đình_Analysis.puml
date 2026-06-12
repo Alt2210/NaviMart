@@ -1,0 +1,47 @@
+@startuml
+title UC014 Rời khỏi nhóm gia đình (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + requestLeaveGroup() : void
+          + displaySuccess() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + leaveGroup(groupId: String, userId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + leaveGroup(groupId: String, userId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + leaveGroup(groupId: String, userId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + removeMember(groupId: String, userId: String) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+title UC039 Xem Dashboard tổng quan (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + requestDashboardData() : void
+          + displayDashboard() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + getOverviewStats() : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + getOverviewStats() : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + getOverviewStats() : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + querySystemMetrics() : Data
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

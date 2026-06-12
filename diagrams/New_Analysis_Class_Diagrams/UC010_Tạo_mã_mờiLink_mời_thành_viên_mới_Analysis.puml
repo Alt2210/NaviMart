@@ -1,0 +1,47 @@
+@startuml
+title UC010 Tạo mã mờiLink mời thành viên mới (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + requestInviteToken() : void
+          + displayInviteToken() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + generateInvite(groupId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + generateInvite(groupId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + generateInvite(groupId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + saveInviteToken(groupId: String, token: String, expiry: Date) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

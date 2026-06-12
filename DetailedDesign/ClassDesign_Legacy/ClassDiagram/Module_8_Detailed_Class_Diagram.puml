@@ -1,0 +1,128 @@
+@startuml
+title Detailed Class Diagram - Module_8_Admin
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "UserManagementUI" as UserManagementUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + login(): void
+    + viewUsers(): void
+  }
+  class "UserStatusUI" as UserStatusUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + toggleLock(): void
+    + displayStatus(): void
+  }
+  class "MasterDataUI" as MasterDataUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + manageData(): void
+    + displayUpdate(): void
+  }
+  class "RecipeApprovalUI" as RecipeApprovalUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + viewPendingRecipes(): void
+    + approveOrReject(): void
+    + displayResult(): void
+  }
+  class "AdminDashboardUI" as AdminDashboardUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + requestDashboardData(): void
+    + displayDashboard(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "UserManagementController" as UserManagementController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + loginAdmin(credentials: Data): void
+    + getUsersList(filters: Data): void
+    + toggleUserLock(userId: String): void
+  }
+  class "MasterDataController" as MasterDataController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + executeCRUD(action: String, data: Data): void
+  }
+  class "RecipeApprovalController" as RecipeApprovalController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + getPendingRecipes(): void
+    + approveOrRejectRecipe(recipeId: String, status: String): void
+  }
+  class "AdminDashboardController" as AdminDashboardController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + getOverviewStats(): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "UserDB" as UserDB_Alias <<entity>> {
+    - email: String
+    - passwordHash: String
+    - fullName: String
+    ==
+    + queryAllUsers(filters: Data): List
+    + updateUserStatus(userId: String, newStatus: String): Boolean
+  }
+  class "MasterDataDB" as MasterDataDB_Alias <<entity>> {
+    + updateDatabase(action: String, data: Data): Boolean
+  }
+  class "RecipeDB" as RecipeDB_Alias <<entity>> {
+    - title: String
+    - ingredients: List<String>
+    ==
+    + queryPending(): List
+    + updateRecipeStatus(recipeId: String, status: String): Boolean
+  }
+  class "SystemDB" as SystemDB_Alias <<entity>> {
+    + querySystemMetrics(): Data
+  }
+}
+
+UserManagementUI_Alias "1" ..> "1" UserManagementController_Alias : <<invoke>>
+UserManagementController_Alias "1" --> "0..*" UserDB_Alias : <<manipulate>>
+UserStatusUI_Alias "1" ..> "1" UserManagementController_Alias : <<invoke>>
+MasterDataUI_Alias "1" ..> "1" MasterDataController_Alias : <<invoke>>
+MasterDataController_Alias "1" --> "0..*" MasterDataDB_Alias : <<manipulate>>
+RecipeApprovalUI_Alias "1" ..> "1" RecipeApprovalController_Alias : <<invoke>>
+RecipeApprovalController_Alias "1" --> "0..*" RecipeDB_Alias : <<manipulate>>
+AdminDashboardUI_Alias "1" ..> "1" AdminDashboardController_Alias : <<invoke>>
+AdminDashboardController_Alias "1" --> "0..*" SystemDB_Alias : <<manipulate>>
+BaseUI <|-- UserManagementUI_Alias : <<extends>>
+IController <|.. UserManagementController_Alias : <<implements>>
+BaseEntity <|-- UserDB_Alias : <<extends>>
+BaseUI <|-- UserStatusUI_Alias : <<extends>>
+BaseUI <|-- MasterDataUI_Alias : <<extends>>
+IController <|.. MasterDataController_Alias : <<implements>>
+BaseEntity <|-- MasterDataDB_Alias : <<extends>>
+BaseUI <|-- RecipeApprovalUI_Alias : <<extends>>
+IController <|.. RecipeApprovalController_Alias : <<implements>>
+BaseEntity <|-- RecipeDB_Alias : <<extends>>
+BaseUI <|-- AdminDashboardUI_Alias : <<extends>>
+IController <|.. AdminDashboardController_Alias : <<implements>>
+BaseEntity <|-- SystemDB_Alias : <<extends>>
+
+@enduml

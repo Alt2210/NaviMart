@@ -1,0 +1,52 @@
+@startuml
+title UC033 Chat tương tác với AI Chef (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + enterQuestion() : void
+          + displayAnswer() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + sendMessage(question: String, context: Data) : void
+    }
+    class AIApiClient <<API Client>> {
+        + callAiAPI(question: String, context: Data) : String
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + sendMessage(question: String, context: Data) : void
+    }
+    class AIController <<Controller>> {
+        + callAiAPI(question: String, context: Data) : String
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + sendMessage(question: String, context: Data) : void
+    }
+    class AIService <<Service>> {
+        + callAiAPI(question: String, context: Data) : String
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+View --> AIApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+AIApiClient ..> AIController : "HTTP REST"
+Controller --> Service : "injects"
+AIController --> AIService : "injects"
+
+@enduml

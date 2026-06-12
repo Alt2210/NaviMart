@@ -1,0 +1,47 @@
+@startuml
+title UC017 Thêm mặt hàng vào danh sách (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + inputItemDetails() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + addItem(listId: String, itemName: String, quantity: Number) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + addItem(listId: String, itemName: String, quantity: Number) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + addItem(listId: String, itemName: String, quantity: Number) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + saveItem(listId: String, itemName: String, quantity: Number) : String
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

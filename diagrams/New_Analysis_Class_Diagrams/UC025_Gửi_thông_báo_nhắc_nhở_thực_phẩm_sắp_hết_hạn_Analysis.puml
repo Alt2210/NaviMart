@@ -1,0 +1,51 @@
+@startuml
+title UC025 Gửi thông báo nhắc nhở thực phẩm sắp hết hạn (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + triggerCheckExpiryDaily() : void
+    }
+    class NotifApiClient <<API Client>> {
+        + sendExpiryWarning(userId: String, foods: List) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + triggerCheckExpiryDaily() : void
+    }
+    class NotifController <<Controller>> {
+        + sendExpiryWarning(userId: String, foods: List) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + triggerCheckExpiryDaily() : void
+    }
+    class NotifService <<Service>> {
+        + sendExpiryWarning(userId: String, foods: List) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + queryExpiringFoods(daysLimit: Number) : List
+    }
+}
+
+' --- Relationships ---
+ApiClient ..> Controller : "HTTP REST"
+NotifApiClient ..> NotifController : "HTTP REST"
+Controller --> Service : "injects"
+NotifController --> NotifService : "injects"
+Service ..> Entity : "CRUD"
+NotifService ..> Entity : "CRUD"
+
+@enduml

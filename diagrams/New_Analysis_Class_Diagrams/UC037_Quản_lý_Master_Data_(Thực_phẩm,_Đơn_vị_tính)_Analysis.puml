@@ -1,0 +1,47 @@
+@startuml
+title UC037 Quản lý Master Data (Thực phẩm, Đơn vị tính) (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + manageData() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + executeCRUD(action: String, data: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + executeCRUD(action: String, data: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + executeCRUD(action: String, data: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + updateDatabase(action: String, data: Data) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

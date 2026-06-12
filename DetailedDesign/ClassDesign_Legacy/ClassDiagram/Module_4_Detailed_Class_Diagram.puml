@@ -1,0 +1,128 @@
+@startuml
+title Detailed Class Diagram - Module_4_Pantry
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "ViewPantryUI" as ViewPantryUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + enterSearchKeyword(): void
+    + displayFoodList(): void
+  }
+  class "AddFoodUI" as AddFoodUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + inputFoodDetails(): void
+    + displaySuccess(): void
+  }
+  class "UpdateFoodUI" as UpdateFoodUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectFoodToUpdate(): void
+    + displayUpdate(): void
+  }
+  class "RemoveFoodUI" as RemoveFoodUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectFoodToRemove(): void
+    + displayResult(): void
+  }
+  class "MealPlanUI" as MealPlanUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + confirmMealCooked(): void
+    + displayUpdate(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "PantrySearchController" as PantrySearchController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + searchFood(keyword: String, filters: Data): void
+  }
+  class "FoodManagementController" as FoodManagementController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + addFood(foodDetails: Data): void
+    + updateFood(foodId: String, updatedData: Data): void
+    + removeFood(foodId: String): void
+  }
+  class "MealController" as MealController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + confirmMealCooked(mealId: String): void
+  }
+  class "PantryController" as PantryController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + deductIngredients(ingredients: List): void
+  }
+  class "NotificationController" as NotificationController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + triggerCheckExpiryDaily(): void
+  }
+  class "NotificationService" as NotificationService_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + sendExpiryWarning(userId: String, foods: List): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "PantryDB" as PantryDB_Alias <<entity>> {
+    - itemName: String
+    - quantity: Float
+    - expiryDate: DateTime
+    ==
+    + queryFoodList(keyword: String, filters: Data): List
+    + saveFood(foodDetails: Data): String
+    + updateFoodData(foodId: String, updatedData: Data): Boolean
+    + deleteFoodData(foodId: String): Boolean
+    + decreaseFoodQuantity(ingredients: List): Boolean
+    + queryExpiringFoods(daysLimit: Number): List
+  }
+}
+
+ViewPantryUI_Alias "1" ..> "1" PantrySearchController_Alias : <<invoke>>
+PantrySearchController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+AddFoodUI_Alias "1" ..> "1" FoodManagementController_Alias : <<invoke>>
+FoodManagementController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+UpdateFoodUI_Alias "1" ..> "1" FoodManagementController_Alias : <<invoke>>
+RemoveFoodUI_Alias "1" ..> "1" FoodManagementController_Alias : <<invoke>>
+MealPlanUI_Alias "1" ..> "1" MealController_Alias : <<invoke>>
+MealController_Alias "1" --> "1" PantryController_Alias : <<associate>>
+PantryController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+NotificationController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+NotificationController_Alias "1" --> "1" NotificationService_Alias : <<associate>>
+BaseUI <|-- ViewPantryUI_Alias : <<extends>>
+IController <|.. PantrySearchController_Alias : <<implements>>
+BaseEntity <|-- PantryDB_Alias : <<extends>>
+BaseUI <|-- AddFoodUI_Alias : <<extends>>
+IController <|.. FoodManagementController_Alias : <<implements>>
+BaseUI <|-- UpdateFoodUI_Alias : <<extends>>
+BaseUI <|-- RemoveFoodUI_Alias : <<extends>>
+BaseUI <|-- MealPlanUI_Alias : <<extends>>
+IController <|.. MealController_Alias : <<implements>>
+IController <|.. PantryController_Alias : <<implements>>
+IController <|.. NotificationController_Alias : <<implements>>
+IController <|.. NotificationService_Alias : <<implements>>
+
+@enduml

@@ -1,0 +1,78 @@
+@startuml
+title UC003 Đăng nhập qua mạng xã hội (OAuth GoogleFacebook) (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + Chọn Login with Google/FB() : void
+          + Success & Redirect() : void
+    }
+}
+
+package "API Client" {
+    class ProviderApiClient <<API Client>> {
+        + Request Auth URL() : void
+          + Đồng ý cấp quyền() : void
+    }
+    class ApiClient <<API Client>> {
+        + Callback with Profile Data (Email, Name) : void
+    }
+    class OAuthProviderApiClient <<API Client>> {
+    }
+}
+
+package "Backend Controller" {
+    class ProviderController <<Controller>> {
+        + Request Auth URL() : void
+          + Đồng ý cấp quyền() : void
+    }
+    class Controller <<Controller>> {
+        + Callback with Profile Data (Email, Name) : void
+    }
+    class OAuthProviderController <<Controller>> {
+    }
+}
+
+package "Backend Service" {
+    class ProviderService <<Service>> {
+        + Request Auth URL() : void
+          + Đồng ý cấp quyền() : void
+    }
+    class Service <<Service>> {
+        + Callback with Profile Data (Email, Name) : void
+    }
+    class OAuthProviderService <<Service>> {
+    }
+}
+
+package "Database Entity" {
+    class UserEntity <<Entity>> {
+  - user_id: INT
+  - email: VARCHAR
+  - phone: VARCHAR
+  - password_hash: VARCHAR
+  - role: VARCHAR
+        + checkEmail() & autoCreateIfNeeded() : void
+    }
+}
+
+' --- Relationships ---
+View --> ProviderApiClient : "calls"
+View --> ApiClient : "calls"
+View --> OAuthProviderApiClient : "calls"
+ProviderApiClient ..> ProviderController : "HTTP REST"
+ApiClient ..> Controller : "HTTP REST"
+OAuthProviderApiClient ..> OAuthProviderController : "HTTP REST"
+ProviderController --> ProviderService : "injects"
+Controller --> Service : "injects"
+OAuthProviderController --> OAuthProviderService : "injects"
+ProviderService ..> UserEntity : "CRUD"
+Service ..> UserEntity : "CRUD"
+OAuthProviderService ..> UserEntity : "CRUD"
+
+@enduml

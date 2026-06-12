@@ -1,0 +1,65 @@
+@startuml
+title UC019 Đánh dấu đã mua và Tự động chuyển vào Tủ lạnh (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + checkItemAsBought() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + markItemAsBought(itemId: String) : void
+    }
+    class PantryApiClient <<API Client>> {
+        + transferItemToPantry(itemDetails: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + markItemAsBought(itemId: String) : void
+    }
+    class PantryController <<Controller>> {
+        + transferItemToPantry(itemDetails: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + markItemAsBought(itemId: String) : void
+    }
+    class PantryService <<Service>> {
+        + transferItemToPantry(itemDetails: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class ShoppingEntity <<Entity>> {
+        + updateItemStatus(itemId: String, status: String) : Boolean
+    }
+    class PantryEntity <<Entity>> {
+        + addFood(itemDetails: Data) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+View --> PantryApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+PantryApiClient ..> PantryController : "HTTP REST"
+Controller --> Service : "injects"
+PantryController --> PantryService : "injects"
+Service ..> ShoppingEntity : "CRUD"
+Service ..> PantryEntity : "CRUD"
+PantryService ..> ShoppingEntity : "CRUD"
+PantryService ..> PantryEntity : "CRUD"
+
+@enduml

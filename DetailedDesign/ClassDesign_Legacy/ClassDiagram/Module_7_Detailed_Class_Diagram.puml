@@ -1,0 +1,50 @@
+@startuml
+title Detailed Class Diagram - Module_7_Statistics
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "StatisticsDashboardUI" as StatisticsDashboardUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectDateRange(): void
+    + renderChart(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "StatisticsController" as StatisticsController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + getStatistics(dateRange: Data): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "StatDB" as StatDB_Alias <<entity>> {
+    + queryUsageAndWasteData(dateRange: Data): Data
+  }
+}
+
+StatisticsDashboardUI_Alias "1" ..> "1" StatisticsController_Alias : <<invoke>>
+StatisticsController_Alias "1" --> "0..*" StatDB_Alias : <<manipulate>>
+BaseUI <|-- StatisticsDashboardUI_Alias : <<extends>>
+IController <|.. StatisticsController_Alias : <<implements>>
+BaseEntity <|-- StatDB_Alias : <<extends>>
+
+@enduml

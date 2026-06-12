@@ -1,0 +1,47 @@
+@startuml
+title UC009 Xem thông tin nhóm gia đình & Danh sách thành viên (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + requestGroupDetails() : void
+          + displayGroupData() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + getGroupDetails(groupId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + getGroupDetails(groupId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + getGroupDetails(groupId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + queryGroupInfoAndMembers(groupId: String) : Data
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

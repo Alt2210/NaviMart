@@ -1,0 +1,97 @@
+@startuml
+title Module 3 - Shopping_Lists (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class MyLists <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class ListDetail <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "API Client" {
+    class ShoppingListsApiClient <<API Client>> {
+        - baseUrl: String
+        + findAll(data: any): Promise<any>
+        + create(data: any): Promise<any>
+        + findOne(data: any): Promise<any>
+        + update(data: any): Promise<any>
+        + remove(data: any): Promise<any>
+        + complete(data: any): Promise<any>
+        + addItem(data: any): Promise<any>
+        + updateItem(data: any): Promise<any>
+        + removeItem(data: any): Promise<any>
+    }
+}
+
+package "Controller" {
+    class ShoppingListsController <<Controller>> {
+        + findAll(@Body dto: any): Response
+        + create(@Body dto: any): Response
+        + findOne(@Body dto: any): Response
+        + update(@Body dto: any): Response
+        + remove(@Body dto: any): Response
+        + complete(@Body dto: any): Response
+        + addItem(@Body dto: any): Response
+        + updateItem(@Body dto: any): Response
+        + removeItem(@Body dto: any): Response
+    }
+}
+
+package "Service" {
+    class ShoppingListsService <<Service>> {
+        + findAll(data: any): any
+        + create(data: any): any
+        + findOne(data: any): any
+        + update(data: any): any
+        + remove(data: any): any
+        + complete(data: any): any
+        + addItem(data: any): any
+        + updateItem(data: any): any
+        + removeItem(data: any): any
+    }
+}
+
+package "Entity / DTO" {
+    abstract class BaseEntity {
+        - created_at: Date
+        - updated_at: Date
+    }
+    class ShoppingListsEntity <<Entity>> {
+        - list_id: INT
+        - group_id: INT
+        - name: VARCHAR
+        - created_at: DATETIME
+        - type: VARCHAR
+    }
+    BaseEntity <|-- ShoppingListsEntity
+    class ShoppingListItemsEntity <<Entity>> {
+        - item_id: INT
+        - list_id: INT
+        - food_id: INT
+        - quantity: DECIMAL
+        - status: VARCHAR
+    }
+    BaseEntity <|-- ShoppingListItemsEntity
+}
+
+' --- Relationships ---
+MyLists --> ShoppingListsApiClient : "calls"
+ListDetail --> ShoppingListsApiClient : "calls"
+ShoppingListsApiClient ..> ShoppingListsController : "HTTP REST"
+ShoppingListsController --> ShoppingListsService : "injects"
+ShoppingListsService ..> ShoppingListsEntity : "CRUD"
+ShoppingListsService ..> ShoppingListItemsEntity : "CRUD"
+
+@enduml

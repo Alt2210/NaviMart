@@ -1,0 +1,60 @@
+@startuml
+title UC029 Gợi ý món ăn dựa trên thực phẩm hiện có (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + requestSuggestion() : void
+          + displayRecipeList() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + getSuggestions() : void
+    }
+    class AIApiClient <<API Client>> {
+        + generateRecipes(ingredientList: List) : List
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + getSuggestions() : void
+    }
+    class AIController <<Controller>> {
+        + generateRecipes(ingredientList: List) : List
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + getSuggestions() : void
+    }
+    class AIService <<Service>> {
+        + generateRecipes(ingredientList: List) : List
+    }
+}
+
+package "Database Entity" {
+    class PantryEntity <<Entity>> {
+        + getAvailableIngredients(userId: String) : List
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+View --> AIApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+AIApiClient ..> AIController : "HTTP REST"
+Controller --> Service : "injects"
+AIController --> AIService : "injects"
+Service ..> PantryEntity : "CRUD"
+AIService ..> PantryEntity : "CRUD"
+
+@enduml

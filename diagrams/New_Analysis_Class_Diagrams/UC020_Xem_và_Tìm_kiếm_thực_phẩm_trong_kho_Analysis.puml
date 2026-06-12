@@ -1,0 +1,47 @@
+@startuml
+title UC020 Xem và Tìm kiếm thực phẩm trong kho (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + enterSearchKeyword() : void
+          + displayFoodList() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + searchFood(keyword: String, filters: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + searchFood(keyword: String, filters: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + searchFood(keyword: String, filters: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + queryFoodList(keyword: String, filters: Data) : List
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

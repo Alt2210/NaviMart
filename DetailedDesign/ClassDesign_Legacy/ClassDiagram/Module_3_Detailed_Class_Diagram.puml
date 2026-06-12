@@ -1,0 +1,121 @@
+@startuml
+title Detailed Class Diagram - Module_3_ShoppingList
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "CreateShoppingListUI" as CreateShoppingListUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + inputListName(): void
+    + displayResult(): void
+  }
+  class "ManageListUI" as ManageListUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectAction(): void
+    + displayUpdate(): void
+  }
+  class "AddShoppingItemUI" as AddShoppingItemUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + inputItemDetails(): void
+    + displayUpdate(): void
+  }
+  class "UpdateItemUI" as UpdateItemUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectItemAction(): void
+    + displayUpdate(): void
+  }
+  class "MarkItemBoughtUI" as MarkItemBoughtUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + checkItemAsBought(): void
+    + displayUpdate(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "CreateListController" as CreateListController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + createList(listName: String, groupId: String): void
+  }
+  class "ManageListController" as ManageListController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + handleListAction(action: String, listId: String, data: Data): void
+  }
+  class "ShoppingItemController" as ShoppingItemController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + addItem(listId: String, itemName: String, quantity: Number): void
+    + updateOrRemoveItem(action: String, itemId: String, data: Data): void
+    + markItemAsBought(itemId: String): void
+  }
+  class "PantryController" as PantryController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + transferItemToPantry(itemDetails: Data): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "ShoppingDB" as ShoppingDB_Alias <<entity>> {
+    - listName: String
+    - status: String
+    ==
+    + saveNewList(listName: String, groupId: String): String
+    + executeDbQuery(action: String, listId: String, data: Data): Boolean
+    + saveItem(listId: String, itemName: String, quantity: Number): String
+    + executeItemDbAction(action: String, itemId: String, data: Data): Boolean
+    + updateItemStatus(itemId: String, status: String): Boolean
+  }
+  class "PantryDB" as PantryDB_Alias <<entity>> {
+    - itemName: String
+    - quantity: Float
+    - expiryDate: DateTime
+    ==
+    + addFood(itemDetails: Data): Boolean
+  }
+}
+
+CreateShoppingListUI_Alias "1" ..> "1" CreateListController_Alias : <<invoke>>
+CreateListController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+ManageListUI_Alias "1" ..> "1" ManageListController_Alias : <<invoke>>
+ManageListController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+AddShoppingItemUI_Alias "1" ..> "1" ShoppingItemController_Alias : <<invoke>>
+ShoppingItemController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+UpdateItemUI_Alias "1" ..> "1" ShoppingItemController_Alias : <<invoke>>
+MarkItemBoughtUI_Alias "1" ..> "1" ShoppingItemController_Alias : <<invoke>>
+PantryController_Alias "1" --> "1" ShoppingItemController_Alias : <<associate>>
+PantryController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+BaseUI <|-- CreateShoppingListUI_Alias : <<extends>>
+IController <|.. CreateListController_Alias : <<implements>>
+BaseEntity <|-- ShoppingDB_Alias : <<extends>>
+BaseUI <|-- ManageListUI_Alias : <<extends>>
+IController <|.. ManageListController_Alias : <<implements>>
+BaseUI <|-- AddShoppingItemUI_Alias : <<extends>>
+IController <|.. ShoppingItemController_Alias : <<implements>>
+BaseUI <|-- UpdateItemUI_Alias : <<extends>>
+BaseUI <|-- MarkItemBoughtUI_Alias : <<extends>>
+IController <|.. PantryController_Alias : <<implements>>
+BaseEntity <|-- PantryDB_Alias : <<extends>>
+
+@enduml

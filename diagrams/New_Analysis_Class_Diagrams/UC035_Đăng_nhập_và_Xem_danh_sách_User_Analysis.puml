@@ -1,0 +1,50 @@
+@startuml
+title UC035 Đăng nhập và Xem danh sách User (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + login() : void
+          + viewUsers() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + loginAdmin(credentials: Data) : void
+          + getUsersList(filters: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + loginAdmin(credentials: Data) : void
+          + getUsersList(filters: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + loginAdmin(credentials: Data) : void
+          + getUsersList(filters: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + queryAllUsers(filters: Data) : List
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

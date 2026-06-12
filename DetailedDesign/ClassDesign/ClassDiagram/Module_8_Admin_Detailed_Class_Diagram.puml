@@ -1,0 +1,120 @@
+@startuml
+title Module 8 - Admin (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class AdminDashboard <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "API Client" {
+    class AdminApiClient <<API Client>> {
+        - baseUrl: String
+        + findAllCategories(data: any): Promise<any>
+        + createCategory(data: any): Promise<any>
+        + updateCategory(data: any): Promise<any>
+        + removeCategory(data: any): Promise<any>
+        + findAllFoods(data: any): Promise<any>
+        + createFood(data: any): Promise<any>
+        + updateFood(data: any): Promise<any>
+        + removeFood(data: any): Promise<any>
+        + findAllUnits(data: any): Promise<any>
+        + createUnit(data: any): Promise<any>
+        + updateUnit(data: any): Promise<any>
+        + removeUnit(data: any): Promise<any>
+        + findAll(data: any): Promise<any>
+        + updateStatus(data: any): Promise<any>
+        + getStats(data: any): Promise<any>
+        + findAll(data: any): Promise<any>
+        + findOne(data: any): Promise<any>
+        + create(data: any): Promise<any>
+        + update(data: any): Promise<any>
+        + remove(data: any): Promise<any>
+    }
+}
+
+package "Controller" {
+    class AdminController <<Controller>> {
+        + findAllCategories(@Body dto: any): Response
+        + createCategory(@Body dto: any): Response
+        + updateCategory(@Body dto: any): Response
+        + removeCategory(@Body dto: any): Response
+        + findAllFoods(@Body dto: any): Response
+        + createFood(@Body dto: any): Response
+        + updateFood(@Body dto: any): Response
+        + removeFood(@Body dto: any): Response
+        + findAllUnits(@Body dto: any): Response
+        + createUnit(@Body dto: any): Response
+        + updateUnit(@Body dto: any): Response
+        + removeUnit(@Body dto: any): Response
+        + findAll(@Body dto: any): Response
+        + updateStatus(@Body dto: any): Response
+        + getStats(@Body dto: any): Response
+        + findAll(@Body dto: any): Response
+        + findOne(@Body dto: any): Response
+        + create(@Body dto: any): Response
+        + update(@Body dto: any): Response
+        + remove(@Body dto: any): Response
+    }
+}
+
+package "Service" {
+    class AdminService <<Service>> {
+        + findAllCategories(data: any): any
+        + createCategory(data: any): any
+        + updateCategory(data: any): any
+        + removeCategory(data: any): any
+        + findAllFoods(data: any): any
+        + createFood(data: any): any
+        + updateFood(data: any): any
+        + removeFood(data: any): any
+        + findAllUnits(data: any): any
+        + createUnit(data: any): any
+        + updateUnit(data: any): any
+        + removeUnit(data: any): any
+        + findAll(data: any): any
+        + updateStatus(data: any): any
+        + getStats(data: any): any
+        + findAll(data: any): any
+        + findOne(data: any): any
+        + create(data: any): any
+        + update(data: any): any
+        + remove(data: any): any
+    }
+}
+
+package "Entity / DTO" {
+    abstract class BaseEntity {
+        - created_at: Date
+        - updated_at: Date
+    }
+    class CategoriesEntity <<Entity>> {
+        - category_id: INT
+        - name: VARCHAR
+    }
+    BaseEntity <|-- CategoriesEntity
+    class FoodCatalogEntity <<Entity>> {
+        - food_id: INT
+        - name: VARCHAR
+        - category_id: INT
+        - unit: VARCHAR
+    }
+    BaseEntity <|-- FoodCatalogEntity
+}
+
+' --- Relationships ---
+AdminDashboard --> AdminApiClient : "calls"
+AdminApiClient ..> AdminController : "HTTP REST"
+AdminController --> AdminService : "injects"
+AdminService ..> CategoriesEntity : "CRUD"
+AdminService ..> FoodCatalogEntity : "CRUD"
+
+@enduml

@@ -1,0 +1,59 @@
+@startuml
+title Module 9 - Shared (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class Home <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class AIChef <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class Notifications <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "Context" {
+    class DialogContext <<Context>> {
+        - state: any
+        + Provider(props: any): JSX.Element
+    }
+}
+
+package "API Client" {
+    class SharedApiClient <<API Client>> {
+        - baseUrl: String
+    }
+}
+
+package "Controller" {
+    class SharedController <<Controller>> {
+    }
+}
+
+package "Service" {
+    class SharedService <<Service>> {
+    }
+}
+
+' --- Relationships ---
+Home --> DialogContext : "uses"
+AIChef --> DialogContext : "uses"
+Notifications --> DialogContext : "uses"
+DialogContext --> SharedApiClient : "calls"
+SharedApiClient ..> SharedController : "HTTP REST"
+SharedController --> SharedService : "injects"
+
+@enduml

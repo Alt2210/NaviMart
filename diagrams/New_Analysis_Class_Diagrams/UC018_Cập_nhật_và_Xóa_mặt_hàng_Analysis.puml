@@ -1,0 +1,47 @@
+@startuml
+title UC018 Cập nhật và Xóa mặt hàng (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectItemAction() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + updateOrRemoveItem(action: String, itemId: String, data: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + updateOrRemoveItem(action: String, itemId: String, data: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + updateOrRemoveItem(action: String, itemId: String, data: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + executeItemDbAction(action: String, itemId: String, data: Data) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

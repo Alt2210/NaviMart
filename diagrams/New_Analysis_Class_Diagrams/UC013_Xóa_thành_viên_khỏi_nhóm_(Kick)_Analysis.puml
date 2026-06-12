@@ -1,0 +1,47 @@
+@startuml
+title UC013 Xóa thành viên khỏi nhóm (Kick) (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectMemberToRemove() : void
+          + displayResult() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + removeMember(groupId: String, memberId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + removeMember(groupId: String, memberId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + removeMember(groupId: String, memberId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + deleteMember(groupId: String, memberId: String) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

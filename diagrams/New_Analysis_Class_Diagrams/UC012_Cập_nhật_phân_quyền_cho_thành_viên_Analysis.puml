@@ -1,0 +1,47 @@
+@startuml
+title UC012 Cập nhật phân quyền cho thành viên (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectRole() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + updateRole(groupId: String, memberId: String, newRole: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + updateRole(groupId: String, memberId: String, newRole: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + updateRole(groupId: String, memberId: String, newRole: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + updateMemberRole(groupId: String, memberId: String, newRole: String) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

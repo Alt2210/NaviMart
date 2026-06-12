@@ -1,0 +1,47 @@
+@startuml
+title UC027 Thêm và Sửa món ăn trong lịch trình (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + assignMealToSession() : void
+          + displayResult() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + addOrUpdateMeal(sessionId: String, recipeId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + addOrUpdateMeal(sessionId: String, recipeId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + addOrUpdateMeal(sessionId: String, recipeId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + saveMealToSession(sessionId: String, recipeId: String) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

@@ -1,0 +1,108 @@
+@startuml
+title Module 6 - Recipes (Detailed Class Diagram)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View" {
+    class RecipeEditor <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class RecipeDetail <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+    class RecipeSuggestion <<View>> {
+        - state: any
+        - props: any
+        + render(): JSX.Element
+    }
+}
+
+package "API Client" {
+    class RecipesApiClient <<API Client>> {
+        - baseUrl: String
+        + findAll(data: any): Promise<any>
+        + getSuggestions(data: any): Promise<any>
+        + findFavorites(data: any): Promise<any>
+        + findOne(data: any): Promise<any>
+        + addFavorite(data: any): Promise<any>
+        + removeFavorite(data: any): Promise<any>
+        + getMissingIngredients(data: any): Promise<any>
+        + generateShoppingList(data: any): Promise<any>
+        + create(data: any): Promise<any>
+        + update(data: any): Promise<any>
+        + remove(data: any): Promise<any>
+    }
+}
+
+package "Controller" {
+    class RecipesController <<Controller>> {
+        + findAll(@Body dto: any): Response
+        + getSuggestions(@Body dto: any): Response
+        + findFavorites(@Body dto: any): Response
+        + findOne(@Body dto: any): Response
+        + addFavorite(@Body dto: any): Response
+        + removeFavorite(@Body dto: any): Response
+        + getMissingIngredients(@Body dto: any): Response
+        + generateShoppingList(@Body dto: any): Response
+        + create(@Body dto: any): Response
+        + update(@Body dto: any): Response
+        + remove(@Body dto: any): Response
+    }
+}
+
+package "Service" {
+    class RecipesService <<Service>> {
+        + findAll(data: any): any
+        + getSuggestions(data: any): any
+        + findFavorites(data: any): any
+        + findOne(data: any): any
+        + addFavorite(data: any): any
+        + removeFavorite(data: any): any
+        + getMissingIngredients(data: any): any
+        + generateShoppingList(data: any): any
+        + create(data: any): any
+        + update(data: any): any
+        + remove(data: any): any
+    }
+}
+
+package "Entity / DTO" {
+    abstract class BaseEntity {
+        - created_at: Date
+        - updated_at: Date
+    }
+    class RecipesEntity <<Entity>> {
+        - recipe_id: INT
+        - name: VARCHAR
+        - instructions: TEXT
+        - image_url: VARCHAR
+        - author_id: INT
+        - status: VARCHAR
+    }
+    BaseEntity <|-- RecipesEntity
+    class RecipeIngredientsEntity <<Entity>> {
+        - recipe_id: INT
+        - food_id: INT
+        - quantity_required: DECIMAL
+    }
+    BaseEntity <|-- RecipeIngredientsEntity
+}
+
+' --- Relationships ---
+RecipeEditor --> RecipesApiClient : "calls"
+RecipeDetail --> RecipesApiClient : "calls"
+RecipeSuggestion --> RecipesApiClient : "calls"
+RecipesApiClient ..> RecipesController : "HTTP REST"
+RecipesController --> RecipesService : "injects"
+RecipesService ..> RecipesEntity : "CRUD"
+RecipesService ..> RecipeIngredientsEntity : "CRUD"
+
+@enduml

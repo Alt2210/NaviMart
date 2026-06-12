@@ -1,0 +1,47 @@
+@startuml
+title UC023 XóaThanh lý thực phẩm (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectFoodToRemove() : void
+          + displayResult() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + removeFood(foodId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + removeFood(foodId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + removeFood(foodId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + deleteFoodData(foodId: String) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

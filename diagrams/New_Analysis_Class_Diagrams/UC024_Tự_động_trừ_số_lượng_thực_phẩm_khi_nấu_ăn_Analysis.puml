@@ -1,0 +1,60 @@
+@startuml
+title UC024 Tự động trừ số lượng thực phẩm khi nấu ăn (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + confirmMealCooked() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class MealApiClient <<API Client>> {
+        + confirmMealCooked(mealId: String) : void
+    }
+    class PantryApiClient <<API Client>> {
+        + deductIngredients(ingredients: List) : void
+    }
+}
+
+package "Backend Controller" {
+    class MealController <<Controller>> {
+        + confirmMealCooked(mealId: String) : void
+    }
+    class PantryController <<Controller>> {
+        + deductIngredients(ingredients: List) : void
+    }
+}
+
+package "Backend Service" {
+    class MealService <<Service>> {
+        + confirmMealCooked(mealId: String) : void
+    }
+    class PantryService <<Service>> {
+        + deductIngredients(ingredients: List) : void
+    }
+}
+
+package "Database Entity" {
+    class PantryEntity <<Entity>> {
+        + decreaseFoodQuantity(ingredients: List) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> MealApiClient : "calls"
+View --> PantryApiClient : "calls"
+MealApiClient ..> MealController : "HTTP REST"
+PantryApiClient ..> PantryController : "HTTP REST"
+MealController --> MealService : "injects"
+PantryController --> PantryService : "injects"
+MealService ..> PantryEntity : "CRUD"
+PantryService ..> PantryEntity : "CRUD"
+
+@enduml

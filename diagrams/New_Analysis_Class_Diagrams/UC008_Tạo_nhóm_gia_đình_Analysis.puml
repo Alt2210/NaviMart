@@ -1,0 +1,47 @@
+@startuml
+title UC008 Tạo nhóm gia đình (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + enterGroupName() : void
+          + displayResult() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + createGroup(groupName: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + createGroup(groupName: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + createGroup(groupName: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + saveNewGroup(groupName: String, ownerId: String) : String
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

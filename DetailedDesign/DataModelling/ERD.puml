@@ -1,0 +1,123 @@
+@startuml
+title Physical Entity-Relationship Diagram (ERD) - NaviMart
+
+' Hide circle and use Crow's foot notation for ERD
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam RoundCorner 10
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+entity "users" as users {
+  * user_id : INT <<PK>>
+  --
+    email : VARCHAR(150)
+    phone : VARCHAR(20)
+    password_hash : VARCHAR(255)
+    first_name : VARCHAR(50)
+    last_name : VARCHAR(50)
+    dob : DATE
+    gender : VARCHAR(10)
+    role : VARCHAR(20)
+    group_id : INT <<FK>>
+    status : VARCHAR(20)
+}
+
+entity "family_groups" as family_groups {
+  * group_id : INT <<PK>>
+  --
+    group_name : VARCHAR(100)
+    owner_id : INT <<FK>>
+    invite_code : VARCHAR(50)
+}
+
+entity "categories" as categories {
+  * category_id : INT <<PK>>
+  --
+    name : VARCHAR(100)
+}
+
+entity "food_catalog" as food_catalog {
+  * food_id : INT <<PK>>
+  --
+    name : VARCHAR(150)
+    category_id : INT <<FK>>
+    unit : VARCHAR(20)
+}
+
+entity "shopping_lists" as shopping_lists {
+  * list_id : INT <<PK>>
+  --
+    group_id : INT <<FK>>
+    name : VARCHAR(100)
+    created_at : DATETIME
+    type : VARCHAR(20)
+}
+
+entity "shopping_list_items" as shopping_list_items {
+  * item_id : INT <<PK>>
+  --
+    list_id : INT <<FK>>
+    food_id : INT <<FK>>
+    quantity : DECIMAL(10,2)
+    status : VARCHAR(20)
+}
+
+entity "inventory" as inventory {
+  * inventory_id : INT <<PK>>
+  --
+    group_id : INT <<FK>>
+    food_id : INT <<FK>>
+    quantity : DECIMAL(10,2)
+    expiry_date : DATE
+    location : VARCHAR(50)
+}
+
+entity "recipes" as recipes {
+  * recipe_id : INT <<PK>>
+  --
+    name : VARCHAR(200)
+    instructions : TEXT
+    image_url : VARCHAR(255)
+    author_id : INT <<FK>>
+    status : VARCHAR(20)
+}
+
+entity "recipe_ingredients" as recipe_ingredients {
+  * recipe_id : INT <<PK>>
+  --
+  * food_id : INT <<PK>>
+  --
+    quantity_required : DECIMAL(10,2)
+}
+
+entity "meal_plans" as meal_plans {
+  * plan_id : INT <<PK>>
+  --
+    group_id : INT <<FK>>
+    date : DATE
+    meal_type : VARCHAR(20)
+    recipe_id : INT <<FK>>
+    is_completed : BOOLEAN
+}
+
+' RELATIONSHIPS
+family_groups ||--o{ users : "has members"
+users ||--o| family_groups : "owns"
+categories ||--o{ food_catalog : "categorizes"
+family_groups ||--o{ shopping_lists : "manages"
+shopping_lists ||--o{ shopping_list_items : "contains"
+food_catalog ||--o{ shopping_list_items : "referenced by"
+family_groups ||--o{ inventory : "stores"
+food_catalog ||--o{ inventory : "referenced by"
+users ||--o{ recipes : "authors"
+recipes ||--o{ recipe_ingredients : "needs"
+food_catalog ||--o{ recipe_ingredients : "referenced by"
+family_groups ||--o{ meal_plans : "schedules"
+recipes ||--o{ meal_plans : "used in"
+
+@enduml

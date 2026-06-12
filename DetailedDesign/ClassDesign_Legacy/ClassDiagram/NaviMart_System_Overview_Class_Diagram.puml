@@ -1,0 +1,270 @@
+@startuml
+title System Overview Class Diagram - NaviMart
+
+' Cấu hình giao diện
+skinparam linetype ortho
+hide empty members
+skinparam shadowing false
+
+package "Module_1_Auth" {
+  package "View " {
+    class "RegisterUI" as RegisterUI_Alias <<boundary>>
+    class "OTPVerificationUI" as OTPVerificationUI_Alias <<boundary>>
+    class "LoginUI" as LoginUI_Alias <<boundary>>
+    class "OAuthUI" as OAuthUI_Alias <<boundary>>
+    class "ForgotPassUI" as ForgotPassUI_Alias <<boundary>>
+    class "ResetPassUI" as ResetPassUI_Alias <<boundary>>
+    class "ProfileUI" as ProfileUI_Alias <<boundary>>
+    class "ChangePassUI" as ChangePassUI_Alias <<boundary>>
+    class "SettingsUI" as SettingsUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "AuthController" as AuthController_Alias <<control>>
+    class "EmailService" as EmailService_Alias <<control>>
+    class "OAuthProvider (Google/FB)" as OAuthProviderGoogleFB_Alias <<control>>
+    class "OAuthProvider" as OAuthProvider_Alias <<control>>
+    class "ProfileController" as ProfileController_Alias <<control>>
+  }
+  package "Model " {
+    class "UserAccount" as UserAccount_Alias <<entity>>
+    class "TokenService" as TokenService_Alias <<entity>>
+    class "UserProfile" as UserProfile_Alias <<entity>>
+    class "SessionManager" as SessionManager_Alias <<entity>>
+  }
+}
+
+RegisterUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+AuthController_Alias "1" --> "0..*" UserAccount_Alias : <<manipulate>>
+AuthController_Alias "1" --> "1" EmailService_Alias : <<associate>>
+OTPVerificationUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+LoginUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+AuthController_Alias "1" --> "0..*" TokenService_Alias : <<manipulate>>
+OAuthUI_Alias "1" ..> "1" OAuthProviderGoogleFB_Alias : <<invoke>>
+AuthController_Alias "1" --> "1" OAuthProviderGoogleFB_Alias : <<associate>>
+OAuthUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+ForgotPassUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+ResetPassUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+ProfileUI_Alias "1" ..> "1" ProfileController_Alias : <<invoke>>
+ProfileController_Alias "1" --> "0..*" UserProfile_Alias : <<manipulate>>
+ChangePassUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+SettingsUI_Alias "1" ..> "1" AuthController_Alias : <<invoke>>
+AuthController_Alias "1" --> "0..*" SessionManager_Alias : <<manipulate>>
+
+package "Module_2_FamilyGroup" {
+  package "View " {
+    class "CreateGroupUI" as CreateGroupUI_Alias <<boundary>>
+    class "ViewGroupUI" as ViewGroupUI_Alias <<boundary>>
+    class "InviteMemberUI" as InviteMemberUI_Alias <<boundary>>
+    class "JoinGroupUI" as JoinGroupUI_Alias <<boundary>>
+    class "ManageRoleUI" as ManageRoleUI_Alias <<boundary>>
+    class "RemoveMemberUI" as RemoveMemberUI_Alias <<boundary>>
+    class "LeaveGroupUI" as LeaveGroupUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "CreateGroupController" as CreateGroupController_Alias <<control>>
+    class "ViewGroupController" as ViewGroupController_Alias <<control>>
+    class "InviteController" as InviteController_Alias <<control>>
+    class "JoinGroupController" as JoinGroupController_Alias <<control>>
+    class "RoleController" as RoleController_Alias <<control>>
+    class "MemberController" as MemberController_Alias <<control>>
+    class "LeaveGroupController" as LeaveGroupController_Alias <<control>>
+  }
+  package "Model " {
+    class "FamilyDB" as FamilyDB_Alias <<entity>>
+  }
+}
+
+CreateGroupUI_Alias "1" ..> "1" CreateGroupController_Alias : <<invoke>>
+CreateGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+ViewGroupUI_Alias "1" ..> "1" ViewGroupController_Alias : <<invoke>>
+ViewGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+InviteMemberUI_Alias "1" ..> "1" InviteController_Alias : <<invoke>>
+InviteController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+JoinGroupUI_Alias "1" ..> "1" JoinGroupController_Alias : <<invoke>>
+JoinGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+ManageRoleUI_Alias "1" ..> "1" RoleController_Alias : <<invoke>>
+RoleController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+RemoveMemberUI_Alias "1" ..> "1" MemberController_Alias : <<invoke>>
+MemberController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+LeaveGroupUI_Alias "1" ..> "1" LeaveGroupController_Alias : <<invoke>>
+LeaveGroupController_Alias "1" --> "0..*" FamilyDB_Alias : <<manipulate>>
+
+package "Module_3_ShoppingList" {
+  package "View " {
+    class "CreateShoppingListUI" as CreateShoppingListUI_Alias <<boundary>>
+    class "ManageListUI" as ManageListUI_Alias <<boundary>>
+    class "AddShoppingItemUI" as AddShoppingItemUI_Alias <<boundary>>
+    class "UpdateItemUI" as UpdateItemUI_Alias <<boundary>>
+    class "MarkItemBoughtUI" as MarkItemBoughtUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "CreateListController" as CreateListController_Alias <<control>>
+    class "ManageListController" as ManageListController_Alias <<control>>
+    class "ShoppingItemController" as ShoppingItemController_Alias <<control>>
+    class "PantryController" as PantryController_Alias <<control>>
+  }
+  package "Model " {
+    class "ShoppingDB" as ShoppingDB_Alias <<entity>>
+    class "PantryDB" as PantryDB_Alias <<entity>>
+  }
+}
+
+CreateShoppingListUI_Alias "1" ..> "1" CreateListController_Alias : <<invoke>>
+CreateListController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+ManageListUI_Alias "1" ..> "1" ManageListController_Alias : <<invoke>>
+ManageListController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+AddShoppingItemUI_Alias "1" ..> "1" ShoppingItemController_Alias : <<invoke>>
+ShoppingItemController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+UpdateItemUI_Alias "1" ..> "1" ShoppingItemController_Alias : <<invoke>>
+MarkItemBoughtUI_Alias "1" ..> "1" ShoppingItemController_Alias : <<invoke>>
+PantryController_Alias "1" --> "1" ShoppingItemController_Alias : <<associate>>
+PantryController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+
+package "Module_4_Pantry" {
+  package "View " {
+    class "ViewPantryUI" as ViewPantryUI_Alias <<boundary>>
+    class "AddFoodUI" as AddFoodUI_Alias <<boundary>>
+    class "UpdateFoodUI" as UpdateFoodUI_Alias <<boundary>>
+    class "RemoveFoodUI" as RemoveFoodUI_Alias <<boundary>>
+    class "MealPlanUI" as MealPlanUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "PantrySearchController" as PantrySearchController_Alias <<control>>
+    class "FoodManagementController" as FoodManagementController_Alias <<control>>
+    class "MealController" as MealController_Alias <<control>>
+    class "PantryController" as PantryController_Alias <<control>>
+    class "NotificationController" as NotificationController_Alias <<control>>
+    class "NotificationService" as NotificationService_Alias <<control>>
+  }
+  package "Model " {
+    class "PantryDB" as PantryDB_Alias <<entity>>
+  }
+}
+
+ViewPantryUI_Alias "1" ..> "1" PantrySearchController_Alias : <<invoke>>
+PantrySearchController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+AddFoodUI_Alias "1" ..> "1" FoodManagementController_Alias : <<invoke>>
+FoodManagementController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+UpdateFoodUI_Alias "1" ..> "1" FoodManagementController_Alias : <<invoke>>
+RemoveFoodUI_Alias "1" ..> "1" FoodManagementController_Alias : <<invoke>>
+MealPlanUI_Alias "1" ..> "1" MealController_Alias : <<invoke>>
+MealController_Alias "1" --> "1" PantryController_Alias : <<associate>>
+PantryController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+NotificationController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+NotificationController_Alias "1" --> "1" NotificationService_Alias : <<associate>>
+
+package "Module_5_MealPlanner" {
+  package "View " {
+    class "ViewMealPlanUI" as ViewMealPlanUI_Alias <<boundary>>
+    class "ManageMealSessionUI" as ManageMealSessionUI_Alias <<boundary>>
+    class "RemoveMealUI" as RemoveMealUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "MealPlanController" as MealPlanController_Alias <<control>>
+    class "MealSessionController" as MealSessionController_Alias <<control>>
+  }
+  package "Model " {
+    class "MealPlanDB" as MealPlanDB_Alias <<entity>>
+  }
+}
+
+ViewMealPlanUI_Alias "1" ..> "1" MealPlanController_Alias : <<invoke>>
+MealPlanController_Alias "1" --> "0..*" MealPlanDB_Alias : <<manipulate>>
+ManageMealSessionUI_Alias "1" ..> "1" MealSessionController_Alias : <<invoke>>
+MealSessionController_Alias "1" --> "0..*" MealPlanDB_Alias : <<manipulate>>
+RemoveMealUI_Alias "1" ..> "1" MealSessionController_Alias : <<invoke>>
+
+package "Module_6_AI_Recipes" {
+  package "View " {
+    class "SuggestRecipeUI" as SuggestRecipeUI_Alias <<boundary>>
+    class "SearchRecipeUI" as SearchRecipeUI_Alias <<boundary>>
+    class "BookmarkRecipeUI" as BookmarkRecipeUI_Alias <<boundary>>
+    class "MissingIngredientUI" as MissingIngredientUI_Alias <<boundary>>
+    class "AIChatUI" as AIChatUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "AISuggestionController" as AISuggestionController_Alias <<control>>
+    class "AIService" as AIService_Alias <<control>>
+    class "RecipeSearchController" as RecipeSearchController_Alias <<control>>
+    class "BookmarkController" as BookmarkController_Alias <<control>>
+    class "ShoppingIntegrationController" as ShoppingIntegrationController_Alias <<control>>
+    class "ShoppingController" as ShoppingController_Alias <<control>>
+    class "ChatController" as ChatController_Alias <<control>>
+  }
+  package "Model " {
+    class "PantryDB" as PantryDB_Alias <<entity>>
+    class "RecipeDB" as RecipeDB_Alias <<entity>>
+    class "ShoppingDB" as ShoppingDB_Alias <<entity>>
+  }
+}
+
+SuggestRecipeUI_Alias "1" ..> "1" AISuggestionController_Alias : <<invoke>>
+AISuggestionController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+AIService_Alias "1" --> "1" AISuggestionController_Alias : <<associate>>
+SearchRecipeUI_Alias "1" ..> "1" RecipeSearchController_Alias : <<invoke>>
+RecipeSearchController_Alias "1" --> "0..*" RecipeDB_Alias : <<manipulate>>
+BookmarkRecipeUI_Alias "1" ..> "1" BookmarkController_Alias : <<invoke>>
+BookmarkController_Alias "1" --> "0..*" RecipeDB_Alias : <<manipulate>>
+MissingIngredientUI_Alias "1" ..> "1" ShoppingIntegrationController_Alias : <<invoke>>
+ShoppingIntegrationController_Alias "1" --> "0..*" PantryDB_Alias : <<manipulate>>
+ShoppingController_Alias "1" --> "1" ShoppingIntegrationController_Alias : <<associate>>
+ShoppingController_Alias "1" --> "0..*" ShoppingDB_Alias : <<manipulate>>
+AIChatUI_Alias "1" ..> "1" ChatController_Alias : <<invoke>>
+AIService_Alias "1" --> "1" ChatController_Alias : <<associate>>
+
+package "Module_7_Statistics" {
+  package "View " {
+    class "StatisticsDashboardUI" as StatisticsDashboardUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "StatisticsController" as StatisticsController_Alias <<control>>
+  }
+  package "Model " {
+    class "StatDB" as StatDB_Alias <<entity>>
+  }
+}
+
+StatisticsDashboardUI_Alias "1" ..> "1" StatisticsController_Alias : <<invoke>>
+StatisticsController_Alias "1" --> "0..*" StatDB_Alias : <<manipulate>>
+
+package "Module_8_Admin" {
+  package "View " {
+    class "UserManagementUI" as UserManagementUI_Alias <<boundary>>
+    class "UserStatusUI" as UserStatusUI_Alias <<boundary>>
+    class "MasterDataUI" as MasterDataUI_Alias <<boundary>>
+    class "RecipeApprovalUI" as RecipeApprovalUI_Alias <<boundary>>
+    class "AdminDashboardUI" as AdminDashboardUI_Alias <<boundary>>
+  }
+  package "Controller " {
+    class "UserManagementController" as UserManagementController_Alias <<control>>
+    class "MasterDataController" as MasterDataController_Alias <<control>>
+    class "RecipeApprovalController" as RecipeApprovalController_Alias <<control>>
+    class "AdminDashboardController" as AdminDashboardController_Alias <<control>>
+  }
+  package "Model " {
+    class "UserDB" as UserDB_Alias <<entity>>
+    class "MasterDataDB" as MasterDataDB_Alias <<entity>>
+    class "RecipeDB" as RecipeDB_Alias <<entity>>
+    class "SystemDB" as SystemDB_Alias <<entity>>
+  }
+}
+
+UserManagementUI_Alias "1" ..> "1" UserManagementController_Alias : <<invoke>>
+UserManagementController_Alias "1" --> "0..*" UserDB_Alias : <<manipulate>>
+UserStatusUI_Alias "1" ..> "1" UserManagementController_Alias : <<invoke>>
+MasterDataUI_Alias "1" ..> "1" MasterDataController_Alias : <<invoke>>
+MasterDataController_Alias "1" --> "0..*" MasterDataDB_Alias : <<manipulate>>
+RecipeApprovalUI_Alias "1" ..> "1" RecipeApprovalController_Alias : <<invoke>>
+RecipeApprovalController_Alias "1" --> "0..*" RecipeDB_Alias : <<manipulate>>
+AdminDashboardUI_Alias "1" ..> "1" AdminDashboardController_Alias : <<invoke>>
+AdminDashboardController_Alias "1" --> "0..*" SystemDB_Alias : <<manipulate>>
+
+' --- Cross Module Relationships (Structural Entities) ---
+FamilyDB_Alias "1" o-- "1..*" UserAccount_Alias : <<contains>>
+ShoppingDB_Alias "1" *-- "0..*" ShoppingItemDB_Alias : <<composed of>>
+RecipeDB_Alias "1" *-- "1..*" RecipeIngredientDB_Alias : <<composed of>>
+MealPlanDB_Alias "0..*" --> "1" RecipeDB_Alias : <<references>>
+MealPlanDB_Alias "0..*" --> "1" FamilyDB_Alias : <<belongs to>>
+PantryDB_Alias "1" o-- "0..*" FoodItem_Alias : <<contains>>
+
+@enduml

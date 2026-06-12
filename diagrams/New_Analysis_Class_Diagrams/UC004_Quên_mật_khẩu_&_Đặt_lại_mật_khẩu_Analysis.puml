@@ -1,0 +1,75 @@
+@startuml
+title UC004 Quên mật khẩu & Đặt lại mật khẩu (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + Submit Email() : void
+          + Success Msg() : void
+    }
+    class ResetView <<View>> {
+        + Show OTP Input() : void
+          + Submit OTP & New Password() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + requestReset(email) : void
+          + resetPassword(otp, newPass) : void
+    }
+    class EmailApiClient <<API Client>> {
+        + sendOTP() : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + requestReset(email) : void
+          + resetPassword(otp, newPass) : void
+    }
+    class EmailController <<Controller>> {
+        + sendOTP() : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + requestReset(email) : void
+          + resetPassword(otp, newPass) : void
+    }
+    class EmailService <<Service>> {
+        + sendOTP() : void
+    }
+}
+
+package "Database Entity" {
+    class UserEntity <<Entity>> {
+  - user_id: INT
+  - email: VARCHAR
+  - phone: VARCHAR
+  - password_hash: VARCHAR
+  - role: VARCHAR
+        + checkExists() : void
+          + updatePassword() : void
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+View --> EmailApiClient : "calls"
+ResetView --> ApiClient : "calls"
+ResetView --> EmailApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+EmailApiClient ..> EmailController : "HTTP REST"
+Controller --> Service : "injects"
+EmailController --> EmailService : "injects"
+Service ..> UserEntity : "CRUD"
+EmailService ..> UserEntity : "CRUD"
+
+@enduml

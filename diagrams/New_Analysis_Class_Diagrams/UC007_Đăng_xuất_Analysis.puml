@@ -1,0 +1,47 @@
+@startuml
+title UC007 Đăng xuất (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + Bấm Đăng xuất() : void
+          + Redirect to Login() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + logout() : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + logout() : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + logout() : void
+    }
+}
+
+package "Database Entity" {
+    class SessionEntity <<Entity>> {
+        + invalidateToken() : void
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> SessionEntity : "CRUD"
+
+@enduml

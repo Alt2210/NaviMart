@@ -1,0 +1,47 @@
+@startuml
+title UC034 Xem thống kê tiêu dùng và lãng phí (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectDateRange() : void
+          + renderChart() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + getStatistics(dateRange: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + getStatistics(dateRange: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + getStatistics(dateRange: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + queryUsageAndWasteData(dateRange: Data) : Data
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

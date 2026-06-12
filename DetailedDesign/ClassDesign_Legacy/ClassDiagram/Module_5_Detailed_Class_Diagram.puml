@@ -1,0 +1,78 @@
+@startuml
+title Detailed Class Diagram - Module_5_MealPlanner
+
+' Cấu hình giao diện
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "View" {
+  abstract class "BaseUI" as BaseUI <<boundary>> {
+    - isRendered: Boolean
+    + render(): void
+  }
+  class "ViewMealPlanUI" as ViewMealPlanUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectDateRange(): void
+    + displayMealPlan(): void
+  }
+  class "ManageMealSessionUI" as ManageMealSessionUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + assignMealToSession(): void
+    + displayResult(): void
+  }
+  class "RemoveMealUI" as RemoveMealUI_Alias <<boundary>> {
+    - screenTitle: String
+    ==
+    + selectMealToRemove(): void
+    + displayResult(): void
+  }
+}
+
+package "Controller" {
+  interface "IController" as IController <<control>> {
+    + execute(): void
+  }
+  class "MealPlanController" as MealPlanController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + getMealPlan(dateRange: Data): void
+    + createSession(date: Date, type: String): void
+  }
+  class "MealSessionController" as MealSessionController_Alias <<control>> {
+    - isActive: Boolean
+    ==
+    + addOrUpdateMeal(sessionId: String, recipeId: String): void
+    + removeMeal(sessionId: String, mealId: String): void
+  }
+}
+
+package "Model" {
+  abstract class "BaseEntity" as BaseEntity <<entity>> {
+    - id: String
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    + save(): Boolean
+  }
+  class "MealPlanDB" as MealPlanDB_Alias <<entity>> {
+    + querySessions(dateRange: Data): List
+    + insertSession(date: Date, type: String): String
+    + saveMealToSession(sessionId: String, recipeId: String): Boolean
+    + deleteMeal(sessionId: String, mealId: String): Boolean
+  }
+}
+
+ViewMealPlanUI_Alias "1" ..> "1" MealPlanController_Alias : <<invoke>>
+MealPlanController_Alias "1" --> "0..*" MealPlanDB_Alias : <<manipulate>>
+ManageMealSessionUI_Alias "1" ..> "1" MealSessionController_Alias : <<invoke>>
+MealSessionController_Alias "1" --> "0..*" MealPlanDB_Alias : <<manipulate>>
+RemoveMealUI_Alias "1" ..> "1" MealSessionController_Alias : <<invoke>>
+BaseUI <|-- ViewMealPlanUI_Alias : <<extends>>
+IController <|.. MealPlanController_Alias : <<implements>>
+BaseEntity <|-- MealPlanDB_Alias : <<extends>>
+BaseUI <|-- ManageMealSessionUI_Alias : <<extends>>
+IController <|.. MealSessionController_Alias : <<implements>>
+BaseUI <|-- RemoveMealUI_Alias : <<extends>>
+
+@enduml

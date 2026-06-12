@@ -1,0 +1,52 @@
+@startuml
+title UC030 Tìm kiếm và Xem chi tiết công thức (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + searchRecipes() : void
+          + viewRecipeDetail() : void
+          + displayDetails() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + searchRecipes(keyword: String) : void
+          + getRecipeDetail(recipeId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + searchRecipes(keyword: String) : void
+          + getRecipeDetail(recipeId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + searchRecipes(keyword: String) : void
+          + getRecipeDetail(recipeId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + queryRecipes(keyword: String) : List
+          + queryRecipeById(recipeId: String) : Data
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

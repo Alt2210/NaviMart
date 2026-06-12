@@ -1,0 +1,47 @@
+@startuml
+title UC028 Xóa món ăn khỏi lịch trình (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectMealToRemove() : void
+          + displayResult() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + removeMeal(sessionId: String, mealId: String) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + removeMeal(sessionId: String, mealId: String) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + removeMeal(sessionId: String, mealId: String) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + deleteMeal(sessionId: String, mealId: String) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml

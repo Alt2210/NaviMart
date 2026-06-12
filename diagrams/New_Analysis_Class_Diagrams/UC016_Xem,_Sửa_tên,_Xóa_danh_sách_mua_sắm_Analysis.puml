@@ -1,0 +1,47 @@
+@startuml
+title UC016 Xem, Sửa tên, Xóa danh sách mua sắm (Detailed Analysis Class)
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+package "View (React Component)" {
+    class View <<View>> {
+        + selectAction() : void
+          + displayUpdate() : void
+    }
+}
+
+package "API Client" {
+    class ApiClient <<API Client>> {
+        + handleListAction(action: String, listId: String, data: Data) : void
+    }
+}
+
+package "Backend Controller" {
+    class Controller <<Controller>> {
+        + handleListAction(action: String, listId: String, data: Data) : void
+    }
+}
+
+package "Backend Service" {
+    class Service <<Service>> {
+        + handleListAction(action: String, listId: String, data: Data) : void
+    }
+}
+
+package "Database Entity" {
+    class Entity <<Entity>> {
+        + executeDbQuery(action: String, listId: String, data: Data) : Boolean
+    }
+}
+
+' --- Relationships ---
+View --> ApiClient : "calls"
+ApiClient ..> Controller : "HTTP REST"
+Controller --> Service : "injects"
+Service ..> Entity : "CRUD"
+
+@enduml
