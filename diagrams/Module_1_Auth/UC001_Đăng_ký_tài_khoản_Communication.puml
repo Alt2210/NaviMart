@@ -1,6 +1,28 @@
 @startuml
 title Communication Diagram - UC001 Đăng ký tài khoản
 
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
 allow_mixing
 actor "Guest" as Actor
 boundary "RegisterUI" as RegisterUI
@@ -9,12 +31,19 @@ control "AuthController" as AuthController
 control "EmailService" as EmailService
 entity "UserAccount" as UserDB
 
-Actor -down-> RegisterUI : 1: Nhập thông tin & Submit
-RegisterUI -right-> AuthController : 2: register(name, email, pass)
-AuthController -down-> UserDB : 3: checkExists()\n4: savePending()\n8: activateAccount()
-AuthController -left-> EmailService : 5: sendOTP()
-AuthController -up-> OTPUI : 6: Show OTP screen
-Actor -right-> OTPUI : 7: Nhập OTP
-OTPUI -right-> AuthController : 7.1: verifyOTP()
-AuthController -up-> RegisterUI : 9: Success & Redirect
+' BÍ QUYẾT 2: Phân bổ lại luồng đi cho hợp lý
+' Tầng 1: Actor tương tác với UI
+Actor -right-> RegisterUI : "1: Nhập thông tin & Submit"
+Actor -down-> OTPUI : "7: Nhập OTP"
+
+' Tầng 2: UI truyền xuống Controller
+RegisterUI -down-> AuthController : "2: register(name, email, pass)"
+OTPUI -right-> AuthController : "7.1: verifyOTP()"
+
+' BÍ QUYẾT 3: Thêm khoảng trắng vào cuối chuỗi này để chữ lệch sang trái, né đường kẻ đi xuống
+AuthController -up-> RegisterUI : "9: Success & Redirect          "
+    
+' Tầng 3: Controller gọi DB và Service
+AuthController -right-> EmailService : "5: sendOTP()"
+AuthController -down-> UserDB : "3: checkExists()\n4: savePending()\n8: activateAccount()"
 @enduml

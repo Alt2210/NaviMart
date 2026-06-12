@@ -1,6 +1,28 @@
 @startuml
 title Communication Diagram - UC003 Đăng nhập mạng xã hội
 
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
 allow_mixing
 actor "Guest" as Actor
 boundary "LoginUI" as UI
@@ -8,10 +30,10 @@ control "OAuthProvider" as Provider
 control "AuthController" as Controller
 entity "UserAccount" as UserDB
 
-Actor -right-> UI : 1: Select OAuth
-UI -right-> Provider : 2: Request Auth
-Actor -down-> Provider : 3: Grant Permission
-Provider -down-> Controller : 4: Callback with Data
-Controller -left-> UserDB : 5: Check/Create User
-Controller -up-> UI : 6: Success Token
+Actor -right--- UI : " ▶ 1: Select OAuth "
+UI -right--- Provider : " ▶ 2: Request Auth "
+Actor -down- Provider : " ▼ 3: Grant Permission "
+Provider -down- Controller : " ▼ 4: Callback with Data "
+Controller -left---- UserDB : " ◀ 5: Check/Create User "
+Controller -up- UI : " ▲ 6: Success Token "
 @enduml

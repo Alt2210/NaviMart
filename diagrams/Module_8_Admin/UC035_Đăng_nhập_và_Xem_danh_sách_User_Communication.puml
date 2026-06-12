@@ -1,14 +1,35 @@
 @startuml
 title Communication Diagram - UC035 AdminLoginAndViewUsers
 
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
 allow_mixing
 actor "User" as Actor
 boundary "AdminLoginAndViewUsersUI" as UI
 control "AdminLoginAndViewUsersController" as Controller
 entity "AdminLoginAndViewUsersDB" as Entity
 
-Actor -right-> UI : 1: Interact
-UI -right-> Controller : 2: process()
-Controller -down-> Entity : 3: dbAction()
-Controller -up-> UI : 4: returnData
+Actor -right--- UI : " ▶ 1: Interact "
+UI -right---- Controller : " ▶ 2: process() \n ◀ 4: returnData "
+Controller -down- Entity : " ▼ 3: dbAction() "
 @enduml

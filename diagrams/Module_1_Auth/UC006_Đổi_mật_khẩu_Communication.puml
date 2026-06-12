@@ -1,14 +1,35 @@
 @startuml
 title Communication Diagram - UC006 Đổi mật khẩu
 
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
 allow_mixing
 actor "User" as Actor
 boundary "ChangePassUI" as UI
 control "AuthController" as Controller
 entity "UserAccount" as UserDB
 
-Actor -right-> UI : 1: Submit Passwords
-UI -right-> Controller : 2: changePass()
-Controller -down-> UserDB : 3: getHash() & updateHash()
-Controller -up-> UI : 4: Return Result
+Actor -right---- UI : " ▶ 1: Submit Passwords "
+UI -right----- Controller : " ▶ 2: changePass() \n ◀ 4: Return Result "
+Controller -down- UserDB : " ▼ 3: getHash() & updateHash() "
 @enduml

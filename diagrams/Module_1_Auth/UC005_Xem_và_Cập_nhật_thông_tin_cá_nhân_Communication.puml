@@ -1,14 +1,35 @@
 @startuml
 title Communication Diagram - UC005 Cập nhật thông tin cá nhân
 
+' Cấu hình nét thẳng và tắt đổ bóng
+skinparam linetype ortho
+skinparam shadowing false
+
+' Tăng khoảng cách mặc định lên cao để tạo không gian rộng rãi
+skinparam nodesep 250
+skinparam ranksep 200
+skinparam defaultTextAlignment center
+
+' Xóa bỏ vòng tròn phân loại (E) và làm sạch bên trong khối
+hide circle
+hide empty members
+
+' Cấu hình đồng bộ màu vàng
+skinparam {
+    ActorBackgroundColor #FFFFCC
+    BoundaryBackgroundColor #FFFFCC
+    ControlBackgroundColor #FFFFCC
+    EntityBackgroundColor #FFFFCC
+    ClassBackgroundColor #FFFFCC
+}
+
 allow_mixing
 actor "User" as Actor
 boundary "ProfileUI" as UI
 control "ProfileController" as Controller
 entity "UserProfile" as ProfileDB
 
-Actor -right-> UI : 1: Sửa & Lưu
-UI -right-> Controller : 2: updateProfile()
-Controller -down-> ProfileDB : 3: update(data)
-Controller -up-> UI : 4: Return status
+Actor -right--- UI : " ▶ 1: Sửa & Lưu "
+UI -right----- Controller : " ▶ 2: updateProfile() \n ◀ 4: Return status "
+Controller -down- ProfileDB : " ▼ 3: update(data) "
 @enduml
