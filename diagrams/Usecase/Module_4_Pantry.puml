@@ -1,0 +1,23 @@
+@startuml
+left to right direction
+
+actor "Người dùng" as User
+actor "Hệ thống" as System
+
+rectangle "Quản lý Tủ lạnh & Kho thực phẩm" {
+  usecase "Xem và Tìm kiếm thực phẩm" as UC020
+  usecase "Thêm thực phẩm thủ công" as UC021
+  usecase "Cập nhật thông tin thực phẩm" as UC022
+  usecase "Xóa/Thanh lý thực phẩm" as UC023
+  usecase "Tự động trừ khi nấu ăn" as UC024
+  usecase "Thông báo sắp hết hạn" as UC025
+}
+
+User -- UC020
+User -- UC021
+User -- UC022
+User -- UC023
+
+System -- UC024
+System -- UC025
+@enduml

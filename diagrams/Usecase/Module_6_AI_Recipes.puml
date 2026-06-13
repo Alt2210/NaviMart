@@ -1,0 +1,23 @@
+@startuml
+left to right direction
+
+actor "Người dùng" as User
+actor "Hệ thống AI" as SystemAI
+
+rectangle "Gợi ý thông minh & Công thức nấu ăn" {
+  usecase "Gợi ý món ăn theo Pantry" as UC029
+  usecase "Tìm & Xem công thức" as UC030
+  usecase "Lưu/Bỏ lưu công thức" as UC031
+  usecase "Thêm nguyên liệu thiếu vào List" as UC032
+  usecase "Chat tương tác AI Chef" as UC033
+}
+
+User -- UC029
+User -- UC030
+User -- UC031
+User -- UC032
+User -- UC033
+
+SystemAI -- UC029
+SystemAI -- UC033
+@enduml

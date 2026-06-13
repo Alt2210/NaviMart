@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Khách (Guest)" as Guest
+actor "Người dùng (User)" as User
+actor "Quản trị viên (Admin)" as Admin
+actor "Hệ thống / AI" as System
+
+rectangle "Hệ thống NaviMart" {
+  usecase "Phân hệ Xác thực & Quản lý Tài khoản" as UC_Auth
+  usecase "Phân hệ Quản lý Nhóm gia đình" as UC_Family
+  usecase "Phân hệ Quản lý Danh sách mua sắm" as UC_Shopping
+  usecase "Phân hệ Quản lý Tủ lạnh (Pantry)" as UC_Pantry
+  usecase "Phân hệ Lên kế hoạch bữa ăn" as UC_Meal
+  usecase "Phân hệ Gợi ý & Công thức nấu ăn" as UC_AI
+  usecase "Phân hệ Báo cáo & Thống kê" as UC_Report
+  usecase "Phân hệ Quản trị Hệ thống" as UC_AdminSystem
+}
+
+Guest -- UC_Auth
+User -- UC_Auth
+User -- UC_Family
+User -- UC_Shopping
+User -- UC_Pantry
+User -- UC_Meal
+User -- UC_AI
+User -- UC_Report
+
+System -- UC_Pantry
+System -- UC_AI
+
+Admin -- UC_AdminSystem
+Admin -- UC_Auth
+@enduml
