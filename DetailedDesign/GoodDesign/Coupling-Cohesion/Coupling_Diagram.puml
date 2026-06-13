@@ -7,7 +7,7 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-note as CouplingNote
+note top of "Hệ thống NaviMart"
   **Data Coupling (Mức độ Coupling tốt nhất)**
   Các module giao tiếp với nhau bằng cách truyền
   các tham số đơn giản hoặc Data Transfer Objects (DTO),

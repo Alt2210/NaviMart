@@ -1,7 +1,7 @@
-# Đánh giá nguyên lý SOLID - Module 7 (Reports)
+# Đánh giá nguyên lý SOLID - Module 7 (Statistics)
 
 ## 1. Single Responsibility Principle (SRP)
-- Việc tính toán số liệu được giao cho `ReportsService`, trong khi việc render biểu đồ (Chart) được giao riêng cho `StatsDashboard`. Nếu muốn đổi thư viện vẽ Chart, ta chỉ đổi View mà không đụng tới Service.
+- Việc tính toán số liệu được giao cho `ReportService`, trong khi việc render biểu đồ (Chart) được giao riêng cho `DashboardView`. Nếu muốn đổi thư viện vẽ Chart, ta chỉ đổi View mà không đụng tới Service.
 
 ## 2. Open-Closed Principle (OCP)
 - Có thể thêm các loại báo cáo mới (ví dụ "Báo cáo xu hướng nấu ăn") bằng cách tạo class mới `TrendReportStrategy` kế thừa `IReportStrategy` mà không cần sửa `ReportService`.

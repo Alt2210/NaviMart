@@ -7,7 +7,7 @@ skinparam class {
     BorderColor #2C3E50
 }
 
-note as CohesionNote
+note top of "Module Auth"
   **Functional Cohesion (Mức độ Cohesion tốt nhất)**
   Tất cả các thành phần trong module đều hướng tới
   và phục vụ cho một chức năng/trách nhiệm duy nhất:
