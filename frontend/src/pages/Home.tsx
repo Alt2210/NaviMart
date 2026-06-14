@@ -65,7 +65,7 @@ export default function Home() {
   const listItems = activeList?.items.slice(0, 5) ?? [];
 
   return (
-    <div className="bg-background text-on-background h-screen overflow-hidden flex">
+    <div className="bg-background text-on-background h-screen overflow-hidden flex font-body-md antialiased">
       <SideNav />
       <div className="flex-1 flex flex-col md:ml-64 w-full h-full relative">
         {/* TopNavBar (Web) */}

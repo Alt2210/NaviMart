@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html,
+  body,
+  #root {
+    font-family: "Be Vietnam Pro", sans-serif;
+  }
+}
+
 @layer utilities {
   .splash-enter {
     animation: splashFadeIn 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
