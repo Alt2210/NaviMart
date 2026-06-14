@@ -11,9 +11,22 @@ import { Server, Socket } from 'socket.io';
 import { JwtPayload } from '../auth/types/authenticated-user.type';
 import { RealtimeService } from './realtime.service';
 
+const DEFAULT_SOCKET_ORIGINS = [
+  'http://localhost:5173',
+  'https://navi-mart-iota.vercel.app',
+];
+
+const socketOrigins =
+  [
+    ...DEFAULT_SOCKET_ORIGINS,
+    ...(process.env.CORS_ORIGIN?.split(',') ?? []),
+  ]
+    .map((origin) => origin.trim())
+    .filter((origin, index, origins) => origin && origins.indexOf(origin) === index);
+
 @WebSocketGateway({
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:5173'],
+    origin: socketOrigins,
     credentials: true,
   },
 })

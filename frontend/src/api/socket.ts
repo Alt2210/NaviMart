@@ -29,6 +29,7 @@ export function connectSocket(): Socket | null {
     autoConnect: true,
     reconnection: true,
     reconnectionDelay: 2000,
+    transports: ['websocket'],
   });
 
   // Re-read the (possibly refreshed) access token on every reconnect attempt.
