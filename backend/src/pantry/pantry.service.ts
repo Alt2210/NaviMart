@@ -198,7 +198,6 @@ export class PantryService {
     dto: ConsumePantryItemDto,
   ) {
     const item = await this.findItemForUser(user, itemId);
-    const previousQuantity = item.quantity;
 
     if (item.status !== 'active') {
       throw new BadRequestException('Only active pantry items can be consumed');
@@ -207,30 +206,62 @@ export class PantryService {
       throw new BadRequestException('Consumed quantity exceeds current stock');
     }
 
-    item.quantity = Number((item.quantity - dto.quantity).toFixed(3));
-    item.note = dto.note ?? item.note;
+    // Deduct atomically: the `quantity: { $gte }` guard ensures that under
+    // concurrent consumes only the requests the stock can actually cover
+    // succeed — preventing the read-modify-write oversell race. A null result
+    // means another request drained the stock first.
+    const updated = await this.pantryItemModel
+      .findOneAndUpdate(
+        {
+          _id: item._id,
+          familyId: item.familyId,
+          status: 'active',
+          quantity: { $gte: dto.quantity },
+        },
+        [
+          {
+            $set: {
+              quantity: {
+                $round: [{ $subtract: ['$quantity', dto.quantity] }, 3],
+              },
+              ...(dto.note !== undefined ? { note: dto.note } : {}),
+            },
+          },
+          {
+            $set: {
+              status: {
+                $cond: [{ $eq: ['$quantity', 0] }, 'used_up', '$status'],
+              },
+              consumedAt: {
+                $cond: [{ $eq: ['$quantity', 0] }, '$$NOW', '$consumedAt'],
+              },
+            },
+          },
+        ],
+        { new: true, updatePipeline: true },
+      )
+      .exec();
 
-    if (item.quantity === 0) {
-      item.status = 'used_up';
-      item.consumedAt = new Date();
+    if (!updated) {
+      throw new BadRequestException('Consumed quantity exceeds current stock');
     }
 
-    await item.save();
+    const previousQuantity = Number((updated.quantity + dto.quantity).toFixed(3));
     await this.inventoryEventsService.create({
-      familyId: item.familyId,
-      pantryItemId: item._id,
-      foodId: item.foodId,
-      categoryId: item.categoryId,
-      name: item.name,
+      familyId: updated.familyId,
+      pantryItemId: updated._id,
+      foodId: updated.foodId,
+      categoryId: updated.categoryId,
+      name: updated.name,
       quantityDelta: -dto.quantity,
-      quantityAfter: item.quantity,
-      unit: item.unit,
+      quantityAfter: updated.quantity,
+      unit: updated.unit,
       type: 'consumed',
       source: 'manual',
       createdBy: new Types.ObjectId(user.userId),
       note: dto.note ?? `Consumed from ${previousQuantity}`,
     });
-    return this.toPantryItemResponse(item);
+    return this.toPantryItemResponse(updated);
   }
 
   async markWasted(user: AuthenticatedUser, itemId: string) {

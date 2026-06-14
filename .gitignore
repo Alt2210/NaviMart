@@ -16,10 +16,11 @@ build/
 logs/
 *.log
 npm-debug.log*
-
 # OS / editor
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+TestingReport.pdf
+
