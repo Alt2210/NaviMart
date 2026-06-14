@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
   Length,
   Min,
   ValidateIf,
@@ -62,4 +63,9 @@ export class CreatePantryItemDto {
   @IsString()
   @Length(1, 300)
   note?: string;
+
+  @ApiPropertyOptional({ example: 'https://res.cloudinary.com/demo/image/upload/item.jpg' })
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
 }

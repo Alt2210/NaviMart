@@ -58,6 +58,7 @@ export class PantryService {
       source: dto.source ?? 'manual',
       createdBy: new Types.ObjectId(user.userId),
       note: dto.note,
+      imageUrl: dto.imageUrl,
     });
 
     await this.inventoryEventsService.create({
@@ -130,6 +131,9 @@ export class PantryService {
     }
     if (dto.note !== undefined) {
       item.note = dto.note;
+    }
+    if (dto.imageUrl !== undefined) {
+      item.imageUrl = dto.imageUrl;
     }
 
     await item.save();
@@ -414,6 +418,7 @@ export class PantryService {
       source: item.source,
       createdBy: item.createdBy.toString(),
       note: item.note,
+      imageUrl: item.imageUrl,
       consumedAt: item.consumedAt,
       wastedAt: item.wastedAt,
     };

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import NotificationDropdown from '../components/NotificationDropdown';
 import SideNav from '../components/SideNav';
 import { CardGridSkeleton } from '../components/Skeleton';
 import { pantryApi } from '../api';
@@ -161,9 +162,7 @@ export default function PantryDashboard() {
               <span className="font-bold text-primary text-sm">Kho thực phẩm</span>
             </div>
           <div className="flex gap-4">
-            <Link to="/notifications" className="text-on-surface-variant font-medium hover:bg-surface-container-high dark:hover:bg-surface-container transition-colors p-2 rounded-full flex items-center justify-center active:opacity-80 active:scale-95 duration-150">
-              <span className="material-symbols-outlined">notifications</span>
-            </Link>
+            <NotificationDropdown />
               <Link to="/profile" className="text-on-surface-variant font-medium hover:bg-surface-container-high dark:hover:bg-surface-container transition-colors p-2 rounded-full flex items-center justify-center active:opacity-80 active:scale-95 duration-150">
                 <span className="material-symbols-outlined">account_circle</span>
               </Link>

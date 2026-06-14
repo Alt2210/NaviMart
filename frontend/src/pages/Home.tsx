@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import NotificationDropdown from '../components/NotificationDropdown';
 import SideNav from '../components/SideNav';
 import { pantryApi, recipesApi, shoppingListsApi } from '../api';
 import type { PantryItem, RecipeSuggestion, ShoppingList } from '../api';
@@ -78,9 +79,7 @@ export default function Home() {
               <span className="font-bold text-primary text-sm">Trang chủ</span>
             </div>
             <div className="flex gap-4">
-              <Link to="/notifications" className="text-on-surface-variant font-medium hover:bg-surface-container-high dark:hover:bg-surface-container transition-colors p-2 rounded-full flex items-center justify-center active:opacity-80 active:scale-95 duration-150">
-                <span className="material-symbols-outlined">notifications</span>
-              </Link>
+              <NotificationDropdown />
               <Link to="/profile" className="text-on-surface-variant font-medium hover:bg-surface-container-high dark:hover:bg-surface-container transition-colors p-2 rounded-full flex items-center justify-center active:opacity-80 active:scale-95 duration-150">
                 <span className="material-symbols-outlined">account_circle</span>
               </Link>
@@ -89,8 +88,8 @@ export default function Home() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto w-full relative">
-          <div className="flex flex-col max-w-7xl mx-auto w-full px-margin-mobile py-stack-md gap-stack-md pb-[100px] md:pb-8">
+        <main className="flex-1 overflow-y-auto w-full relative flex flex-col">
+          <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full px-margin-mobile py-stack-md gap-stack-md pb-[100px] md:pb-8">
             <section className="py-4 flex justify-between items-center">
               <div>
                 <h1 className="font-headline-md text-headline-md text-primary mb-2">

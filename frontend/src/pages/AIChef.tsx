@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { aiChefApi } from '../api';
+import SideNav from '../components/SideNav';
 
 type ChatMessage = { id: number; text: string; sender: 'ai' | 'user'; time: string };
 
@@ -79,7 +80,9 @@ export default function AIChef() {
   ];
 
   return (
-    <div className="bg-surface-container-lowest text-on-surface h-screen overflow-hidden flex flex-col font-body-md antialiased relative">
+    <div className="bg-surface-container-lowest text-on-surface h-screen overflow-hidden flex font-body-md antialiased relative">
+      <SideNav />
+      <div className="flex-1 flex flex-col md:ml-64 w-full h-full relative">
       {/* Header */}
       <header className="shrink-0 bg-surface dark:bg-surface-dim border-b border-outline-variant z-40 px-margin-mobile pt-safe-top h-nav-height flex items-center justify-between shadow-sm">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors active:opacity-80">
@@ -199,6 +202,7 @@ export default function AIChef() {
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

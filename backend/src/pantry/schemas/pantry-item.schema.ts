@@ -60,6 +60,9 @@ export class PantryItem {
   @Prop({ type: String, trim: true, maxlength: 300 })
   note?: string;
 
+  @Prop({ type: String, trim: true })
+  imageUrl?: string;
+
   @Prop({ type: Date })
   consumedAt?: Date;
 

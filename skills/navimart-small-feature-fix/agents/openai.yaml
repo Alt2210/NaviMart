@@ -1,0 +1,4 @@
+interface:
+  display_name: "NaviMart Small Feature Fix"
+  short_description: "Fix small NaviMart UI/API/backend feature issues safely."
+  default_prompt: "Use this skill to make a small NaviMart feature fix that may touch frontend UI, API client types, and backend DTO/schema/service contracts while keeping changes minimal."

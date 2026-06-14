@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import NotificationDropdown from '../components/NotificationDropdown';
 import { shoppingListsApi } from '../api';
 import type { CatalogFood, ShoppingList } from '../api';
 import { onSocketEvent } from '../api/socket';
@@ -165,7 +166,7 @@ export default function ListDetail() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/notifications" className="material-symbols-outlined text-primary dark:text-primary-fixed hover:bg-surface-container-high dark:hover:bg-surface-container transition-colors rounded-full p-2">notifications</Link>
+            <NotificationDropdown />
             <Link to="/profile" className="text-on-surface-variant font-medium hover:bg-surface-container-high dark:hover:bg-surface-container transition-colors p-2 rounded-full flex items-center justify-center active:opacity-80 active:scale-95 duration-150">
               <span className="material-symbols-outlined">account_circle</span>
             </Link>

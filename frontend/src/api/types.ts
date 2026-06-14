@@ -70,6 +70,7 @@ export type PantryItem = {
   source: string;
   createdBy: string;
   note?: string;
+  imageUrl?: string;
   consumedAt?: string;
   wastedAt?: string;
 };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation as useRouterLocation, useNavigate } from 'react-router-dom';
 import { useDialog } from '../contexts/DialogContext';
-import { pantryApi } from '../api';
+import { pantryApi, uploadsApi } from '../api';
 import type { CatalogFood, StorageLocation } from '../api';
 import FoodAutocomplete from '../components/FoodAutocomplete';
 
@@ -35,6 +35,8 @@ export default function AddItem() {
   const [expiryDate, setExpiryDate] = useState('');
   const [selectedFood, setSelectedFood] = useState<CatalogFood | null>(null);
   const [saving, setSaving] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Catalog defaults: unit, storage location, shelf life and storage tips.
   const applyFood = (food: CatalogFood) => {
@@ -61,9 +63,23 @@ export default function AddItem() {
     }
   };
 
+  const handleImageUpload = async (file?: File) => {
+    if (!file || uploadingImage) return;
+    setUploadingImage(true);
+    try {
+      const image = await uploadsApi.image(file);
+      setImageUrl(image.secureUrl);
+      showAlert('Đã tải ảnh lên Cloudinary.');
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : 'Không tải được ảnh.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!itemName.trim() || saving) return;
+    if (!itemName.trim() || saving || uploadingImage) return;
     if (!expiryDate) {
       showAlert('Vui lòng chọn hạn sử dụng.');
       return;
@@ -82,6 +98,7 @@ export default function AddItem() {
         unit,
         expiryDate: new Date(expiryDate).toISOString(),
         location: LOCATION_VALUES[location] ?? 'fridge',
+        imageUrl: imageUrl || undefined,
       });
       showAlert('Đã thêm thực phẩm thành công!');
       navigate('/pantry');
@@ -103,12 +120,27 @@ export default function AddItem() {
       </header>
 
       <main className="flex-1 overflow-y-auto w-full max-w-2xl mx-auto px-margin-mobile py-stack-md pb-[90px] hide-scrollbar">
-        <div className="mb-6 flex flex-col items-center justify-center bg-surface-container-low border-2 border-dashed border-outline-variant rounded-xl p-6 cursor-pointer hover:bg-surface-container transition-colors group">
-          <div className="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-3xl">add_a_photo</span>
-          </div>
-          <span className="font-body-md text-body-md font-medium text-primary">Chụp hoặc tải ảnh lên</span>
-        </div>
+        <label className="mb-6 flex flex-col items-center justify-center bg-surface-container-low border-2 border-dashed border-outline-variant rounded-xl p-6 cursor-pointer hover:bg-surface-container transition-colors group overflow-hidden">
+          {imageUrl ? (
+            <div className="w-full aspect-video rounded-lg overflow-hidden bg-surface-container mb-3">
+              <img src={imageUrl} alt={itemName || 'Ảnh thực phẩm'} className="w-full h-full object-cover" />
+            </div>
+          ) : (
+            <div className="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-3xl">cloud_upload</span>
+            </div>
+          )}
+          <span className="font-body-md text-body-md font-medium text-primary">
+            {uploadingImage ? 'Đang tải ảnh lên...' : 'Tải ảnh lên'}
+          </span>
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            disabled={uploadingImage}
+            onChange={(e) => handleImageUpload(e.target.files?.[0])}
+          />
+        </label>
 
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-1">
@@ -207,11 +239,11 @@ export default function AddItem() {
         <div className="max-w-2xl mx-auto w-full">
           <button 
             onClick={handleSubmit} 
-            disabled={!itemName.trim()}
-            className={`w-full h-14 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 transition-all shadow-sm ${itemName.trim() ? 'bg-primary text-white hover:opacity-90 active:scale-[0.98]' : 'bg-surface-container-high text-on-surface-variant opacity-50 cursor-not-allowed'}`}
+            disabled={!itemName.trim() || uploadingImage}
+            className={`w-full h-14 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 transition-all shadow-sm ${itemName.trim() && !uploadingImage ? 'bg-primary text-white hover:opacity-90 active:scale-[0.98]' : 'bg-surface-container-high text-on-surface-variant opacity-50 cursor-not-allowed'}`}
           >
             <span className="material-symbols-outlined">save</span>
-            {saving ? 'Đang lưu...' : 'Lưu thực phẩm'}
+            {saving ? 'Đang lưu...' : uploadingImage ? 'Đang tải ảnh...' : 'Lưu thực phẩm'}
           </button>
         </div>
       </div>

@@ -263,6 +263,7 @@ export const pantryApi = {
     expiryDate: string;
     location?: StorageLocation;
     note?: string;
+    imageUrl?: string;
   }) => apiRequest<PantryItem>('/pantry', { method: 'POST', body: input }),
 
   get: (itemId: string) => apiRequest<PantryItem>(`/pantry/${itemId}`),
@@ -277,6 +278,7 @@ export const pantryApi = {
       location?: StorageLocation;
       status?: PantryItemStatus;
       note?: string;
+      imageUrl?: string;
     },
   ) => apiRequest<PantryItem>(`/pantry/${itemId}`, { method: 'PATCH', body: input }),
 
